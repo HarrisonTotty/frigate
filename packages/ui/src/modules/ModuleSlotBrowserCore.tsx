@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import type { ModuleSlot, ModuleInstance } from '@frigate/api-client';
 import { ModuleSlotCard } from '../lobby/ModuleSlotCard';
 import { ModuleSlotCategoryTabs } from '../lobby/ModuleSlotCategoryTabs';
@@ -65,9 +65,20 @@ export function ModuleSlotBrowserCore({
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  // Use a ref to track if we've already attempted to load slots
+  // This prevents infinite loops caused by the catalog object being recreated
+  const loadAttemptedRef = useRef(false);
 
   // Load all available module slots from the API
   useEffect(() => {
+    // Skip if we've already attempted to load or if apiUrl is empty
+    if (loadAttemptedRef.current || !apiUrl) {
+      return;
+    }
+    
+    loadAttemptedRef.current = true;
+
     const loadSlots = async () => {
       try {
         setLoading(true);
@@ -93,7 +104,7 @@ export function ModuleSlotBrowserCore({
     };
 
     void loadSlots();
-  }, [catalog]);
+  }, [apiUrl, catalog]);
 
   // Extract all unique categories from loaded slots
   const categories = useMemo(() => {
