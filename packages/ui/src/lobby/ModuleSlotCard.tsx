@@ -74,7 +74,7 @@ export function ModuleSlotCard({
     >
       <pre style={{ 
         margin: 0, 
-        color: '#3af', 
+        color: 'var(--frigate-primary)', 
         fontWeight: 700,
         fontFamily: 'var(--frigate-font-mono)',
         lineHeight: 1.2,
@@ -97,7 +97,7 @@ export function ModuleSlotCard({
             style={{ 
               background: 'none', 
               border: 'none', 
-              color: '#3af', 
+              color: 'var(--frigate-primary)', 
               fontWeight: 700, 
               padding: 0, 
               cursor: canAdd && !disabled ? 'pointer' : 'not-allowed',
@@ -115,7 +115,7 @@ export function ModuleSlotCard({
       {/* No expanded details in catalog view */}
       <pre style={{ 
         margin: 0, 
-        color: '#3af', 
+        color: 'var(--frigate-primary)', 
         fontWeight: 700,
         fontFamily: 'var(--frigate-font-mono)',
         lineHeight: 1.2,
