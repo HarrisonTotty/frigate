@@ -16,9 +16,9 @@ The workspace will be divided into three main columns:
     - Displays current usage of build points, module slots, and weight.
     - Displays a list of currently installed module instances on the ship blueprint.
     - Each module instance shows its slot type name, selected variant (if any), and key stats.
-    - Each instance has `[EDIT]` and `[REMOVE]` buttons.
-    - Clicking `[EDIT]` opens the _Module Catalog_ to select or change the variant for that module instance.
-    - Clicking `[REMOVE]` removes the module instance from the blueprint.
+    - Each instance has `[SELECT]` and `[X]` buttons. If the module slot does not support variants, it will only have a `[X]` button.
+    - Clicking `[SELECT]` opens the _Module Catalog_ to select or change the variant for that module instance.
+    - Clicking `[X]` removes the module instance from the blueprint.
     - Hovering over a module instance reveals a tooltip panel with detailed stats, including aggregated stats from the selected variant.
 
 3. **Right Column: Ship Statistics**
@@ -39,6 +39,15 @@ The _Module Catalog_ is a modal panel that appears when adding or editing a modu
    - Displays detailed information about the selected variant, including full description, lore, and all stats.
    - Includes a `[SELECT]` button to confirm the selection and close the catalog, updating the module instance in the center column of the workspace.
 
+## Example User Flow
+
+1. The ship design workspace is populated with relevant information sourced from the selected ship class (like the max build points and maximum weight).
+2. The user clicks `[ADD]` on a module slot in the _module slot browser_, which adds it to the _installed modules_ list. As an example let's say the user clicks `[ADD]` for "Kinetic Weapon Port". There will now be a new entry in the _installed modules_ list called "Kinetic Weapon Port". Since this module slot accepts any kinetic weapon module (aka it has subtypes/varients), there will be both an `[SELECT]` button and a `[X]` button for it.
+3. The user then clicks `[SELECT]` for the "Kinetic Weapon Port" they just added, opening the _Module Catalog_ dialog for them to select which weapon they want to mount to the port.
+4. After they have selected a kinetic weapon module (like a particular type of cannon for instance), the "Kinetic Weapon Port" module slot will be updated to reflect the selection, with the particular type of kinetic weapon shown.
+5. The ship statistics panel and other statistics like the current usage of build points is updated to reflect the change.
+6. The user repeats this process for other kinds of module slots.
+
 ## Notable Changes & Other Notes
 
 1. The workspace no longer incorperates ship crew position selection. This will be handled in a separate crew management workspace.
@@ -46,7 +55,7 @@ The _Module Catalog_ is a modal panel that appears when adding or editing a modu
 
 ## Implementation Guidelines
 
-1. Be sure to ahere to the hard sci-fi design philosophy specified in `doc/design.md`. Reuse components from the existing UI library where possible.
+1. Be sure to ahere to the hard sci-fi design philosophy specified in `doc/design/design-philosophy.md`. Reuse components from the existing UI library where possible.
 2. Separate components should be created for the Module Slot Browser, Installed Modules List, Ship Statistics Panel, and Module Catalog to ensure modularity and reusability.
 3. Create unit tests for each component to ensure functionality and reliability.
 4. Relevant components should be created in `packages/ui/src/lobby`.
