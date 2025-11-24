@@ -6,6 +6,7 @@ import ShipStatsPanel, { ShipStats } from './ShipStatsPanel';
 import { ModuleCatalog } from '../modules/ModuleCatalog';
 import { useUiBlueprint } from '../hooks/useUiBlueprint';
 import { useCatalog } from '../hooks/useCatalog';
+import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
 import { Grid } from '../layout';
 
 /**
@@ -164,6 +165,7 @@ export function ShipDesignWorkspace({
 }: ShipDesignWorkspaceProps) {
   const { blueprint, addInstance, removeInstance, setVariant, ensureOpen } = useUiBlueprint({ blueprintId, apiBase: apiUrl });
   const { slotsList, getModuleSlots } = useCatalog(apiUrl);
+  const { goBack } = useLobbyWorkflowStore();
 
   // Initialize blueprint state when component mounts
   useEffect(() => {
@@ -174,6 +176,12 @@ export function ShipDesignWorkspace({
   useEffect(() => {
     getModuleSlots();
   }, [getModuleSlots]);
+
+  // Handle back button - use workflow store first, then fallback to onBack callback
+  const handleBackClick = () => {
+    goBack();
+    if (onBack) onBack();
+  };
 
   // Blueprint instances are the source of truth - convert to mutable array
   const instances = Array.from(blueprint?.instances ?? []);
@@ -269,7 +277,7 @@ export function ShipDesignWorkspace({
       }}
     >
       {/* Header */}
-      <WorkspaceHeader blueprintName={blueprint?.name ?? 'SHIP BLUEPRINT'} onBack={onBack} />
+      <WorkspaceHeader blueprintName={blueprint?.name ?? 'SHIP BLUEPRINT'} onBack={handleBackClick} />
 
       {/* Main Content Area - Three Column Layout */}
       <div
