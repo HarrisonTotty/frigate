@@ -154,7 +154,7 @@ function ModuleListHeader({ count, maxModules }: ModuleListHeaderProps) {
           marginBottom: 'var(--frigate-space-2)',
         }}
       >
-        INSTALLED MODULES [STS]
+        INSTALLED MODULES
       </div>
       <div
         style={{

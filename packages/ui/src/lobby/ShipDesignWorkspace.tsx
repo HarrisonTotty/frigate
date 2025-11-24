@@ -5,6 +5,7 @@ import InstalledModulesList from './InstalledModulesList';
 import ShipStatsPanel, { ShipStats } from './ShipStatsPanel';
 import { ModuleCatalog } from '../modules/ModuleCatalog';
 import { useUiBlueprint } from '../hooks/useUiBlueprint';
+import { useShipClass } from '../hooks/useShipClass';
 import { useCatalog } from '../hooks/useCatalog';
 import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
 import { Grid } from '../layout';
@@ -166,8 +167,30 @@ export function ShipDesignWorkspace({
   const { blueprint, addInstance, removeInstance, setVariant, ensureOpen } = useUiBlueprint({ blueprintId, apiBase: apiUrl });
   const { slotsList, getModuleSlots } = useCatalog(apiUrl);
   const { goBack } = useLobbyWorkflowStore();
-
-  // Initialize blueprint state when component mounts
+  
+  // Fetch the full blueprint from API to get shipClass
+  const [blueprintData, setBlueprintData] = useState<{ id: string; name: string; class: string; team_id: string } | null>(null);
+  
+  useEffect(() => {
+    const fetchBlueprint = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/v1/blueprints/${blueprintId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBlueprintData(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch blueprint:', error);
+      }
+    };
+    
+    if (blueprintId && apiUrl) {
+      fetchBlueprint();
+    }
+  }, [blueprintId, apiUrl]);
+  
+  // Use the useShipClass hook to fetch ship class details using the class from the blueprint
+  const { shipClass } = useShipClass(blueprintData?.class, apiUrl);
   useEffect(() => {
     ensureOpen({ id: blueprintId, instances: [] });
   }, [blueprintId, ensureOpen]);
@@ -245,7 +268,7 @@ export function ShipDesignWorkspace({
       power: 0,
       heat: 0,
       buildPointsUsed: 0,
-      buildPointsMax: 100,
+      buildPointsMax: shipClass?.build_points ?? 100,
       warnings: [],
     };
     for (const inst of instances) {
@@ -262,7 +285,7 @@ export function ShipDesignWorkspace({
       s.warnings?.push('Build points exceeded');
     }
     return s;
-  }, [instances]);
+  }, [instances, shipClass]);
 
   return (
     <div

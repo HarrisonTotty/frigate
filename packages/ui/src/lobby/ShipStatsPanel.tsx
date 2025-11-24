@@ -98,7 +98,7 @@ export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
           borderBottom: '1px solid var(--frigate-border-base)',
         }}
       >
-        SHIP STATISTICS [SHP]
+        SHIP STATISTICS
       </div>
 
       {/* Primary Stats Grid (2 columns) */}
