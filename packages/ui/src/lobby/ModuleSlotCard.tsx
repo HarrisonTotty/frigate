@@ -12,22 +12,6 @@ export interface ModuleSlotCardProps {
   disabled?: boolean;
 }
 
-/**
- * Generate a top border with dynamic width
- */
-function generateTopBorder(width: number): string {
-  if (width < 3) return '┌┐';
-  return '┌' + '─'.repeat(width - 2) + '┐';
-}
-
-/**
- * Generate a bottom border with dynamic width
- */
-function generateBottomBorder(width: number): string {
-  if (width < 3) return '└┘';
-  return '└' + '─'.repeat(width - 2) + '┘';
-}
-
 export function ModuleSlotCard({
   slot,
   currentCount,
@@ -47,12 +31,11 @@ export function ModuleSlotCard({
   const safeDescription = typeof slot.description === 'string' ? slot.description : '';
   const canAdd = safeBaseCost <= (maxBuildPoints - buildPointsUsed);
   
-  // Calculate border width based on content
-  // Use consistent fixed width for proper ASCII border alignment
-  const borderWidth = 50;
-
-  const borderTop = generateTopBorder(borderWidth);
-  const borderBottom = generateBottomBorder(borderWidth);
+  // Use a border width that fits within the 320px column container
+  // accounting for padding (8px on each side = 16px) and scrollbar (~16px)
+  // Available width: ~288px at ~8.5px per char = ~34 chars max
+  const borderTop = '┌' + '─'.repeat(30) + '┐';
+  const borderBottom = '└' + '─'.repeat(30) + '┘';
 
   return (
     <div
@@ -74,11 +57,13 @@ export function ModuleSlotCard({
     >
       <pre style={{ 
         margin: 0, 
+        padding: 0,
         color: 'var(--frigate-primary)', 
         fontWeight: 700,
         fontFamily: 'var(--frigate-font-mono)',
-        lineHeight: 1.2,
-        overflow: 'hidden',
+        fontSize: 'var(--frigate-font-body)',
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
       }}>
         {borderTop}
       </pre>
@@ -115,11 +100,13 @@ export function ModuleSlotCard({
       {/* No expanded details in catalog view */}
       <pre style={{ 
         margin: 0, 
+        padding: 0,
         color: 'var(--frigate-primary)', 
         fontWeight: 700,
         fontFamily: 'var(--frigate-font-mono)',
-        lineHeight: 1.2,
-        overflow: 'hidden',
+        fontSize: 'var(--frigate-font-body)',
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
       }}>
         {borderBottom}
       </pre>

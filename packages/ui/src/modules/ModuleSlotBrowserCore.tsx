@@ -196,10 +196,12 @@ export function ModuleSlotBrowserCore({
   const scrollableAreaStyles: React.CSSProperties = {
     flex: 1,
     overflowY: 'auto',
-    overflowX: 'hidden',
+    overflowX: 'auto',
     display: 'flex',
     flexDirection: 'column',
     gap: 'var(--frigate-space-1)',
+    paddingRight: 'var(--frigate-space-2)',
+    minWidth: 0,
   };
 
   const emptyStateStyles: React.CSSProperties = {
