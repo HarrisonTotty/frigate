@@ -1,0 +1,474 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Frigate UI/Accessibility" />
+
+# Accessibility Guidelines
+
+Comprehensive accessibility documentation for the Frigate UI design system.
+
+---
+
+## Overview
+
+Frigate is designed to be fully accessible to all users, including those using assistive technologies, alternate input methods, or requiring visual/motion accommodations.
+
+### Accessibility Features
+
+- **Keyboard Navigation**: Full keyboard support for all interactive elements
+- **Screen Reader Support**: Semantic HTML and ARIA labels throughout
+- **High Contrast Mode**: Automatic support via `@media (prefers-contrast: high)`
+- **Colorblind Mode**: Alternative color palette via `.frigate-colorblind-mode`
+- **Reduced Motion**: Respects `@media (prefers-reduced-motion: reduce)`
+- **Focus Indicators**: Clear visual focus states for keyboard navigation
+
+---
+
+## Keyboard Navigation
+
+### Global Shortcuts
+
+All keyboard shortcuts use terminal-style formatting (uppercase, no symbols):
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| **CTRL+K** | Open command palette | Global |
+| **ESC** | Close modal/overlay | Global |
+| **TAB** | Navigate forward | Global |
+| **SHIFT+TAB** | Navigate backward | Global |
+| **ENTER** | Activate/Confirm | Interactive elements |
+| **SPACE** | Toggle/Select | Checkboxes, buttons |
+
+### Component-Specific Shortcuts
+
+| Component | Shortcut | Action |
+|-----------|----------|--------|
+| **Button** | Displayed inline | e.g., `[FIRE] SPACE` |
+| **Command Palette** | ↑↓ | Navigate items |
+| **Command Palette** | ENTER | Execute command |
+| **Command Palette** | ESC | Close palette |
+| **Tabs** | ←→ | Navigate tabs |
+| **Accordion** | SPACE/ENTER | Toggle section |
+| **Modal** | ESC | Close modal |
+
+### Focus Management
+
+**Focus Indicators:**
+- All interactive elements show clear border on focus
+- Focus color: `var(--frigate-primary)` (#356b8f)
+- Focus width: `2px solid`
+- Focus offset: None (tight to element for TUI aesthetic)
+
+**Focus Trapping:**
+- Modals trap focus within dialog
+- Command palette traps focus when open
+- ESC key always returns focus to trigger element
+
+**Skip Links:**
+```tsx
+<a href="#main-content" className="frigate-skip-link">
+  [SKIP TO MAIN CONTENT]
+</a>
+```
+
+---
+
+## Screen Reader Support
+
+### Semantic HTML
+
+All components use proper semantic HTML:
+
+```tsx
+// ✓ Correct - uses semantic button
+<button>
+  [CONNECT]
+</button>
+
+// ✗ Incorrect - don't use divs as buttons
+<div onClick={...}>
+  [CONNECT]
+</div>
+```
+
+### ARIA Labels
+
+Components provide descriptive ARIA labels for screen readers:
+
+```tsx
+// Button with abbreviation
+<button aria-label="Fire weapons">
+  [FIRE] F
+</button>
+
+// Status badge
+<span role="status" aria-label="System operational">
+  [OPER]
+</span>
+
+// Progress indicator
+<div role="progressbar" aria-valuenow={75} aria-valuemin={0} aria-valuemax={100}>
+  [███████░░░] 75%
+</div>
+```
+
+### Live Regions
+
+Dynamic content updates use ARIA live regions:
+
+```tsx
+// Alert notifications
+<div role="alert" aria-live="assertive">
+  [CRIT] HULL BREACH DETECTED
+</div>
+
+// Status updates
+<div role="status" aria-live="polite">
+  SHIELDS: 80%
+</div>
+
+// Background processing
+<div role="status" aria-live="off" aria-busy="true">
+  [PROC] COMPILING...
+</div>
+```
+
+### Abbreviation Expansion
+
+Use `<Abbr>` component for automatic tooltip expansion:
+
+```tsx
+<Abbr 
+  term="PWR" 
+  definition="Power"
+  description="Electrical power generation and distribution"
+/>
+```
+
+Screen readers will announce: "Power, PWR, Electrical power generation and distribution"
+
+---
+
+## Visual Accommodations
+
+### High Contrast Mode
+
+Automatically activated via user preference:
+
+```css
+@media (prefers-contrast: high) {
+  :root {
+    --frigate-bg-base: #000000;      /* Pure black */
+    --frigate-bg-surface: #0a0a0a;   /* Near black */
+    --frigate-text-primary: #ffffff;  /* Pure white */
+    --frigate-primary: #00aaff;       /* Brighter blue */
+    --frigate-success: #00ff00;       /* Bright green */
+    --frigate-warning: #ffff00;       /* Bright yellow */
+    --frigate-error: #ff0000;         /* Bright red */
+    --frigate-border-base: #666666;   /* Brighter borders */
+  }
+}
+```
+
+**High Contrast Features:**
+- Pure black backgrounds (#000000)
+- Pure white text (#ffffff)
+- More saturated functional colors
+- Brighter borders for better definition
+- Increased contrast ratio (21:1 minimum)
+
+### Colorblind Mode
+
+Manually activated via `.frigate-colorblind-mode` class:
+
+```tsx
+<body className="frigate-colorblind-mode">
+  {/* All components automatically use alternative palette */}
+</body>
+```
+
+**Colorblind-Friendly Changes:**
+- Success: Green → Blue (#4d7ba8)
+- Warning: Yellow → Orange (#d97826)
+- Shape/pattern differentiation emphasized
+- Icons/symbols preferred over color alone
+- Status indicated by text labels, not just color
+
+**Affected Color Mapping:**
+
+| Standard | Colorblind | Use Case |
+|----------|-----------|----------|
+| Green #3d8a52 | Blue #4d7ba8 | Success states |
+| Yellow #b89548 | Orange #d97826 | Warnings |
+| Unchanged | Unchanged | Error (red) and info (blue) |
+
+### Reduced Motion
+
+Respects user's motion preference:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+**Reduced Motion Behavior:**
+- All animations instantly complete
+- Transitions happen immediately (effectively 0ms)
+- Loading dots become static
+- Alert entrance is instant (no slide)
+- Smooth scrolling disabled
+
+---
+
+## Component Accessibility
+
+### Button
+
+**Keyboard Support:**
+- ENTER or SPACE to activate
+- TAB to focus
+- Visual focus indicator
+
+**Screen Reader:**
+```tsx
+<Button 
+  variant="primary"
+  shortcut="F"
+  aria-label="Fire weapons (Press F)"
+>
+  [FIRE]
+</Button>
+```
+
+**States:**
+- Disabled: `aria-disabled="true"`, `tabindex="-1"`
+- Loading: `aria-busy="true"`, loading text announced
+- Pressed: `aria-pressed="true"` for toggle buttons
+
+### Badge
+
+**Screen Reader:**
+```tsx
+<Badge 
+  variant="success"
+  role="status"
+  aria-label="System operational"
+>
+  [OPER]
+</Badge>
+```
+
+**Color Independence:**
+- Text label always present (not color-only)
+- Shape/border indicates severity
+- Tooltip provides full expansion
+
+### ProgressBar
+
+**Screen Reader:**
+```tsx
+<ProgressBar 
+  value={75}
+  max={100}
+  role="progressbar"
+  aria-valuenow={75}
+  aria-valuemin={0}
+  aria-valuemax={100}
+  aria-label="Power level"
+>
+  PWR: [███████░░░] 75%
+</ProgressBar>
+```
+
+**Visual:**
+- Text percentage always shown
+- Unicode blocks provide clear visual
+- Color indicates status (green/yellow/red)
+
+### Modal
+
+**Keyboard Support:**
+- ESC to close
+- TAB cycles through focusable elements (trapped)
+- Focus returns to trigger on close
+
+**Screen Reader:**
+```tsx
+<Modal
+  isOpen={true}
+  onClose={handleClose}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+  aria-describedby="modal-description"
+>
+  <h2 id="modal-title">CONFIRMATION REQUIRED</h2>
+  <p id="modal-description">Are you sure you want to proceed?</p>
+</Modal>
+```
+
+### Alert
+
+**Screen Reader:**
+```tsx
+<Alert
+  severity="critical"
+  role="alert"
+  aria-live="assertive"
+>
+  [CRIT] HULL BREACH DETECTED
+</Alert>
+```
+
+**Live Region Levels:**
+- Info/Success: `aria-live="polite"` (announces when idle)
+- Warning: `aria-live="polite"` (announces when idle)
+- Critical/Emergency: `aria-live="assertive"` (announces immediately)
+
+### DataGrid
+
+**Keyboard Support:**
+- Arrow keys to navigate cells
+- TAB to move to next interactive element
+- ENTER to activate row/cell action
+- HOME/END to jump to first/last row
+
+**Screen Reader:**
+```tsx
+<DataGrid
+  columns={columns}
+  data={data}
+  role="table"
+  aria-label="Ship systems status"
+  aria-rowcount={data.length}
+  aria-colcount={columns.length}
+/>
+```
+
+**Table Structure:**
+- Proper `<table>`, `<thead>`, `<tbody>` semantics
+- `<th>` for headers with `scope` attribute
+- `aria-sort` for sortable columns
+- Row headers for first column
+
+### CommandPalette
+
+**Keyboard Support:**
+- CTRL+K to open
+- ESC to close
+- ↑↓ to navigate
+- ENTER to execute
+- Type to filter
+
+**Screen Reader:**
+```tsx
+<CommandPalette
+  role="dialog"
+  aria-modal="true"
+  aria-label="Command palette"
+>
+  <input
+    type="text"
+    role="combobox"
+    aria-autocomplete="list"
+    aria-controls="command-list"
+    aria-activedescendant={activeId}
+  />
+  <ul id="command-list" role="listbox">
+    {commands.map(cmd => (
+      <li role="option" aria-selected={isSelected}>
+        {cmd.label}
+      </li>
+    ))}
+  </ul>
+</CommandPalette>
+```
+
+### Loading States
+
+**Text-Based Loading (Accessible):**
+```tsx
+<LoadingText message="LOADING" />
+// Announces: "Loading" with animated dots visible
+```
+
+**Screen Reader Announcement:**
+```tsx
+<div role="status" aria-live="polite" aria-busy="true">
+  LOADING...
+</div>
+```
+
+---
+
+## Testing Checklist
+
+### Keyboard Navigation
+- [ ] All interactive elements reachable via TAB
+- [ ] Focus order is logical (top to bottom, left to right)
+- [ ] Focus indicators clearly visible
+- [ ] No keyboard traps (can always TAB out)
+- [ ] Shortcuts don't conflict with browser/screen reader
+- [ ] ESC closes modals/overlays
+
+### Screen Reader
+- [ ] All images have alt text (N/A - text-only UI)
+- [ ] Form inputs have labels
+- [ ] Buttons have descriptive text
+- [ ] Headings follow logical hierarchy (h1 → h2 → h3)
+- [ ] ARIA labels expand abbreviations
+- [ ] Live regions announce updates appropriately
+- [ ] Table structure is semantic
+
+### Visual
+- [ ] Contrast ratio ≥4.5:1 for normal text
+- [ ] Contrast ratio ≥7:1 for high contrast mode
+- [ ] Focus indicators have ≥3:1 contrast
+- [ ] Color is not sole indicator of meaning
+- [ ] Text resizes to 200% without breaking layout
+- [ ] Content readable in colorblind mode
+
+### Motion
+- [ ] Animations respect prefers-reduced-motion
+- [ ] No auto-playing animations >5 seconds
+- [ ] Animations can be paused/stopped
+- [ ] Essential motion only (no decorative)
+
+---
+
+## Best Practices
+
+### DO ✓
+
+- Use semantic HTML elements (`<button>`, `<nav>`, `<main>`)
+- Provide ARIA labels for abbreviations
+- Include keyboard shortcuts with clear labels
+- Test with actual screen readers (NVDA, JAWS, VoiceOver)
+- Maintain focus indicators on all interactive elements
+- Use `role` attributes appropriately
+- Provide text alternatives for all content
+- Respect user motion preferences
+
+### DON'T ✗
+
+- Use `<div>` or `<span>` as buttons
+- Rely solely on color to convey information
+- Create keyboard traps
+- Remove focus indicators (outline: none without replacement)
+- Auto-play animations without controls
+- Use placeholder as label
+- Hide content from screen readers unnecessarily
+- Override user's accessibility preferences
+
+---
+
+## Resources
+
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Screen Reader Testing](https://webaim.org/articles/screenreader_testing/)

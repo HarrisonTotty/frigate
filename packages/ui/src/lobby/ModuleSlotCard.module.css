@@ -1,0 +1,128 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frigate-space-2);
+  padding: var(--frigate-space-2);
+  background: var(--frigate-bg-surface);
+  border: 1px solid var(--frigate-primary);
+  border-radius: var(--frigate-radius-none);
+  font-family: var(--frigate-font-mono);
+  color: var(--frigate-text-primary);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  background: var(--frigate-bg-highlight);
+  border-color: var(--frigate-info);
+}
+
+.card:focus {
+  outline: 2px solid var(--frigate-primary);
+  outline-offset: -1px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--frigate-space-2);
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frigate-space-1);
+  flex: 1;
+}
+
+.name {
+  font-size: var(--frigate-text-body);
+  font-weight: bold;
+  color: var(--frigate-text-primary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badges {
+  display: flex;
+  gap: var(--frigate-space-1);
+  flex-wrap: wrap;
+}
+
+.cost {
+  font-size: var(--frigate-text-body);
+  font-weight: bold;
+  color: var(--frigate-success);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.description {
+  font-size: var(--frigate-text-small);
+  color: var(--frigate-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--frigate-space-2);
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: var(--frigate-space-1);
+  font-size: var(--frigate-text-small);
+}
+
+.countLabel {
+  color: var(--frigate-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.countValue {
+  font-weight: bold;
+  color: var(--frigate-text-primary);
+}
+
+.countValue.countAtMax {
+  color: var(--frigate-warning);
+}
+
+.maxIndicator {
+  padding: var(--frigate-space-1) var(--frigate-space-2);
+  background: rgba(212, 168, 85, 0.1);
+  color: var(--frigate-warning);
+  font-size: var(--frigate-text-tiny);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px dashed var(--frigate-warning);
+  text-align: center;
+  border-radius: var(--frigate-radius-none);
+}
+
+@media (max-width: 600px) {
+  .card {
+    gap: var(--frigate-space-1);
+    padding: var(--frigate-space-1);
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .count {
+    justify-content: space-between;
+  }
+}

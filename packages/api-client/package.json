@@ -1,0 +1,24 @@
+{
+  "name": "@frigate/api-client",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc --build && tsup src/index.ts --format esm,cjs",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "graphql-request": "^6.1.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "tsup": "^7.2.0",
+    "vitest": "^0.34.6"
+  }
+}

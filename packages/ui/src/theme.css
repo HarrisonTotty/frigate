@@ -1,0 +1,468 @@
+/**
+ * Frigate Design System - Global Theme & Foundations
+ * 
+ * Hard Sci-Fi TUI Aesthetic - Monospace Typography, Muted Professional Palette
+ * 
+ * Color Palette (Desaturated & Professional):
+ * - Background: #0d0d0d (Very Dark Gray - deeper than previous)
+ * - Surface: #1a1a1a (Dark Gray)
+ * - Primary: #356b8f (Muted Blue - desaturated)
+ * - Text: #d0d0d0 (Light Gray - slightly dimmed)
+ * 
+ * Functional Colors (All Muted):
+ * - Success/Ready: #3d8a52 (Muted Green)
+ * - Warning: #b89548 (Muted Yellow/Gold)
+ * - Danger/Alert: #b04540 (Muted Red)
+ * - Info: #4d7ba8 (Muted Blue)
+ * 
+ * Semantic Data Type Colors:
+ * - Power/Energy: #4d7ba8 (Muted Blue)
+ * - Status/State: #909090 (Gray)
+ * - Thermal/Heat: #b89548 (Muted Yellow)
+ * - Structural (Hull/Shields): #3d8a52 (Muted Green)
+ * - Combat/Weapons: #b04540 (Muted Red)
+ * 
+ * Typography:
+ * - Enforced monospace throughout (Roboto Mono)
+ * - Display: 24px, Heading: 18px, Body: 14px, Small: 12px, Tiny: 10px
+ * - Technical uppercase labels with letter-spacing
+ * 
+ * Accessibility:
+ * - High-contrast mode support (@media prefers-contrast)
+ * - Colorblind-friendly alternative (.frigate-colorblind-mode)
+ * - Reduced motion support (@media prefers-reduced-motion)
+ */
+
+:root {
+  /* Base Colors - Darker, more professional */
+  --frigate-bg-base: #0d0d0d;
+  --frigate-bg-surface: #1a1a1a;
+  --frigate-bg-raised: #252525;
+  --frigate-bg-overlay: rgba(13, 13, 13, 0.95);
+  --frigate-surface-overlay: #2a2a2a;
+
+  /* Primary Palette - More muted blue */
+  --frigate-primary: #356b8f;
+  --frigate-primary-hover: #457b9f;
+  --frigate-primary-active: #255b7f;
+  --frigate-primary-muted: rgba(53, 107, 143, 0.2);
+
+  /* Text Colors */
+  --frigate-text-primary: #d0d0d0;
+  --frigate-text-secondary: #909090;
+  --frigate-text-tertiary: #606060;
+  --frigate-text-muted: #404040;
+  --frigate-text-inverse: #0d0d0d;
+
+  /* Functional Colors - More desaturated and muted */
+  --frigate-success: #3d8a52;
+  --frigate-success-hover: #4d9a62;
+  --frigate-success-muted: rgba(61, 138, 82, 0.2);
+
+  --frigate-warning: #b89548;
+  --frigate-warning-hover: #c8a558;
+  --frigate-warning-muted: rgba(184, 149, 72, 0.2);
+
+  --frigate-danger: #b04540;
+  --frigate-danger-hover: #c05550;
+  --frigate-danger-muted: rgba(176, 69, 64, 0.2);
+
+  --frigate-info: #4d7ba8;
+  --frigate-info-hover: #5d8bb8;
+  --frigate-info-muted: rgba(77, 123, 168, 0.2);
+
+  /* Status Indicators - Aligned with new muted palette */
+  --frigate-status-hull: #3d8a52;
+  --frigate-status-shields: #4d7ba8;
+  --frigate-status-power: #b89548;
+  --frigate-status-weapons: #b04540;
+
+  /* Borders - Slightly lighter for better definition */
+  --frigate-border-base: #353535;
+  --frigate-border-light: #454545;
+  --frigate-border-muted: #252525;
+  --frigate-border-emphasis: #555555;
+
+  /* Typography */
+  --frigate-font-mono: 'Roboto Mono', 'Courier New', 'Consolas', monospace;
+  --frigate-font-sans: var(--frigate-font-mono); /* Enforce monospace everywhere */
+
+  --frigate-font-display: 1.5rem;      /* 24px - Ship names, major sections */
+  --frigate-font-heading: 1.125rem;    /* 18px - Panel headers, station names */
+  --frigate-font-body: 0.875rem;       /* 14px - Standard data displays */
+  --frigate-font-small: 0.75rem;       /* 12px - Labels, metadata */
+  --frigate-font-tiny: 0.625rem;       /* 10px - Secondary information */
+
+  /* Semantic Data Type Colors - Professional and muted */
+  --frigate-data-power: #4d7ba8;       /* Muted blue for power/energy */
+  --frigate-data-status: #909090;      /* Gray for status/state */
+  --frigate-data-thermal: #b89548;     /* Muted yellow for temperature/heat */
+  --frigate-data-structural: #3d8a52;  /* Muted green for hull/shields */
+  --frigate-data-combat: #b04540;      /* Muted red for weapons/damage */
+
+  /* Spacing Scale (based on 4px grid) */
+  --frigate-space-0: 0;
+  --frigate-space-1: 0.25rem;  /* 4px */
+  --frigate-space-2: 0.5rem;   /* 8px */
+  --frigate-space-3: 0.75rem;  /* 12px */
+  --frigate-space-4: 1rem;     /* 16px */
+  --frigate-space-5: 1.25rem;  /* 20px */
+  --frigate-space-6: 1.5rem;   /* 24px */
+  --frigate-space-8: 2rem;     /* 32px */
+  --frigate-space-10: 2.5rem;  /* 40px */
+  --frigate-space-12: 3rem;    /* 48px */
+  --frigate-space-16: 4rem;    /* 64px */
+
+  /* Radius - All set to 0 for flat design */
+  --frigate-radius-none: 0;
+  --frigate-radius-sm: 0;
+  --frigate-radius-md: 0;
+  --frigate-radius-lg: 0;
+
+  /* Transitions - Minimal for TUI aesthetic */
+  /* Only essential feedback: text fade (100ms), border state (50ms), alerts (150ms) */
+  --frigate-transition-instant: 0ms;
+  --frigate-transition-state: 50ms ease;     /* Border/color state changes */
+  --frigate-transition-text: 100ms ease;     /* Text fade-in for new data */
+  --frigate-transition-alert: 150ms ease;    /* Alert banner slide-down */
+  
+  /* Legacy support - map to minimal values */
+  --frigate-transition-fast: 50ms ease;
+  --frigate-transition-base: 100ms ease;
+  --frigate-transition-slow: 150ms ease;
+
+  /* Z-Index Scale */
+  --frigate-z-base: 0;
+  --frigate-z-dropdown: 100;
+  --frigate-z-sticky: 200;
+  --frigate-z-overlay: 300;
+  --frigate-z-modal: 400;
+  --frigate-z-toast: 500;
+
+  /* ASCII Box-Drawing Characters */
+  --frigate-ascii-corner-tl: '┌';
+  --frigate-ascii-corner-tr: '┐';
+  --frigate-ascii-corner-bl: '└';
+  --frigate-ascii-corner-br: '┘';
+  --frigate-ascii-h-line: '─';
+  --frigate-ascii-v-line: '│';
+  
+  --frigate-ascii-corner-tl-heavy: '╔';
+  --frigate-ascii-corner-tr-heavy: '╗';
+  --frigate-ascii-corner-bl-heavy: '╚';
+  --frigate-ascii-corner-br-heavy: '╝';
+  --frigate-ascii-h-line-heavy: '═';
+  --frigate-ascii-v-line-heavy: '║';
+}
+
+/* High-Contrast Mode */
+@media (prefers-contrast: high), (prefers-contrast: more) {
+  :root {
+    /* Enhanced contrast backgrounds */
+    --frigate-bg-base: #000000;
+    --frigate-bg-surface: #1a1a1a;
+    --frigate-bg-raised: #2a2a2a;
+    --frigate-bg-overlay: rgba(0, 0, 0, 0.98);
+
+    /* High-contrast text */
+    --frigate-text-primary: #ffffff;
+    --frigate-text-secondary: #cccccc;
+    --frigate-text-tertiary: #999999;
+    --frigate-text-muted: #666666;
+
+    /* Brighter borders */
+    --frigate-border-base: #666666;
+    --frigate-border-light: #888888;
+    --frigate-border-muted: #444444;
+    --frigate-border-emphasis: #aaaaaa;
+
+    /* More saturated functional colors */
+    --frigate-success: #5ac770;
+    --frigate-warning: #f0c060;
+    --frigate-danger: #e86560;
+    --frigate-info: #70b0e0;
+    --frigate-primary: #50a0d0;
+
+    /* Enhanced data type colors */
+    --frigate-data-power: #70b0e0;
+    --frigate-data-status: #cccccc;
+    --frigate-data-thermal: #f0c060;
+    --frigate-data-structural: #5ac770;
+    --frigate-data-combat: #e86560;
+  }
+}
+
+/* Colorblind-Friendly Alternative (can be toggled via class) */
+.frigate-colorblind-mode {
+  /* Use shape/pattern differentiation over color */
+  --frigate-success: #0077bb;      /* Blue instead of green */
+  --frigate-warning: #ee7733;      /* Orange instead of yellow */
+  --frigate-danger: #cc3311;       /* Red (unchanged) */
+  --frigate-info: #009988;         /* Teal instead of blue */
+  --frigate-primary: #33bbee;      /* Cyan instead of blue */
+
+  /* Status indicators use patterns */
+  --frigate-status-hull: #0077bb;
+  --frigate-status-shields: #33bbee;
+  --frigate-status-power: #ee7733;
+  --frigate-status-weapons: #cc3311;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --frigate-transition-fast: 0ms;
+    --frigate-transition-base: 0ms;
+    --frigate-transition-slow: 0ms;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* Base Reset & Typography */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--frigate-font-mono);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--frigate-text-primary);
+  background-color: var(--frigate-bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force monospace everywhere */
+button,
+input,
+select,
+textarea,
+.frigate-mono,
+* {
+  font-family: var(--frigate-font-mono);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 640px) {
+  :root {
+    --frigate-font-display: 1.25rem;
+    --frigate-font-heading: 1rem;
+    --frigate-font-body: 0.8125rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --frigate-font-display: 1.75rem;
+    --frigate-font-heading: 1.25rem;
+    --frigate-font-body: 1rem;
+  }
+}
+
+/* Multi-monitor hint classes */
+.frigate-monitor-span-2 {
+  min-width: 200vw;
+}
+
+.frigate-monitor-span-3 {
+  min-width: 300vw;
+}
+
+/* Focus & Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--frigate-primary);
+  outline-offset: 2px;
+}
+
+.frigate-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* TUI-Inspired Utility Classes */
+.frigate-ascii-border {
+  position: relative;
+  border: 1px solid var(--frigate-border-base);
+}
+
+.frigate-ascii-border-heavy {
+  position: relative;
+  border: 2px solid var(--frigate-border-light);
+}
+
+.frigate-technical-text {
+  font-family: var(--frigate-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.frigate-dense-layout {
+  line-height: 1.2;
+  padding: var(--frigate-space-1);
+}
+
+/* Technical Status Abbreviations */
+.frigate-status-online::before {
+  content: '[ONLN]';
+}
+
+.frigate-status-offline::before {
+  content: '[OFFL]';
+}
+
+.frigate-status-ready::before {
+  content: '[RDY]';
+}
+
+.frigate-status-active::before {
+  content: '[ACTV]';
+}
+
+.frigate-status-standby::before {
+  content: '[STBY]';
+}
+
+.frigate-status-critical::before {
+  content: '[CRIT]';
+}
+
+.frigate-status-warning::before {
+  content: '[WARN]';
+}
+
+/* Progress Bar with Block Characters */
+.frigate-progress-blocks {
+  font-family: var(--frigate-font-mono);
+  font-size: var(--frigate-font-body);
+  line-height: 1;
+  letter-spacing: -0.1em;
+}
+
+/* Semantic Data Type Color Classes */
+.frigate-data-power {
+  color: var(--frigate-data-power);
+}
+
+.frigate-data-status {
+  color: var(--frigate-data-status);
+}
+
+.frigate-data-thermal {
+  color: var(--frigate-data-thermal);
+}
+
+.frigate-data-structural {
+  color: var(--frigate-data-structural);
+}
+
+.frigate-data-combat {
+  color: var(--frigate-data-combat);
+}
+
+/* Data type backgrounds (for badges/indicators) */
+.frigate-data-power-bg {
+  background-color: var(--frigate-data-power);
+  color: var(--frigate-text-inverse);
+}
+
+.frigate-data-thermal-bg {
+  background-color: var(--frigate-data-thermal);
+  color: var(--frigate-text-inverse);
+}
+
+.frigate-data-structural-bg {
+  background-color: var(--frigate-data-structural);
+  color: var(--frigate-text-inverse);
+}
+
+.frigate-data-combat-bg {
+  background-color: var(--frigate-data-combat);
+  color: var(--frigate-text-inverse);
+}
+
+/* Muted text hierarchy */
+.frigate-text-primary {
+  color: var(--frigate-text-primary);
+}
+
+.frigate-text-secondary {
+  color: var(--frigate-text-secondary);
+}
+
+.frigate-text-tertiary {
+  color: var(--frigate-text-tertiary);
+}
+
+.frigate-text-muted {
+  color: var(--frigate-text-muted);
+}
+
+/* Minimal animations - TUI aesthetic */
+/* Only essential feedback allowed per design spec */
+
+@keyframes frigate-text-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes frigate-alert-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Utility classes for minimal animations */
+.frigate-fade-in {
+  animation: frigate-text-fade-in 100ms ease;
+}
+
+.frigate-alert-enter {
+  animation: frigate-alert-slide 150ms ease;
+}
+
+/* Loading text indicator (no spinners) */
+.frigate-loading::after {
+  content: '...';
+  animation: frigate-loading-dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes frigate-loading-dots {
+  0%, 25% {
+    content: '';
+  }
+  25%, 50% {
+    content: '.';
+  }
+  50%, 75% {
+    content: '..';
+  }
+  75%, 100% {
+    content: '...';
+  }
+}

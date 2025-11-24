@@ -1,0 +1,31 @@
+{
+  "name": "@frigate/state",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc --build && tsup src/index.ts --format esm,cjs",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@frigate/api-client": "workspace:^0.1.0",
+    "immer": "^10.0.3",
+    "zustand": "^4.4.5",
+    "@tanstack/react-query": "^5.14.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "tsup": "^7.2.0",
+    "vitest": "^0.34.6",
+    "react": "^18.2.0",
+    "@types/react": "^18.2.45",
+    "jsdom": "^24.0.0"
+  }
+}

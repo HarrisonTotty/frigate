@@ -1,0 +1,261 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Frigate UI/Introduction" />
+
+# Frigate UI Design System
+
+**Version**: 0.1.0  
+**Philosophy**: Hard sci-fi realism with flat, TUI-inspired interface
+
+---
+
+## Design Philosophy
+
+Frigate follows a strict design system philosophy creating an intimidating yet functional spaceship bridge experience. The visual design is inspired by hard sci-fi aesthetics and terminal user interfaces.
+
+### 1. Hard Sci-Fi Realism
+
+- **Flat, minimalistic design** - Focus on realism and functionality over decoration
+- **No flashy or fantastical elements** - Think *The Expanse*, not *Star Wars*
+- **Grounded in reality** - Leverage actual spaceflight and nautical terminology
+- **Intimidating complexity** - Dense data visualizations and technical jargon convey depth
+- **Professional interface** - Should feel like operating real equipment
+
+### 2. Strictly Flat, Text-Based Design
+
+- **Zero icons or emojis** - All UI elements are text-only
+- **Flat rectangles** - No gradients, shadows, or rounded corners (`border-radius: 0`)
+- **TUI/i3-inspired** - Visual style inspired by terminal UIs and minimalist window managers
+- **ASCII art borders** - Use box-drawing characters (╔═══╗, ─, │) for visual separation
+- **Muted color palette** - Grays, blues, minimal use of bright colors except for alerts
+- **Monospace typography** - Roboto Mono for all text (data, labels, buttons)
+- **Zero decorative elements** - Every pixel serves a functional purpose
+- **Minimal animations** - Maximum 50ms-150ms, only for essential feedback
+- **No box shadows** - All elements have `boxShadow: 'none'`
+
+### 3. Technical Jargon and Complexity
+
+- **Acronyms and abbreviations** - Use realistic technical terminology
+  - PWR (Power), STS (Status), TGT (Target), HDG (Heading), VEL (Velocity)
+  - CAPT (Captain), HELM (Helmsman), ENGR (Engineer), TACT (Tactical)
+- **Bracketed labels** - Buttons and indicators use brackets: `[CONNECT]`, `[FIRE]`, `[OK]`
+- **Dense information** - Pack displays with relevant data
+- **Keyboard-driven** - Every action accessible via shortcuts (CTRL+K, SHIFT+F, etc.)
+- **Uppercase labels** - Technical displays use uppercase for commands and status
+
+### 4. Animation Philosophy
+
+**Minimal animations only for essential feedback:**
+
+- **Text fade-in**: 100ms opacity transition for new data appearing
+- **Border state change**: 50ms color transition for interactive elements
+- **Alert entrance**: 150ms slide-down for system notifications
+
+**Prohibited animations:**
+
+- ❌ Loading spinners (use text: "LOADING..." with animated dots)
+- ❌ Smooth scrolling (default browser behavior)
+- ❌ Hover transitions > 100ms
+- ❌ Bounce/elastic/spring effects
+- ❌ Fade/scale on modals
+
+### 5. Accessibility Features
+
+- **High contrast mode** - `@media (prefers-contrast: high)` support
+  - Pure black background (#000000)
+  - White text (#ffffff)
+  - More saturated functional colors
+  
+- **Colorblind-friendly mode** - `.frigate-colorblind-mode` class
+  - Blue instead of green for success
+  - Orange instead of yellow for warning
+  - Shape/pattern differentiation emphasized
+  
+- **Reduced motion** - `@media (prefers-reduced-motion: reduce)`
+  - All animations set to 0ms
+  - Instant state transitions
+
+- **Keyboard navigation** - Full support for keyboard-only operation
+- **Screen reader** - Semantic HTML and ARIA labels throughout
+
+---
+
+## Design System Components
+
+### Color Palette
+
+**Base Colors:**
+- Background: `#0d0d0d` (darker professional equipment feel)
+- Surface: `#1a1a1a` (raised elements)
+- Primary: `#356b8f` (desaturated blue)
+- Text: `#d0d0d0` (slightly dimmed for reduced eye strain)
+
+**Functional Colors:**
+- Success: `#3d8a52` (muted green)
+- Warning: `#b89548` (muted yellow)
+- Error: `#b04540` (muted red)
+- Info: `#4d7ba8` (muted blue)
+
+**Semantic Data Colors:**
+- Power/Energy: `#4d7ba8` (muted blue)
+- Status/State: `#909090` (gray)
+- Thermal/Heat: `#b89548` (muted yellow)
+- Structural: `#3d8a52` (muted green)
+- Combat: `#b04540` (muted red)
+
+### Typography
+
+**Font Family:**
+- Monospace: `Roboto Mono, Courier New, monospace` (used everywhere)
+- ~~Sans-serif~~ - Not used, monospace only
+
+**Font Sizes:**
+- Tiny: `0.625rem` (10px) - Keyboard shortcuts, micro labels
+- Small: `0.75rem` (12px) - Secondary text, captions
+- Body: `0.875rem` (14px) - Default text, buttons
+- Large: `1rem` (16px) - Section headers
+- XL: `1.25rem` (20px) - Panel titles
+- 2XL: `1.5rem` (24px) - Page titles
+
+**Text Styles:**
+- Primary: Full opacity text
+- Secondary: 70% opacity
+- Tertiary: 50% opacity
+- Muted: 40% opacity
+- All uppercase for technical labels with `letter-spacing: 0.05em-0.1em`
+
+### Spacing
+
+Uses a consistent 4px base unit:
+- 1: `0.25rem` (4px)
+- 2: `0.5rem` (8px)
+- 3: `0.75rem` (12px)
+- 4: `1rem` (16px)
+- 5: `1.25rem` (20px)
+- 6: `1.5rem` (24px)
+- 8: `2rem` (32px)
+
+### Borders
+
+- Radius: `0px` (always flat, no rounded corners)
+- Width: `1px` (standard), `2px` (emphasis)
+- Style: `solid` (no dashed except for radar grids)
+- Color: `var(--frigate-border-base)` (#2a2a2a)
+
+### Transitions
+
+- State: `50ms` - Border/color changes on interactive elements
+- Text: `100ms` - Text fade-in for new data
+- Alert: `150ms` - Alert notification entrance
+
+---
+
+## Component Patterns
+
+### Buttons
+
+```tsx
+[CONNECT]  // Default state
+[CONNECTING...]  // Loading state (text-based, no spinner)
+[DISCONNECT]  // Active state
+```
+
+- Bracketed text labels
+- Uppercase for commands
+- Monospace font
+- 50ms hover transition (border color only)
+- Optional keyboard shortcut display: `[FIRE] SPACE`
+
+### Status Badges
+
+```tsx
+[RDY]   // Ready
+[ACTIVE]  // Active/Online
+[OFFL]   // Offline
+[DMGD]   // Damaged
+[CRIT]   // Critical
+```
+
+- 3-4 character abbreviations
+- Color-coded by severity
+- Small bordered rectangles
+- Uppercase text
+
+### Progress Indicators
+
+```tsx
+LOADING...     // Text-based loading (animated dots)
+45% COMPLETE   // Text-only progress
+[████░░░░░░]   // ASCII progress bar with percentage
+```
+
+- NO spinners or circular progress
+- Text or Unicode block characters only
+- Percentage always shown
+
+### Alerts
+
+```tsx
+[INFO] SYSTEM MESSAGE
+[OK] OPERATION SUCCESSFUL
+[WARN] TEMPERATURE HIGH
+[CRIT] HULL BREACH DETECTED
+[!!] COLLISION IMMINENT
+```
+
+- Severity indicator in brackets
+- Terminal-style notifications
+- 150ms slide-down entrance
+- Buttons: `[ACKNOWLEDGE]`, `[DISMISS]`, `[X]`
+
+---
+
+## Usage Guidelines
+
+### When to Use Abbreviations
+
+**Always abbreviate:**
+- Status labels (STATUS → STS)
+- Technical measurements (POWER → PWR, VELOCITY → VEL)
+- Bridge roles (CAPTAIN → CAPT, ENGINEER → ENGR)
+- System states (OPERATIONAL → OPER, OFFLINE → OFFL)
+
+**Never abbreviate:**
+- User-facing error messages
+- Help text and tooltips
+- Mission objectives
+- Ship/faction names
+
+### When to Use Uppercase
+
+**Always uppercase:**
+- Button labels: `[CONNECT]`, `[FIRE]`
+- Status codes: `[OK]`, `[CRIT]`
+- Technical labels: `HDG:`, `PWR:`, `TGT:`
+- Panel titles: `POWER DISTRIBUTION`, `TARGET LOCK`
+
+**Mixed case allowed:**
+- Long descriptive text
+- Player names (as entered)
+- Ship names (as designed)
+
+### Animation Guidelines
+
+**Use animations for:**
+- New data appearing (100ms fade)
+- State changes (50ms border color)
+- System alerts (150ms slide)
+
+**Never animate:**
+- Background colors
+- Layout shifts
+- Scrolling
+- Modal appearances (instant)
+
+---
+
+## Resources
+
+- [Design Document](../../../doc/design.md)
+- [Action Plan](../../../doc/action-plan.md)
+- [Theme Variables](../theme.css)

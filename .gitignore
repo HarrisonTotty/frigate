@@ -1,0 +1,45 @@
+# .gitignore file
+# ---------------
+
+# .DS_Store files
+**/.DS_Store
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore log files  
+*.log
+
+# Ignore environment variable files
+.env
+
+# Ignore build output directories
+dist/
+
+# Desktop tauri files
+apps/desktop/src-tauri/target/
+
+# TypeScript / Node / tooling
+# TypeScript incremental compilation files
+*.tsbuildinfo
+
+# Vite / dev tooling cache
+.vite/
+.cache/
+
+# pnpm
+.pnpm-debug.log
+.pnp.*
+
+# Turborepo / caching
+.turbo/
+
+# IDEs
+.vscode/
+
+# Local env and lockfiles sometimes created during CI or local experiments
+.env.local
+.env.*.local
+
+# Storybook static files
+**/storybook-static/

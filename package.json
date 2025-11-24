@@ -1,0 +1,30 @@
+{
+  "name": "frigate-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "lint": "pnpm run --recursive lint",
+    "typecheck": "pnpm run --recursive typecheck",
+    "test": "pnpm run --recursive test",
+    "build": "pnpm run --recursive build",
+    "ci": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "desktop": "pnpm --filter @frigate/desktop tauri dev",
+    "web": "pnpm --filter @frigate/web dev",
+    "storybook": "pnpm --filter @frigate/ui storybook"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  }
+}

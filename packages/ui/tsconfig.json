@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "baseUrl": ".",
+    "types": ["jest"],
+    "paths": {
+      "@frigate/state": ["../../packages/state/src/index.ts"],
+      "@frigate/api-client": ["../../packages/api-client/src/index.ts"],
+      "@frigate/utils": ["../../packages/utils/src/index.ts"]
+    }
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../state" }
+  ]
+}

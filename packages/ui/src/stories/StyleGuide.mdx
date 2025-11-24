@@ -1,0 +1,536 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Frigate UI/Visual Style Guide" />
+
+# Visual Style Guide
+
+Complete reference for the Frigate UI design system visual elements.
+
+---
+
+## Color System
+
+### Base Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#0d0d0d', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>BG-BASE</strong><br/>
+      #0d0d0d<br/>
+      Main background
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#1a1a1a', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>BG-SURFACE</strong><br/>
+      #1a1a1a<br/>
+      Raised elements
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#222222', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>BG-RAISED</strong><br/>
+      #222222<br/>
+      Interactive elements
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#356b8f', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a', color: '#d0d0d0' }}>
+      <strong>PRIMARY</strong><br/>
+      #356b8f<br/>
+      Key actions
+    </div>
+  </div>
+</div>
+
+### Functional Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#3d8a52', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>SUCCESS</strong><br/>
+      #3d8a52<br/>
+      Positive status
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#b89548', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>WARNING</strong><br/>
+      #b89548<br/>
+      Caution needed
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#b04540', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>ERROR</strong><br/>
+      #b04540<br/>
+      Critical issues
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#4d7ba8', height: '80px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>INFO</strong><br/>
+      #4d7ba8<br/>
+      Informational
+    </div>
+  </div>
+</div>
+
+### Semantic Data Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#4d7ba8', height: '60px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>POWER</strong><br/>
+      #4d7ba8<br/>
+      Energy systems
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#909090', height: '60px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>STATUS</strong><br/>
+      #909090<br/>
+      State data
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#b89548', height: '60px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>THERMAL</strong><br/>
+      #b89548<br/>
+      Heat readings
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#3d8a52', height: '60px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>STRUCTURAL</strong><br/>
+      #3d8a52<br/>
+      Hull/shields
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a' }}>
+    <div style={{ backgroundColor: '#b04540', height: '60px', border: '1px solid #2a2a2a' }}></div>
+    <div style={{ padding: '8px', fontFamily: 'monospace', fontSize: '12px', backgroundColor: '#1a1a1a' }}>
+      <strong>COMBAT</strong><br/>
+      #b04540<br/>
+      Weapons/damage
+    </div>
+  </div>
+</div>
+
+### Text Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+  <div style={{ border: '1px solid #2a2a2a', backgroundColor: '#0d0d0d', padding: '16px' }}>
+    <div style={{ fontFamily: 'monospace', fontSize: '14px', color: '#d0d0d0', marginBottom: '8px' }}>
+      <strong>PRIMARY</strong><br/>
+      #d0d0d0 (100%)
+    </div>
+    <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#d0d0d0' }}>
+      Main text content
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a', backgroundColor: '#0d0d0d', padding: '16px' }}>
+    <div style={{ fontFamily: 'monospace', fontSize: '14px', color: 'rgba(208, 208, 208, 0.7)', marginBottom: '8px' }}>
+      <strong>SECONDARY</strong><br/>
+      #d0d0d0 (70%)
+    </div>
+    <div style={{ fontFamily: 'monospace', fontSize: '12px', color: 'rgba(208, 208, 208, 0.7)' }}>
+      Supporting text
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a', backgroundColor: '#0d0d0d', padding: '16px' }}>
+    <div style={{ fontFamily: 'monospace', fontSize: '14px', color: 'rgba(208, 208, 208, 0.5)', marginBottom: '8px' }}>
+      <strong>TERTIARY</strong><br/>
+      #d0d0d0 (50%)
+    </div>
+    <div style={{ fontFamily: 'monospace', fontSize: '12px', color: 'rgba(208, 208, 208, 0.5)' }}>
+      Less important
+    </div>
+  </div>
+  <div style={{ border: '1px solid #2a2a2a', backgroundColor: '#0d0d0d', padding: '16px' }}>
+    <div style={{ fontFamily: 'monospace', fontSize: '14px', color: 'rgba(208, 208, 208, 0.4)', marginBottom: '8px' }}>
+      <strong>MUTED</strong><br/>
+      #d0d0d0 (40%)
+    </div>
+    <div style={{ fontFamily: 'monospace', fontSize: '12px', color: 'rgba(208, 208, 208, 0.4)' }}>
+      Disabled/subtle
+    </div>
+  </div>
+</div>
+
+---
+
+## Typography
+
+### Font Hierarchy
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', fontFamily: 'monospace', color: '#d0d0d0', marginBottom: '32px' }}>
+  <div style={{ fontSize: '24px', marginBottom: '16px' }}>2XL: PAGE TITLES (24px)</div>
+  <div style={{ fontSize: '20px', marginBottom: '16px' }}>XL: SECTION HEADERS (20px)</div>
+  <div style={{ fontSize: '16px', marginBottom: '16px' }}>LARGE: PANEL TITLES (16px)</div>
+  <div style={{ fontSize: '14px', marginBottom: '16px' }}>BODY: DEFAULT TEXT (14px)</div>
+  <div style={{ fontSize: '12px', marginBottom: '16px' }}>SMALL: SECONDARY TEXT (12px)</div>
+  <div style={{ fontSize: '10px' }}>TINY: MICRO LABELS (10px)</div>
+</div>
+
+### Text Styles
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', fontFamily: 'monospace', color: '#d0d0d0', marginBottom: '32px' }}>
+  <div style={{ fontSize: '14px', marginBottom: '12px' }}>
+    <strong>UPPERCASE TECHNICAL:</strong> STATUS, POWER, HEADING
+  </div>
+  <div style={{ fontSize: '14px', marginBottom: '12px', letterSpacing: '0.1em' }}>
+    <strong>SPACED LABELS:</strong> [CONNECT]  [FIRE]  [OK]
+  </div>
+  <div style={{ fontSize: '14px', marginBottom: '12px' }}>
+    <strong>Data Values:</strong> 270°, 1500 m/s, 85%
+  </div>
+  <div style={{ fontSize: '12px', color: 'rgba(208, 208, 208, 0.7)' }}>
+    Secondary information and captions
+  </div>
+</div>
+
+---
+
+## Spacing & Layout
+
+### Spacing Scale
+
+<div style={{ marginBottom: '32px' }}>
+  {[1, 2, 3, 4, 5, 6, 8].map(size => (
+    <div key={size} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', fontFamily: 'monospace', fontSize: '12px' }}>
+      <div style={{ width: '60px' }}>SPACE-{size}:</div>
+      <div style={{ width: '60px' }}>{size * 4}px</div>
+      <div style={{ backgroundColor: '#356b8f', height: '16px', width: `${size * 16}px` }}></div>
+    </div>
+  ))}
+</div>
+
+### Layout Patterns
+
+<div style={{ display: 'grid', gap: '16px', marginBottom: '32px' }}>
+  <div style={{ border: '1px solid #2a2a2a', padding: '16px', backgroundColor: '#0d0d0d' }}>
+    <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#d0d0d0', marginBottom: '8px' }}>
+      <strong>DENSE LAYOUT (gap: 12px)</strong>
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '8px', fontFamily: 'monospace', fontSize: '10px', textAlign: 'center' }}>
+        PANEL
+      </div>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '8px', fontFamily: 'monospace', fontSize: '10px', textAlign: 'center' }}>
+        PANEL
+      </div>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '8px', fontFamily: 'monospace', fontSize: '10px', textAlign: 'center' }}>
+        PANEL
+      </div>
+    </div>
+  </div>
+  
+  <div style={{ border: '1px solid #2a2a2a', padding: '16px', backgroundColor: '#0d0d0d' }}>
+    <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#d0d0d0', marginBottom: '8px' }}>
+      <strong>STANDARD LAYOUT (gap: 16px)</strong>
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '8px', fontFamily: 'monospace', fontSize: '10px', textAlign: 'center' }}>
+        PANEL
+      </div>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '8px', fontFamily: 'monospace', fontSize: '10px', textAlign: 'center' }}>
+        PANEL
+      </div>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '8px', fontFamily: 'monospace', fontSize: '10px', textAlign: 'center' }}>
+        PANEL
+      </div>
+    </div>
+  </div>
+</div>
+
+---
+
+## Component Anatomy
+
+### Button States
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', marginBottom: '32px' }}>
+  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+    <button style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '14px', 
+      padding: '8px 16px', 
+      backgroundColor: 'transparent', 
+      color: '#d0d0d0', 
+      border: '1px solid #2a2a2a',
+      cursor: 'pointer',
+      letterSpacing: '0.05em'
+    }}>
+      [DEFAULT]
+    </button>
+    <button style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '14px', 
+      padding: '8px 16px', 
+      backgroundColor: 'transparent', 
+      color: '#d0d0d0', 
+      border: '1px solid #356b8f',
+      cursor: 'pointer',
+      letterSpacing: '0.05em'
+    }}>
+      [HOVER]
+    </button>
+    <button style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '14px', 
+      padding: '8px 16px', 
+      backgroundColor: '#356b8f', 
+      color: '#d0d0d0', 
+      border: '1px solid #356b8f',
+      cursor: 'pointer',
+      letterSpacing: '0.05em'
+    }}>
+      [ACTIVE]
+    </button>
+    <button style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '14px', 
+      padding: '8px 16px', 
+      backgroundColor: 'transparent', 
+      color: 'rgba(208, 208, 208, 0.4)', 
+      border: '1px solid #1a1a1a',
+      cursor: 'not-allowed',
+      letterSpacing: '0.05em'
+    }}>
+      [DISABLED]
+    </button>
+  </div>
+</div>
+
+### Badge Variants
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', marginBottom: '32px' }}>
+  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+    <span style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '10px', 
+      padding: '4px 8px', 
+      backgroundColor: 'transparent', 
+      color: '#909090', 
+      border: '1px solid #2a2a2a',
+      letterSpacing: '0.05em'
+    }}>
+      [DEFAULT]
+    </span>
+    <span style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '10px', 
+      padding: '4px 8px', 
+      backgroundColor: 'transparent', 
+      color: '#3d8a52', 
+      border: '1px solid #3d8a52',
+      letterSpacing: '0.05em'
+    }}>
+      [OK]
+    </span>
+    <span style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '10px', 
+      padding: '4px 8px', 
+      backgroundColor: 'transparent', 
+      color: '#4d7ba8', 
+      border: '1px solid #4d7ba8',
+      letterSpacing: '0.05em'
+    }}>
+      [INFO]
+    </span>
+    <span style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '10px', 
+      padding: '4px 8px', 
+      backgroundColor: 'transparent', 
+      color: '#b89548', 
+      border: '1px solid #b89548',
+      letterSpacing: '0.05em'
+    }}>
+      [WARN]
+    </span>
+    <span style={{ 
+      fontFamily: 'monospace', 
+      fontSize: '10px', 
+      padding: '4px 8px', 
+      backgroundColor: 'transparent', 
+      color: '#b04540', 
+      border: '1px solid #b04540',
+      letterSpacing: '0.05em'
+    }}>
+      [CRIT]
+    </span>
+  </div>
+</div>
+
+### Panel Structure
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', marginBottom: '32px' }}>
+  <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', fontFamily: 'monospace' }}>
+    <div style={{ 
+      padding: '12px 16px', 
+      borderBottom: '1px solid #2a2a2a',
+      fontSize: '16px',
+      fontWeight: 600,
+      letterSpacing: '0.1em',
+      color: '#d0d0d0'
+    }}>
+      PANEL TITLE
+    </div>
+    <div style={{ padding: '16px', fontSize: '14px', color: '#d0d0d0' }}>
+      Panel content area with monospace text.<br/>
+      Dense information display.<br/>
+      Technical data presentation.
+    </div>
+  </div>
+</div>
+
+---
+
+## ASCII Art Elements
+
+### Box Drawing Characters
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', fontFamily: 'monospace', color: '#d0d0d0', fontSize: '14px', marginBottom: '32px' }}>
+  <pre style={{ margin: 0 }}>{`╔═══════════════════════╗
+║  HEAVY BOX BORDER     ║
+╚═══════════════════════╝
+
+┌───────────────────────┐
+│  LIGHT BOX BORDER     │
+└───────────────────────┘
+
+├─── SECTION SEPARATOR ───┤
+
+─────────────────────────── HORIZONTAL LINE
+
+│ VERTICAL DIVIDER │ VERTICAL DIVIDER │`}</pre>
+</div>
+
+### Progress Bars
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', fontFamily: 'monospace', color: '#d0d0d0', fontSize: '14px', marginBottom: '32px' }}>
+  <div style={{ marginBottom: '12px' }}>
+    PWR: [████████░░] 80%
+  </div>
+  <div style={{ marginBottom: '12px' }}>
+    SHLD: [██████████] 100%
+  </div>
+  <div style={{ marginBottom: '12px' }}>
+    HULL: [████░░░░░░] 40%
+  </div>
+  <div>
+    TEMP: [██░░░░░░░░] 20%
+  </div>
+</div>
+
+---
+
+## Animation Timing
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', fontFamily: 'monospace', color: '#d0d0d0', marginBottom: '32px' }}>
+  <div style={{ fontSize: '14px', marginBottom: '16px' }}>
+    <strong>TRANSITION-STATE:</strong> 50ms (border/color changes)
+  </div>
+  <div style={{ fontSize: '14px', marginBottom: '16px' }}>
+    <strong>TRANSITION-TEXT:</strong> 100ms (text fade-in)
+  </div>
+  <div style={{ fontSize: '14px', marginBottom: '16px' }}>
+    <strong>TRANSITION-ALERT:</strong> 150ms (alert entrance)
+  </div>
+  <div style={{ fontSize: '12px', color: 'rgba(208, 208, 208, 0.7)', marginTop: '24px' }}>
+    No animations longer than 150ms permitted.<br/>
+    Reduced motion: All transitions set to 0ms.
+  </div>
+</div>
+
+---
+
+## Accessibility Features
+
+### High Contrast Mode
+
+<div style={{ backgroundColor: '#000000', padding: '24px', border: '2px solid #ffffff', fontFamily: 'monospace', color: '#ffffff', marginBottom: '32px' }}>
+  <div style={{ fontSize: '16px', marginBottom: '16px', fontWeight: 600 }}>
+    HIGH CONTRAST MODE
+  </div>
+  <div style={{ fontSize: '14px', marginBottom: '12px' }}>
+    Pure black background (#000000)
+  </div>
+  <div style={{ fontSize: '14px', marginBottom: '12px' }}>
+    White text (#ffffff)
+  </div>
+  <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+    <span style={{ padding: '4px 8px', backgroundColor: 'transparent', color: '#00ff00', border: '1px solid #00ff00', fontSize: '10px' }}>
+      [SUCCESS]
+    </span>
+    <span style={{ padding: '4px 8px', backgroundColor: 'transparent', color: '#ffff00', border: '1px solid #ffff00', fontSize: '10px' }}>
+      [WARNING]
+    </span>
+    <span style={{ padding: '4px 8px', backgroundColor: 'transparent', color: '#ff0000', border: '1px solid #ff0000', fontSize: '10px' }}>
+      [ERROR]
+    </span>
+  </div>
+</div>
+
+### Colorblind Mode
+
+<div style={{ backgroundColor: '#0d0d0d', padding: '24px', border: '1px solid #2a2a2a', fontFamily: 'monospace', color: '#d0d0d0', marginBottom: '32px' }}>
+  <div style={{ fontSize: '14px', marginBottom: '16px' }}>
+    <strong>COLORBLIND-FRIENDLY PALETTE:</strong>
+  </div>
+  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+    <span style={{ padding: '4px 8px', backgroundColor: 'transparent', color: '#4d7ba8', border: '1px solid #4d7ba8', fontSize: '10px' }}>
+      [OK] BLUE
+    </span>
+    <span style={{ padding: '4px 8px', backgroundColor: 'transparent', color: '#d97826', border: '1px solid #d97826', fontSize: '10px' }}>
+      [WARN] ORANGE
+    </span>
+  </div>
+  <div style={{ fontSize: '12px', color: 'rgba(208, 208, 208, 0.7)' }}>
+    Blue replaces green • Orange replaces yellow<br/>
+    Shape differentiation emphasized
+  </div>
+</div>
+
+---
+
+## Best Practices
+
+### DO ✓
+
+- Use monospace fonts exclusively
+- Keep borders flat (radius: 0)
+- Apply consistent spacing (4px base unit)
+- Use uppercase for technical labels
+- Abbreviate status codes (3-4 chars)
+- Show keyboard shortcuts in brackets
+- Provide hover tooltips for abbreviations
+- Use text-based loading indicators
+- Keep animations ≤150ms
+
+### DON'T ✗
+
+- Use icons or emojis
+- Add box shadows or gradients
+- Round corners on any element
+- Mix sans-serif fonts
+- Create long abbreviations (>4 chars)
+- Use spinners or circular progress
+- Animate layout shifts
+- Create transitions >150ms
+- Use decorative elements

@@ -1,0 +1,89 @@
+.grid {
+  display: grid;
+  gap: var(--frigate-space-3);
+  width: 100%;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frigate-space-1);
+  padding: var(--frigate-space-2);
+  background: var(--frigate-bg-base);
+  border: 1px solid var(--frigate-primary);
+  border-radius: var(--frigate-radius-none);
+}
+
+.label {
+  font-family: var(--frigate-font-mono);
+  font-size: var(--frigate-text-tiny);
+  font-weight: bold;
+  color: var(--frigate-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.textValue {
+  font-family: var(--frigate-font-mono);
+  font-size: var(--frigate-text-body);
+  font-weight: bold;
+  color: var(--frigate-text-primary);
+}
+
+.unit {
+  font-size: var(--frigate-text-small);
+  color: var(--frigate-text-secondary);
+  margin-left: 0.25em;
+  font-weight: normal;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frigate-space-1);
+}
+
+.progressText {
+  font-family: var(--frigate-font-mono);
+  font-size: var(--frigate-text-small);
+  font-weight: bold;
+  color: var(--frigate-text-primary);
+  text-align: center;
+}
+
+.gaugeContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--frigate-space-2);
+  height: 24px;
+}
+
+.gaugeBar {
+  flex: 1;
+  height: 100%;
+  background: linear-gradient(90deg, var(--frigate-success), var(--frigate-warning), var(--frigate-danger));
+  border: 1px solid var(--frigate-primary);
+  border-radius: var(--frigate-radius-none);
+  transition: width 0.15s ease;
+  min-width: 20%;
+}
+
+.gaugeText {
+  font-family: var(--frigate-font-mono);
+  font-size: var(--frigate-text-small);
+  font-weight: bold;
+  color: var(--frigate-text-primary);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .item {
+    padding: var(--frigate-space-1);
+  }
+}
