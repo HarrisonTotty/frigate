@@ -4,6 +4,16 @@ import { ModuleSlotCard } from '../lobby/ModuleSlotCard';
 import { ModuleSlotCategoryTabs } from '../lobby/ModuleSlotCategoryTabs';
 import { useCatalog } from '../hooks/useCatalog';
 
+/** Sort options for the module slot browser */
+export type ModuleSlotSortOption = 'name' | 'cost' | 'required';
+
+/** Sort labels for display */
+const SORT_LABELS: Record<ModuleSlotSortOption, string> = {
+  name: 'NAME',
+  cost: 'COST',
+  required: 'REQUIRED',
+};
+
 /**
  * Props for the ModuleSlotBrowserCore component
  */
@@ -14,6 +24,8 @@ export interface ModuleSlotBrowserCoreProps {
   blueprintId: string;
   /** Currently installed module instances */
   installedModules?: ModuleInstance[];
+  /** Pre-loaded module slots list (optional - if provided, skips fetching) */
+  moduleSlots?: ModuleSlot[];
   /** Build points currently used */
   buildPointsUsed?: number;
   /** Maximum build points available */
@@ -54,6 +66,7 @@ export function ModuleSlotBrowserCore({
   apiUrl,
   blueprintId,
   installedModules = [],
+  moduleSlots: propModuleSlots,
   buildPointsUsed = 0,
   maxBuildPoints = 100,
   onModuleAdded,
@@ -65,18 +78,42 @@ export function ModuleSlotBrowserCore({
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  
+  const [sortBy, setSortBy] = useState<ModuleSlotSortOption>('name');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   // Use a ref to track if we've already attempted to load slots
   // This prevents infinite loops caused by the catalog object being recreated
   const loadAttemptedRef = useRef(false);
 
-  // Load all available module slots from the API
+  // If moduleSlots are provided via props, use them directly
   useEffect(() => {
+    if (propModuleSlots && propModuleSlots.length > 0) {
+      setSlots(propModuleSlots);
+      setLoading(false);
+      setError(null);
+      // Set initial category if not already set
+      if (!selectedCategory) {
+        const allGroups = Array.from(
+          new Set(propModuleSlots.flatMap((slot) => slot.groups || []))
+        );
+        if (allGroups.length > 0) {
+          setSelectedCategory(allGroups[0]);
+        }
+      }
+    }
+  }, [propModuleSlots, selectedCategory]);
+
+  // Load all available module slots from the API (only if not provided via props)
+  useEffect(() => {
+    // Skip if moduleSlots are provided via props
+    if (propModuleSlots && propModuleSlots.length > 0) {
+      return;
+    }
     // Skip if we've already attempted to load or if apiUrl is empty
     if (loadAttemptedRef.current || !apiUrl) {
       return;
     }
-    
+
     loadAttemptedRef.current = true;
 
     const loadSlots = async () => {
@@ -104,7 +141,7 @@ export function ModuleSlotBrowserCore({
     };
 
     void loadSlots();
-  }, [apiUrl, catalog]);
+  }, [apiUrl, catalog, propModuleSlots]);
 
   // Extract all unique categories from loaded slots
   const categories = useMemo(() => {
@@ -114,9 +151,9 @@ export function ModuleSlotBrowserCore({
     return allGroups.sort();
   }, [slots]);
 
-  // Filter slots based on search term and selected category
+  // Filter and sort slots based on search term, selected category, and sort option
   const filteredSlots = useMemo(() => {
-    return slots.filter((slot) => {
+    const filtered = slots.filter((slot) => {
       // Filter by search term
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
@@ -133,7 +170,25 @@ export function ModuleSlotBrowserCore({
 
       return true;
     });
-  }, [slots, searchTerm, selectedCategory]);
+
+    // Sort the filtered results
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'cost':
+          return (a.base_cost ?? 0) - (b.base_cost ?? 0);
+        case 'required':
+          // Required slots first, then by name
+          if (a.required === b.required) {
+            return a.name.localeCompare(b.name);
+          }
+          return a.required ? -1 : 1;
+        default:
+          return 0;
+      }
+    });
+  }, [slots, searchTerm, selectedCategory, sortBy]);
 
   // Count how many instances of each slot are installed
   const slotInstanceCounts = useMemo(() => {
@@ -167,6 +222,33 @@ export function ModuleSlotBrowserCore({
     },
     []
   );
+
+  // Handle sort change
+  const handleSortChange = useCallback((option: ModuleSlotSortOption) => {
+    setSortBy(option);
+  }, []);
+
+  // Cycle through sort options
+  const cycleSortOption = useCallback(() => {
+    const options: ModuleSlotSortOption[] = ['name', 'cost', 'required'];
+    const currentIndex = options.indexOf(sortBy);
+    const nextIndex = (currentIndex + 1) % options.length;
+    setSortBy(options[nextIndex]);
+  }, [sortBy]);
+
+  // Handle keyboard shortcuts
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    // "/" to focus search
+    if (e.key === '/' && document.activeElement !== searchInputRef.current) {
+      e.preventDefault();
+      searchInputRef.current?.focus();
+    }
+    // "s" to cycle sort (when not in search input)
+    if (e.key === 's' && document.activeElement !== searchInputRef.current) {
+      e.preventDefault();
+      cycleSortOption();
+    }
+  }, [cycleSortOption]);
 
   const containerStyles: React.CSSProperties = {
     display: 'flex',
@@ -235,17 +317,58 @@ export function ModuleSlotBrowserCore({
     );
   }
 
+  const sortButtonStyles: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    color: 'var(--frigate-text-secondary)',
+    fontFamily: 'var(--frigate-font-mono)',
+    fontSize: 'var(--frigate-font-tiny)',
+    padding: '2px 4px',
+    cursor: 'pointer',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  };
+
+  const activeSortButtonStyles: React.CSSProperties = {
+    ...sortButtonStyles,
+    color: 'var(--frigate-primary)',
+    fontWeight: 700,
+  };
+
   return (
-    <div style={containerStyles} className={className}>
+    <div style={containerStyles} className={className} onKeyDown={handleKeyDown} tabIndex={-1}>
       {/* Search Input */}
       <input
+        ref={searchInputRef}
         type="text"
-        placeholder="Search modules..."
+        placeholder="[/] Search modules..."
         value={searchTerm}
         onChange={handleSearchChange}
         style={searchInputStyles}
         aria-label="Search module slots"
       />
+
+      {/* Sort Options */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--frigate-space-1)',
+        fontSize: 'var(--frigate-font-tiny)',
+        color: 'var(--frigate-text-muted)',
+      }}>
+        <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>SORT:</span>
+        {(['name', 'cost', 'required'] as ModuleSlotSortOption[]).map((option) => (
+          <button
+            key={option}
+            onClick={() => handleSortChange(option)}
+            style={sortBy === option ? activeSortButtonStyles : sortButtonStyles}
+            aria-pressed={sortBy === option}
+            aria-label={`Sort by ${SORT_LABELS[option]}`}
+          >
+            [{SORT_LABELS[option]}]
+          </button>
+        ))}
+      </div>
 
       {/* Category Tabs */}
       {categories.length > 0 && (

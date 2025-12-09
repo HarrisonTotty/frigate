@@ -398,15 +398,38 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         body: JSON.stringify({ module_slot_id: slotTypeId, variant_id: variantId }),
       });
       if (res.ok) {
-        const created = await res.json();
-        // replace temporary
+        const responseData = await res.json();
+        // Server returns the full blueprint object, not just the created instance
+        // Extract the newly created instance from the modules array
+        let createdInstance: ModuleInstance | undefined;
+        if (responseData.modules && Array.isArray(responseData.modules)) {
+          // Find the instance that matches our slot type and doesn't already exist locally
+          const currentInstances = (get().uiBlueprints[blueprintId] ?? initialBlueprintState).instances;
+          const existingIds = new Set(currentInstances.map(i => i.id).filter(id => !id.startsWith('tmp-')));
+          createdInstance = responseData.modules.find((m: ModuleInstance) =>
+            m.module_slot_id === slotTypeId && !existingIds.has(m.id)
+          );
+        }
+
+        if (!createdInstance) {
+          // Fallback: if response is already a ModuleInstance (has module_slot_id), use it directly
+          if (responseData.module_slot_id) {
+            createdInstance = responseData as ModuleInstance;
+          } else {
+            // Can't find the instance - keep the optimistic one
+            console.warn('[FrigateStore] Could not extract created instance from server response');
+            return instance;
+          }
+        }
+
+        // replace temporary with server instance
         set((state: FrigateStoreState) => {
           const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
           const afterRemove = blueprintReducer(current, { type: 'blueprint/removeInstance', payload: { instanceId: tempId } });
-          const afterAdd = blueprintReducer(afterRemove, { type: 'blueprint/addInstance', payload: created as ModuleInstance });
+          const afterAdd = blueprintReducer(afterRemove, { type: 'blueprint/addInstance', payload: createdInstance as ModuleInstance });
           return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: afterAdd } };
         });
-        return created as ModuleInstance;
+        return createdInstance as ModuleInstance;
       }
     } catch (err) {
       // rollback

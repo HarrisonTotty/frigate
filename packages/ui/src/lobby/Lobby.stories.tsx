@@ -14,5 +14,5 @@ export const EmptyInstalled: StoryObj = {
 };
 
 export const ShipStatsExample: StoryObj = {
-  render: () => <ShipStatsPanel stats={{ cost: 200, weight: 500, hp: 1000, power: 1200, heat: 50, buildPointsUsed: 20, buildPointsMax: 100, warnings: ['Overweight'] }} />
+  render: () => <ShipStatsPanel stats={{ cost: 200, weight: 500, weightMax: 800, hp: 1000, power: 1200, powerMax: 1000, heat: 50, heatMax: 400, buildPointsUsed: 20, buildPointsMax: 100, warnings: ['Overweight'] }} />
 };

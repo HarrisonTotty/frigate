@@ -107,7 +107,7 @@ describe('ShipDesignWorkspace', () => {
       const mainContent = Array.from(container.querySelectorAll('[style*="grid"]')).find(
         (el) => (el as HTMLElement).style.display === 'grid'
       ) as HTMLElement;
-      expect(mainContent?.style.gridTemplateColumns).toBe('320px 1fr 300px');
+      expect(mainContent?.style.gridTemplateColumns).toBe('3fr 4fr 3fr');
     });
 
     it('applies proper gap between columns', () => {

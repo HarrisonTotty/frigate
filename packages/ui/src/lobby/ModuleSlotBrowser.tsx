@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { ModuleInstance } from '@frigate/api-client';
+import type { ModuleInstance, ModuleSlot } from '@frigate/api-client';
 import { ModuleSlotBrowserCore } from '../modules/ModuleSlotBrowserCore';
 import { BOX_DRAWING } from '../constants';
 
@@ -13,12 +13,14 @@ export interface LobbyModuleSlotBrowserProps {
   blueprintId: string;
   /** Currently installed module instances */
   installedModules?: ModuleInstance[];
+  /** Pre-loaded module slots list (optional - if provided, skips fetching) */
+  moduleSlots?: ModuleSlot[];
   /** Build points currently used */
   buildPointsUsed?: number;
   /** Maximum build points available */
   maxBuildPoints?: number;
-  /** Callback when a module is added */
-  onModuleAdded?: () => void;
+  /** Callback when a module slot is selected for adding - receives the slot ID */
+  onModuleAdded?: (slotId: string) => void;
   /** Optional CSS class name */
   className?: string;
 }
@@ -107,7 +109,7 @@ function ModuleSlotBrowserHeader({
 
 /**
  * Module Slot Browser Footer Component
- * 
+ *
  * Displays keyboard navigation hints.
  */
 function ModuleSlotBrowserFooter() {
@@ -122,7 +124,7 @@ function ModuleSlotBrowserFooter() {
         letterSpacing: '0.05em',
       }}
     >
-      [KEYS: TAB NAV | ↑/↓ SELECT | ENTER: ADD | ESC: CLOSE]
+      [/] SEARCH  [S] SORT  [TAB] NAV  [ENTER] ADD
     </div>
   );
 }
@@ -186,6 +188,7 @@ export function ModuleSlotBrowser(props: LobbyModuleSlotBrowserProps) {
           apiUrl={props.apiUrl}
           blueprintId={props.blueprintId}
           installedModules={props.installedModules ?? []}
+          moduleSlots={props.moduleSlots}
           buildPointsUsed={buildPointsUsed}
           maxBuildPoints={maxBuildPoints}
           onModuleAdded={props.onModuleAdded}

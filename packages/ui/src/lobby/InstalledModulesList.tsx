@@ -2,6 +2,7 @@ import React from 'react';
 import type { ModuleInstance, ModuleSlot } from '@frigate/api-client';
 import { Button } from '../components';
 import { BOX_DRAWING } from '../constants';
+import { ModuleTooltip, type TooltipStatRow } from '../components/ModuleTooltip';
 
 /**
  * Installed Modules List Props
@@ -15,8 +16,6 @@ export interface InstalledModulesListProps {
   moduleSlots?: Record<string, ModuleSlot>;
   /** Callback when user clicks select type button to open variant modal */
   onSelectType?: (instanceId: string, slotType: ModuleSlot) => void;
-  /** Callback when user clicks edit button */
-  onEdit?: (instanceId: string) => void;
   /** Callback when user clicks remove button */
   onRemove?: (instanceId: string) => void;
   /** Optional CSS class name */
@@ -46,53 +45,111 @@ function ModuleInstanceRow({
   onSelectType,
   onRemove,
 }: ModuleInstanceRowProps) {
-  const hasVariants = slotType?.hasVariants ?? slotType?.has_varients ?? false;
+  // hasVariants is normalized by useCatalog - no need for fallback to legacy field name
+  const hasVariants = slotType?.hasVariants ?? false;
   const variantStatus = instance.variant_id ? instance.variant_id : '[UNCONFIGURED]';
   const slotName = slotType?.name ?? instance.module_slot_id;
   const variantWarning = !instance.variant_id && hasVariants;
 
-  return (
-    <div
-      key={instance.id}
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 'var(--frigate-space-2)',
-        borderBottom: !isLast ? '1px dashed var(--frigate-border-base)' : undefined,
-        fontSize: 'var(--frigate-font-small)',
-        fontFamily: 'var(--frigate-font-mono)',
-      }}
-      role="listitem"
-      aria-label={`Module ${index + 1}: ${slotName} - ${variantStatus}`}
-    >
-      {/* Left: Module Info */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)', flex: 1 }}>
-        <div style={{ display: 'flex', gap: 'var(--frigate-space-2)' }}>
-          <span style={{ fontWeight: 700, color: 'var(--frigate-text-primary)' }}>
-            {slotName}
-          </span>
-          {variantWarning && (
-            <span style={{ color: 'var(--frigate-warning)', fontWeight: 700 }}>
-              [UNCONFIGURED]
-            </span>
-          )}
-          {!variantWarning && instance.variant_id && (
-            <span style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)' }}>
-              {instance.variant_id}
-            </span>
-          )}
-        </div>
-      </div>
+  // Build tooltip stats from instance data
+  // Instance may have optional numeric fields from the API
+  const inst = instance as any;
+  const tooltipStats: TooltipStatRow[] = [];
 
-      {/* Right: Action Buttons */}
-      <div style={{ display: 'flex', gap: 'var(--frigate-space-2)', marginLeft: 'var(--frigate-space-3)' }}>
-        {hasVariants && (
+  if (typeof inst.cost === 'number') {
+    tooltipStats.push({ label: 'COST', value: inst.cost, unit: 'cr' });
+  }
+  if (typeof inst.build_points === 'number') {
+    tooltipStats.push({ label: 'BUILD PTS', value: inst.build_points, unit: 'BP' });
+  }
+  if (typeof inst.weight === 'number') {
+    tooltipStats.push({ label: 'WEIGHT', value: inst.weight, unit: 't' });
+  }
+  if (typeof inst.power === 'number') {
+    tooltipStats.push({ label: 'POWER', value: inst.power, unit: 'kW' });
+  }
+  if (typeof inst.heat === 'number') {
+    tooltipStats.push({ label: 'HEAT', value: inst.heat, unit: 'kWth' });
+  }
+  if (typeof inst.hp === 'number') {
+    tooltipStats.push({ label: 'HP', value: inst.hp });
+  }
+
+  // Build tooltip tags
+  const tooltipTags: string[] = [];
+  if (variantWarning) tooltipTags.push('[UNCONFIGURED]');
+  if (hasVariants && instance.variant_id) tooltipTags.push('[CONFIGURED]');
+
+  return (
+    <ModuleTooltip
+      title={slotName}
+      subtitle={instance.variant_id || undefined}
+      description={slotType?.description || undefined}
+      stats={tooltipStats.length > 0 ? tooltipStats : undefined}
+      tags={tooltipTags.length > 0 ? tooltipTags : undefined}
+      position="left"
+      delay={300}
+    >
+      <div
+        key={instance.id}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: 'var(--frigate-space-2)',
+          borderBottom: !isLast ? '1px dashed var(--frigate-border-base)' : undefined,
+          fontSize: 'var(--frigate-font-small)',
+          fontFamily: 'var(--frigate-font-mono)',
+        }}
+        role="listitem"
+        aria-label={`Module ${index + 1}: ${slotName} - ${variantStatus}`}
+      >
+        {/* Left: Module Info */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)', flex: 1 }}>
+          <div style={{ display: 'flex', gap: 'var(--frigate-space-2)' }}>
+            <span style={{ fontWeight: 700, color: 'var(--frigate-text-primary)' }}>
+              {slotName}
+            </span>
+            {variantWarning && (
+              <span style={{ color: 'var(--frigate-warning)', fontWeight: 700 }}>
+                [UNCONFIGURED]
+              </span>
+            )}
+            {!variantWarning && instance.variant_id && (
+              <span style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)' }}>
+                {instance.variant_id}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Right: Action Buttons */}
+        <div style={{ display: 'flex', gap: 'var(--frigate-space-2)', marginLeft: 'var(--frigate-space-3)' }}>
+          {hasVariants && (
+            <button
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--frigate-primary)',
+                fontWeight: 700,
+                padding: 0,
+                cursor: 'pointer',
+                fontFamily: 'var(--frigate-font-mono)',
+                fontSize: 'var(--frigate-font-small)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+              onClick={() => slotType && onSelectType(instance.id, slotType)}
+              aria-label={`Select variant for ${slotName}`}
+            >
+              [SELECT]
+            </button>
+          )}
           <button
             style={{
               background: 'none',
               border: 'none',
-              color: 'var(--frigate-primary)',
+              color: 'var(--frigate-danger)',
               fontWeight: 700,
               padding: 0,
               cursor: 'pointer',
@@ -101,32 +158,14 @@ function ModuleInstanceRow({
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}
-            onClick={() => slotType && onSelectType(instance.id, slotType)}
-            aria-label={`Select variant for ${slotName}`}
+            onClick={() => onRemove(instance.id)}
+            aria-label={`Remove module ${instance.id}`}
           >
-            [SELECT]
+            [REMOVE]
           </button>
-        )}
-        <button
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--frigate-danger)',
-            fontWeight: 700,
-            padding: 0,
-            cursor: 'pointer',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}
-          onClick={() => onRemove(instance.id)}
-          aria-label={`Remove module ${instance.id}`}
-        >
-          [REMOVE]
-        </button>
+        </div>
       </div>
-    </div>
+    </ModuleTooltip>
   );
 }
 
@@ -231,7 +270,6 @@ export function InstalledModulesList({
   maxModules = 12,
   moduleSlots = {},
   onSelectType,
-  onEdit,
   onRemove,
   className = '',
 }: InstalledModulesListProps) {
@@ -308,7 +346,7 @@ export function InstalledModulesList({
               marginBottom: 'var(--frigate-space-2)',
             }}
           >
-            ⚠ WARNING: MODULE LIMIT EXCEEDED ({instances.length}/{maxModules})
+            [WARNING] MODULE LIMIT EXCEEDED ({instances.length}/{maxModules})
           </div>
         )}
 

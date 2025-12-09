@@ -28,6 +28,12 @@ export function useBlueprint(initial = initialBlueprintState, options: UseBluepr
       });
       if (res.ok) {
         const created = await res.json();
+        console.log('[useBlueprint] Server response for addInstance:', {
+          created,
+          sentSlotId: slotTypeId,
+          returnedSlotId: created.module_slot_id,
+          idsMatch: slotTypeId === created.module_slot_id,
+        });
         // replace temporary instance with server-provided instance id
         dispatch({ type: 'blueprint/removeInstance', payload: { instanceId: tempId } });
         dispatch({ type: 'blueprint/addInstance', payload: created as ModuleInstance });

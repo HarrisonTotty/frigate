@@ -2,15 +2,26 @@ import { useCallback, useState } from 'react';
 import type { ModuleSlot, ModuleVariant } from '@frigate/api-client';
 
 function normalizeSlot(slot: any): ModuleSlot {
-  // Ensure legacy fields exist for backward compatibility with UI that expects them
+  // Normalize API response fields to consistent camelCase names.
+  // The API may return snake_case (has_varients) or camelCase (hasVariants).
+  // After normalization, consumers should use the camelCase versions only.
   const normalized = { ...slot } as any;
   normalized.groups = Array.isArray(slot.groups) ? slot.groups : [];
   normalized.description = slot.description ?? slot.desc ?? '';
-  normalized.desc = normalized.desc ?? normalized.description;
-  normalized.extendedDescription = slot.extendedDescription ?? slot.extended_desc ?? slot.extendedDescription ?? '';
-  normalized.extended_desc = normalized.extended_desc ?? normalized.extendedDescription;
-  normalized.hasVariants = slot.hasVariants ?? slot.has_varients ?? false;
-  normalized.has_varients = normalized.has_varients ?? normalized.hasVariants;
+  normalized.desc = normalized.description; // Keep for backward compat
+  normalized.extendedDescription = slot.extendedDescription ?? slot.extended_desc ?? '';
+  normalized.extended_desc = normalized.extendedDescription; // Keep for backward compat
+  // hasVariants is the canonical field - normalize from legacy "has_varients" (note typo in API)
+  // Use typeof check because the API may only send one field, and we need to handle explicit false values
+  normalized.hasVariants = typeof slot.hasVariants === 'boolean' ? slot.hasVariants : !!slot.has_varients;
+  normalized.has_varients = normalized.hasVariants; // Keep for backward compat
+  console.log('[useCatalog] normalizeSlot:', {
+    id: slot.id,
+    name: slot.name,
+    'slot.hasVariants': slot.hasVariants,
+    'slot.has_varients': slot.has_varients,
+    'normalized.hasVariants': normalized.hasVariants,
+  });
   return normalized as ModuleSlot;
 }
 
@@ -58,15 +69,32 @@ export function useCatalog(apiBase = '') {
   }, [fetchJson, slotsById]);
 
   const getModuleVariants = useCallback(async (slotId: string) => {
+    console.log('[useCatalog] getModuleVariants called for slotId:', slotId);
     // If we already have variants for this slot in cache, return those
     const existing = Object.values(variantsById).filter(v => v.type === slotId);
+    console.log('[useCatalog] cached variants check:', { variantsById, existing });
     if (existing.length > 0) return existing;
+
+    // First fetch the list of variant IDs
+    console.log('[useCatalog] fetching variant list from API:', `/v1/catalog/modules/${slotId}`);
     const data = await fetchJson(`/v1/catalog/modules/${slotId}`);
-    const list = (data.variants || []).map(normalizeVariant);
+    console.log('[useCatalog] API response (variant IDs):', data);
+
+    // data.variants is an array of variant IDs (strings), not variant objects
+    // We need to fetch each variant's details
+    const variantIds = data.variants || [];
+    const variantDetails = await Promise.all(
+      variantIds.map(async (variantId: string) => {
+        const variantData = await fetchJson(`/v1/catalog/modules/${slotId}/${variantId}`);
+        return normalizeVariant({ ...variantData, type: slotId });
+      })
+    );
+    console.log('[useCatalog] fetched variant details:', variantDetails);
+
     const byId: Record<string, ModuleVariant> = {};
-    for (const v of list) byId[v.id] = v;
+    for (const v of variantDetails) byId[v.id] = v;
     setVariantsById(prev => ({ ...prev, ...byId }));
-    return list;
+    return variantDetails;
   }, [fetchJson, variantsById]);
 
   const getModuleVariant = useCallback(async (slotId: string, variantId: string) => {

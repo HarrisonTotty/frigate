@@ -17,7 +17,8 @@ describe("ModuleSlotBrowserHeader Component", () => {
     );
 
     expect(screen.getByText("BUILD POINTS:")).toBeInTheDocument();
-    expect(screen.getByText("180/250")).toBeInTheDocument();
+    // Component uses aria-label for the build points value
+    expect(screen.getByLabelText("Build points: 180 of 250")).toBeInTheDocument();
   });
 
   it("calculates percentage correctly for low usage", () => {
@@ -78,14 +79,13 @@ describe("ModuleSlotBrowserHeader Component", () => {
     expect(bpValue).toBeInTheDocument();
   });
 
-  it("has aria labels for progress bar", () => {
+  it("displays percentage next to progress bar", () => {
     render(
       <ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />
     );
 
-    // Progress bar should have aria-label with percentage
-    const progressLabel = screen.getByLabelText(/Build points usage: 72\.0%/);
-    expect(progressLabel).toBeInTheDocument();
+    // Percentage is displayed as text next to the progress bar
+    expect(screen.getByText("72.0%")).toBeInTheDocument();
   });
 
   it("renders when build points used is zero", () => {
@@ -93,7 +93,7 @@ describe("ModuleSlotBrowserHeader Component", () => {
       <ModuleSlotBrowserHeader buildPointsUsed={0} buildPointsMax={250} />
     );
 
-    expect(screen.getByText("0/250")).toBeInTheDocument();
+    expect(screen.getByLabelText("Build points: 0 of 250")).toBeInTheDocument();
     expect(screen.getByText("0.0%")).toBeInTheDocument();
   });
 
@@ -102,7 +102,7 @@ describe("ModuleSlotBrowserHeader Component", () => {
       <ModuleSlotBrowserHeader buildPointsUsed={250} buildPointsMax={250} />
     );
 
-    expect(screen.getByText("250/250")).toBeInTheDocument();
+    expect(screen.getByLabelText("Build points: 250 of 250")).toBeInTheDocument();
     expect(screen.getByText("100.0%")).toBeInTheDocument();
   });
 
@@ -111,7 +111,7 @@ describe("ModuleSlotBrowserHeader Component", () => {
       <ModuleSlotBrowserHeader buildPointsUsed={300} buildPointsMax={250} />
     );
 
-    expect(screen.getByText("300/250")).toBeInTheDocument();
+    expect(screen.getByLabelText("Build points: 300 of 250")).toBeInTheDocument();
     expect(screen.getByText("120.0%")).toBeInTheDocument();
   });
 
@@ -120,7 +120,7 @@ describe("ModuleSlotBrowserHeader Component", () => {
       <ModuleSlotBrowserHeader buildPointsUsed={5} buildPointsMax={10} />
     );
 
-    expect(screen.getByText("5/10")).toBeInTheDocument();
+    expect(screen.getByLabelText("Build points: 5 of 10")).toBeInTheDocument();
     expect(screen.getByText("50.0%")).toBeInTheDocument();
   });
 
@@ -132,7 +132,7 @@ describe("ModuleSlotBrowserHeader Component", () => {
       />
     );
 
-    expect(screen.getByText("50000/100000")).toBeInTheDocument();
+    expect(screen.getByLabelText("Build points: 50000 of 100000")).toBeInTheDocument();
     expect(screen.getByText("50.0%")).toBeInTheDocument();
   });
 });

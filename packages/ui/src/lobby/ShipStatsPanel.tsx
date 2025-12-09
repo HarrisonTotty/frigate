@@ -3,7 +3,7 @@ import { ProgressBar } from '../components';
 
 /**
  * Ship Statistics Interface
- * 
+ *
  * Represents aggregated statistics for a ship blueprint.
  */
 export interface ShipStats {
@@ -11,12 +11,18 @@ export interface ShipStats {
   cost: number;
   /** Total ship weight in metric tons */
   weight: number;
+  /** Maximum weight allowed by ship class (in metric tons) */
+  weightMax: number;
   /** Total hull points (structural integrity) */
   hp: number;
   /** Total power consumption in kilowatts */
   power: number;
+  /** Maximum power capacity in kilowatts (0 if not set) */
+  powerMax: number;
   /** Total heat generation in kilowatts thermal */
   heat: number;
+  /** Maximum heat dissipation capacity in kilowatts thermal (0 if not set) */
+  heatMax: number;
   /** Build points currently used */
   buildPointsUsed: number;
   /** Maximum build points available */
@@ -62,6 +68,21 @@ export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
   // Calculate percentages for constrained resources
   const bpPercent = (stats.buildPointsUsed / stats.buildPointsMax) * 100;
   const bpStatus = bpPercent > 90 ? 'danger' : bpPercent > 70 ? 'warning' : 'primary';
+
+  // Weight constraint calculations
+  const weightPercent = stats.weightMax > 0 ? (stats.weight / stats.weightMax) * 100 : 0;
+  const weightStatus = weightPercent > 100 ? 'danger' : weightPercent > 90 ? 'warning' : 'primary';
+  const weightExceeded = stats.weight > stats.weightMax && stats.weightMax > 0;
+
+  // Power constraint calculations
+  const powerPercent = stats.powerMax > 0 ? (stats.power / stats.powerMax) * 100 : 0;
+  const powerStatus = powerPercent > 100 ? 'danger' : powerPercent > 90 ? 'warning' : 'primary';
+  const powerExceeded = stats.power > stats.powerMax && stats.powerMax > 0;
+
+  // Heat constraint calculations
+  const heatPercent = stats.heatMax > 0 ? (stats.heat / stats.heatMax) * 100 : 0;
+  const heatStatus = heatPercent > 100 ? 'danger' : heatPercent > 90 ? 'warning' : 'primary';
+  const heatExceeded = stats.heat > stats.heatMax && stats.heatMax > 0;
 
   // Helper to format stat rows
   const StatRow = ({ label, value, unit = '' }: { label: string; value: number | string; unit?: string }) => (
@@ -123,7 +144,7 @@ export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
       </div>
 
       {/* Build Points Constraint */}
-      <div style={{ marginBottom: 'var(--frigate-space-4)' }}>
+      <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
         <div
           style={{
             fontSize: 'var(--frigate-font-small)',
@@ -154,6 +175,162 @@ export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
         </div>
       </div>
 
+      {/* Weight Constraint */}
+      <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 'var(--frigate-space-2)',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 'var(--frigate-font-small)',
+              color: 'var(--frigate-text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            WEIGHT ALLOCATION
+          </span>
+          {weightExceeded && (
+            <span
+              style={{
+                fontSize: 'var(--frigate-font-tiny)',
+                color: 'var(--frigate-danger)',
+                fontWeight: 700,
+              }}
+            >
+              [OVER LIMIT]
+            </span>
+          )}
+        </div>
+        <ProgressBar
+          value={Math.min(stats.weight, stats.weightMax)}
+          max={stats.weightMax > 0 ? stats.weightMax : 1}
+          variant={weightStatus}
+          showLabel={true}
+          blocks={20}
+        />
+        <div
+          style={{
+            fontSize: 'var(--frigate-font-small)',
+            color: weightExceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            marginTop: 'var(--frigate-space-1)',
+            textAlign: 'right',
+            fontWeight: weightExceeded ? 700 : 400,
+          }}
+        >
+          {stats.weight} / {stats.weightMax > 0 ? stats.weightMax : '—'} t
+        </div>
+      </div>
+
+      {/* Power Constraint */}
+      <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 'var(--frigate-space-2)',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 'var(--frigate-font-small)',
+              color: 'var(--frigate-text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            POWER CONSUMPTION
+          </span>
+          {powerExceeded && (
+            <span
+              style={{
+                fontSize: 'var(--frigate-font-tiny)',
+                color: 'var(--frigate-danger)',
+                fontWeight: 700,
+              }}
+            >
+              [OVER LIMIT]
+            </span>
+          )}
+        </div>
+        <ProgressBar
+          value={Math.min(stats.power, stats.powerMax)}
+          max={stats.powerMax > 0 ? stats.powerMax : 1}
+          variant={powerStatus}
+          showLabel={true}
+          blocks={20}
+        />
+        <div
+          style={{
+            fontSize: 'var(--frigate-font-small)',
+            color: powerExceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            marginTop: 'var(--frigate-space-1)',
+            textAlign: 'right',
+            fontWeight: powerExceeded ? 700 : 400,
+          }}
+        >
+          {stats.power} / {stats.powerMax > 0 ? stats.powerMax : '—'} kW
+        </div>
+      </div>
+
+      {/* Heat Constraint */}
+      <div style={{ marginBottom: 'var(--frigate-space-4)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 'var(--frigate-space-2)',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 'var(--frigate-font-small)',
+              color: 'var(--frigate-text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            HEAT DISSIPATION
+          </span>
+          {heatExceeded && (
+            <span
+              style={{
+                fontSize: 'var(--frigate-font-tiny)',
+                color: 'var(--frigate-danger)',
+                fontWeight: 700,
+              }}
+            >
+              [OVER LIMIT]
+            </span>
+          )}
+        </div>
+        <ProgressBar
+          value={Math.min(stats.heat, stats.heatMax)}
+          max={stats.heatMax > 0 ? stats.heatMax : 1}
+          variant={heatStatus}
+          showLabel={true}
+          blocks={20}
+        />
+        <div
+          style={{
+            fontSize: 'var(--frigate-font-small)',
+            color: heatExceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            marginTop: 'var(--frigate-space-1)',
+            textAlign: 'right',
+            fontWeight: heatExceeded ? 700 : 400,
+          }}
+        >
+          {stats.heat} / {stats.heatMax > 0 ? stats.heatMax : '—'} kWth
+        </div>
+      </div>
+
       {/* Constraints Section */}
       <div
         style={{
@@ -169,9 +346,9 @@ export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--frigate-space-2)', fontSize: 'var(--frigate-font-tiny)' }}>
           <div>MAX BUILD: {stats.buildPointsMax} BP</div>
-          <div>MAX WEIGHT: — t</div>
-          <div>MAX POWER: — kW</div>
-          <div>MAX HEAT: — kWth</div>
+          <div>MAX WEIGHT: {stats.weightMax > 0 ? `${stats.weightMax} t` : '—'}</div>
+          <div>MAX POWER: {stats.powerMax > 0 ? `${stats.powerMax} kW` : '—'}</div>
+          <div>MAX HEAT: {stats.heatMax > 0 ? `${stats.heatMax} kWth` : '—'}</div>
         </div>
       </div>
 
@@ -188,7 +365,7 @@ export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
               fontWeight: 700,
             }}
           >
-            ⚠ WARNINGS [{stats.warnings.length}]
+            [WARNING] WARNINGS [{stats.warnings.length}]
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
             {stats.warnings.map((warning, idx) => (

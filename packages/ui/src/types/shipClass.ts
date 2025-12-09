@@ -145,6 +145,10 @@ export interface ShipClassDetails {
   base_shields: number;
   /** Build points required to construct this ship class */
   build_points: number;
+  /** Maximum power capacity in kilowatts (optional - may not be set for all ship classes) */
+  max_power?: number;
+  /** Maximum heat dissipation capacity in kilowatts thermal (optional - may not be set for all ship classes) */
+  max_heat?: number;
   
   // Bonuses grouped by category
   /** Bonuses provided by this ship class, grouped by category */

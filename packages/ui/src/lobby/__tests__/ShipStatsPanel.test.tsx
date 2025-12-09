@@ -7,9 +7,12 @@ describe('ShipStatsPanel', () => {
   const mockStats: ShipStats = {
     cost: 1500,
     weight: 850,
+    weightMax: 1000,
     hp: 450,
     power: 280,
+    powerMax: 500,
     heat: 320,
+    heatMax: 600,
     buildPointsUsed: 75,
     buildPointsMax: 100,
     warnings: [],
@@ -18,16 +21,17 @@ describe('ShipStatsPanel', () => {
   describe('rendering', () => {
     it('renders the component with header', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('SHIP STATISTICS [SHP]')).toBeDefined();
+      expect(screen.getByText('SHIP STATISTICS')).toBeDefined();
     });
 
     it('displays all primary statistics', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('1500')).toBeDefined(); // cost
-      expect(screen.getByText('850')).toBeDefined(); // weight
-      expect(screen.getByText('450')).toBeDefined(); // hp
-      expect(screen.getByText('280')).toBeDefined(); // power
-      expect(screen.getByText('320')).toBeDefined(); // heat
+      // Stats are displayed with units
+      expect(screen.getByText('1500 cr')).toBeDefined(); // cost
+      expect(screen.getByText('850 t')).toBeDefined(); // weight
+      expect(screen.getByText('450 HP')).toBeDefined(); // hp
+      expect(screen.getByText('280 kW')).toBeDefined(); // power
+      expect(screen.getByText('320 kWth')).toBeDefined(); // heat
     });
 
     it('displays build points allocation', () => {
@@ -48,7 +52,8 @@ describe('ShipStatsPanel', () => {
         warnings: ['Build points exceeded', 'Weight limit exceeded'],
       };
       render(<ShipStatsPanel stats={statsWithWarnings} />);
-      expect(screen.getByText('WARNINGS [2]')).toBeDefined();
+      // Warnings header shows "[WARNING] WARNINGS [count]"
+      expect(screen.getByText('[WARNING] WARNINGS [2]')).toBeDefined();
       expect(screen.getByText('Build points exceeded')).toBeDefined();
       expect(screen.getByText('Weight limit exceeded')).toBeDefined();
     });
@@ -83,15 +88,19 @@ describe('ShipStatsPanel', () => {
       const emptyStats: ShipStats = {
         cost: 0,
         weight: 0,
+        weightMax: 1000,
         hp: 0,
         power: 0,
+        powerMax: 500,
         heat: 0,
+        heatMax: 600,
         buildPointsUsed: 0,
         buildPointsMax: 100,
         warnings: [],
       };
       render(<ShipStatsPanel stats={emptyStats} />);
-      expect(screen.getByText('0')).toBeDefined();
+      // Cost is displayed with unit
+      expect(screen.getByText('0 cr')).toBeDefined();
     });
 
     it('handles large values correctly', () => {
@@ -104,8 +113,8 @@ describe('ShipStatsPanel', () => {
         heat: 4500,
       };
       render(<ShipStatsPanel stats={largeStats} />);
-      expect(screen.getByText('999999')).toBeDefined();
-      expect(screen.getByText('50000')).toBeDefined();
+      expect(screen.getByText('999999 cr')).toBeDefined();
+      expect(screen.getByText('50000 t')).toBeDefined();
     });
 
     it('handles build points exceeding max', () => {

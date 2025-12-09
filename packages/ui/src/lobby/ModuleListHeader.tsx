@@ -149,7 +149,7 @@ export const ModuleListHeader: React.FC<ModuleListHeaderProps> = ({
 
       {isAtMax && (
         <div style={componentStyles.maxWarning} role="alert">
-          ⚠ MAXIMUM MODULES INSTALLED
+          [WARNING] MAXIMUM MODULES INSTALLED
         </div>
       )}
     </div>

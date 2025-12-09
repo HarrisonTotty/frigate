@@ -31,6 +31,7 @@ describe("StatsGrid Component", () => {
   it("displays units correctly", () => {
     render(<StatsGrid items={basicItems} />);
 
+    // Units are rendered in span elements (text nodes may be split)
     expect(screen.getByText("BP")).toBeInTheDocument();
     expect(screen.getByText("kg")).toBeInTheDocument();
     expect(screen.getByText("MW")).toBeInTheDocument();
@@ -51,8 +52,8 @@ describe("StatsGrid Component", () => {
     render(<StatsGrid items={progressItems} />);
 
     expect(screen.getByText("BUILD POINTS")).toBeInTheDocument();
-    // Progress bar should show current/max
-    expect(screen.getByText("180/250")).toBeInTheDocument();
+    // Progress bar shows current/max in aria-label format
+    expect(screen.getByLabelText("180/250")).toBeInTheDocument();
   });
 
   it("renders gauge type stats", () => {
@@ -70,20 +71,24 @@ describe("StatsGrid Component", () => {
     render(<StatsGrid items={gaugeItems} />);
 
     expect(screen.getByText("POWER USAGE")).toBeInTheDocument();
-    expect(screen.getByText("75%")).toBeInTheDocument();
+    // Gauge renders value and unit separately
+    expect(screen.getByText("75")).toBeInTheDocument();
+    expect(screen.getByText("%")).toBeInTheDocument();
   });
 
   it("respects column count prop", () => {
     const { container } = render(<StatsGrid items={basicItems} columns={3} />);
 
-    const grid = container.querySelector(".grid");
+    // Component uses inline styles, not CSS classes
+    const grid = container.querySelector("[role='region']");
     expect(grid).toHaveStyle("grid-template-columns: repeat(3, 1fr)");
   });
 
   it("applies gap spacing correctly", () => {
     const { container } = render(<StatsGrid items={basicItems} gap={2} />);
 
-    const grid = container.querySelector(".grid");
+    // Component uses inline styles with CSS custom properties
+    const grid = container.querySelector("[role='region']");
     expect(grid).toHaveStyle("gap: var(--frigate-space-2)");
   });
 
@@ -135,8 +140,9 @@ describe("StatsGrid Component", () => {
   it("has proper accessibility attributes", () => {
     const { container } = render(<StatsGrid items={basicItems} />);
 
-    const grid = container.querySelector(".grid");
-    expect(grid).toHaveAttribute("role", "region");
+    // Component uses inline styles with role and aria-label attributes
+    const grid = container.querySelector("[role='region']");
+    expect(grid).toBeInTheDocument();
     expect(grid).toHaveAttribute("aria-label", "Statistics grid");
   });
 
@@ -175,7 +181,8 @@ describe("StatsGrid Component", () => {
   it("renders empty grid when items is empty array", () => {
     const { container } = render(<StatsGrid items={[]} />);
 
-    const grid = container.querySelector(".grid");
+    // Component uses inline styles, query by role
+    const grid = container.querySelector("[role='region']");
     expect(grid).toBeInTheDocument();
     expect(grid?.children.length).toBe(0);
   });

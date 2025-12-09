@@ -10,16 +10,16 @@ The workspace will be divided into three main columns:
    - Displays all available module slot types, filterable by group (from the `groups` field) and search.
    - Each slot type shows its name, description, cost, whether it is required, the maximum number allowed on the ship, and an `[ADD]` button.
    - Hovering over a slot type reveals a tooltip panel with additional details about the slot type, including base stats and extended description.
-   - Clicking the `[ADD]` button adds an instance of that module slot to the ship blueprint in the center column, and opens the _Module Catalog_ to select a variant, if applicable.
+   - Clicking the `[ADD]` button adds an instance of that module slot to the ship blueprint in the center column.
 
 2. **Center Column: Installed Modules**
     - Displays current usage of build points, module slots, and weight.
-    - Displays a list of currently installed module instances on the ship blueprint.
-    - Each module instance shows its slot type name, selected variant (if any), and key stats.
-    - Each instance has `[SELECT]` and `[X]` buttons. If the module slot does not support variants, it will only have a `[X]` button.
-    - Clicking `[SELECT]` opens the _Module Catalog_ to select or change the variant for that module instance.
-    - Clicking `[X]` removes the module instance from the blueprint.
-    - Hovering over a module instance reveals a tooltip panel with detailed stats, including aggregated stats from the selected variant.
+    - Displays a list of currently installed modules on the ship blueprint.
+    - Each module shows its slot type name, selected variant (if any), and key stats.
+    - Each module slot has `[SELECT]` and `[X]` buttons. If the module slot does not support variants, it will only have a `[X]` button.
+    - Clicking `[SELECT]` opens the _Module Catalog_ to select or change the module for that module slot.
+    - Clicking `[X]` removes the module from the blueprint.
+    - Hovering over a module reveals a tooltip panel with detailed stats.
 
 3. **Right Column: Ship Statistics**
     - Displays overall ship statistics, including total cost, total weight, total HP, power consumption, heat generation, and other relevant stats.
@@ -28,16 +28,16 @@ The workspace will be divided into three main columns:
 
 ## Module Catalog
 
-The _Module Catalog_ is a modal panel that appears when adding or editing a module instance. It allows the user to select a variant for the chosen module slot type. It should have a two column layout:
+The _Module Catalog_ is a modal panel that appears when clicking `[SELECT]` on a module slot from the installed modules panel. It allows the user to select a specifc module for the chosen module slot type. It should have a two column layout:
 
-1. **Left Column: Variant List**
-   - Displays all available variants for the selected module slot type.
-   - Each variant shows its name, additional cost, and key stats.
-   - Clicking on a variant selects it and updates the right column with detailed information.
+1. **Left Column: Module List**
+   - Displays all available modules for the selected module slot type.
+   - Each module shows its name, additional cost, and key stats.
+   - Clicking on a module selects it and updates the right column with detailed information.
 
-2. **Right Column: Variant Details**
-   - Displays detailed information about the selected variant, including full description, lore, and all stats.
-   - Includes a `[SELECT]` button to confirm the selection and close the catalog, updating the module instance in the center column of the workspace.
+2. **Right Column: Module Details**
+   - Displays detailed information about the selected module, including full description, lore, and all stats.
+   - Includes a `[SELECT]` button to confirm the selection and close the catalog, updating the associated module slot in the center column of the workspace.
 
 ## Example User Flow
 
