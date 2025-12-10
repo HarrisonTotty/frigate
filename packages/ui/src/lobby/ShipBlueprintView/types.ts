@@ -1,6 +1,11 @@
 import type { ModuleSlot, ModuleInstance, ModuleVariant } from '@frigate/api-client';
 
 /**
+ * Ship size category for silhouette selection
+ */
+export type ShipSize = 'small' | 'medium' | 'large';
+
+/**
  * Position for a module slot marker on the blueprint canvas
  */
 export interface SlotPosition {
@@ -42,10 +47,12 @@ export interface ShipSilhouetteData {
  * - Instance with variant_id set → Slot with installed module
  */
 export interface ShipBlueprintCanvasProps {
-  /** Ship class ID to render silhouette for */
+  /** Ship class ID (used for size inference if shipSize not provided) */
   shipClassId: string;
-  /** Ship class display name */
+  /** Ship class display name (used for size inference if shipSize not provided) */
   shipClassName?: string;
+  /** Explicit ship size for silhouette selection (small/medium/large) */
+  shipSize?: ShipSize;
   /** Available module slot type definitions */
   moduleSlots: ModuleSlot[];
   /** Module slot types lookup by ID */
@@ -84,8 +91,8 @@ export interface ModuleSlotMarkerProps {
   variant?: ModuleVariant;
   /** Position on canvas */
   position: SlotPosition;
-  /** Whether this marker is selected */
-  isSelected?: boolean;
+  /** Whether this marker is highlighted (on hover) */
+  isHighlighted?: boolean;
   /** Whether this slot is empty (needs variant selection) */
   isEmpty?: boolean;
   /** Whether this slot type has variants to configure (if false, slot is finalized when added) */
@@ -94,6 +101,10 @@ export interface ModuleSlotMarkerProps {
   onClick?: () => void;
   /** Remove handler (Delete/Backspace key) */
   onRemove?: () => void;
+  /** Mouse enter handler for hover highlighting */
+  onMouseEnter?: () => void;
+  /** Mouse leave handler for hover highlighting */
+  onMouseLeave?: () => void;
   /** Group label for display */
   groupLabel?: string;
 }
@@ -108,8 +119,8 @@ export interface ConnectionLineProps {
   /** End point (ship attachment) */
   endX: number;
   endY: number;
-  /** Whether the connected marker is selected */
-  isSelected?: boolean;
+  /** Whether the connected marker is highlighted (on hover) */
+  isHighlighted?: boolean;
   /** Whether the connected slot is empty */
   isEmpty?: boolean;
 }

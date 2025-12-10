@@ -46,3 +46,6 @@ export type { LobbyWorkflowState, WorkflowStep } from './lobbyWorkflowStore';
 
 export * from './ModuleSlotCard';
 export * from './ModuleSlotCategoryTabs';
+
+export { ShipStatsPanel } from './ShipStatsPanel';
+export type { ShipStats, ShipStatsPanelProps, ShipProfile, ValidationState } from './ShipStatsPanel';

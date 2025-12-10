@@ -154,16 +154,13 @@ export function ModuleCatalog({
 
   // Fetch variants when catalog opens
   useEffect(() => {
-    console.log('[ModuleCatalog] useEffect for variants:', { isOpen, slotType, slotTypeId: slotType?.id });
     if (!isOpen || !slotType) return;
 
     let mounted = true;
     const load = async () => {
       setLoading(true);
       try {
-        console.log('[ModuleCatalog] Fetching variants for slotType.id:', slotType.id);
         const v = await catalog.getModuleVariants(slotType.id);
-        console.log('[ModuleCatalog] Received variants:', v);
         if (!mounted) return;
         setRemoteVariants(v && v.length ? v : []);
       } catch (err) {
@@ -575,20 +572,92 @@ export function ModuleCatalog({
                         )}
                       </div>
 
-                      {/* Type-specific stats */}
-                      {v.stats && Object.keys(v.stats).length > 0 && (
-                        <div style={{ marginTop: 'var(--frigate-space-2)', paddingTop: 'var(--frigate-space-2)', borderTop: '1px dashed var(--frigate-border-base)' }}>
-                          <div style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)', textTransform: 'uppercase', marginBottom: '4px' }}>ATTRIBUTES</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--frigate-space-1)' }}>
-                            {Object.entries(v.stats).map(([key, value]) => (
-                              <div key={key} style={{ fontSize: 'var(--frigate-font-tiny)' }}>
-                                <span style={{ color: 'var(--frigate-text-muted)', textTransform: 'uppercase' }}>{key.replace(/_/g, ' ')}: </span>
-                                <span style={{ fontWeight: 600 }}>{String(value)}</span>
-                              </div>
-                            ))}
+                      {/* Type-specific parameters */}
+                      {(() => {
+                        // Common properties to exclude from module-specific display
+                        const commonProps = new Set([
+                          'id', 'type', 'name', 'model', 'manufacturer', 'desc', 'description', 'lore',
+                          'cost', 'additional_hp', 'additional_power_consumption', 'additional_heat_generation',
+                          'additional_weight', 'stats'
+                        ]);
+
+                        // Get all module-specific properties
+                        const variantAny = v as unknown as Record<string, unknown>;
+                        const moduleParams = Object.entries(variantAny)
+                          .filter(([key, value]) => !commonProps.has(key) && value !== undefined && value !== null)
+                          .map(([key, value]) => ({ key, value }));
+
+                        if (moduleParams.length === 0) return null;
+
+                        // Format value for display
+                        const formatValue = (key: string, value: unknown): string => {
+                          if (typeof value === 'number') {
+                            // Format percentages
+                            if (key.includes('accuracy') || key.includes('efficiency')) {
+                              return `${(value * 100).toFixed(0)}%`;
+                            }
+                            // Format large numbers
+                            if (value >= 1000000) {
+                              return `${(value / 1000000).toFixed(1)}M`;
+                            }
+                            if (value >= 1000) {
+                              return value.toLocaleString();
+                            }
+                            // Format decimals
+                            if (!Number.isInteger(value)) {
+                              return value.toFixed(2);
+                            }
+                            return String(value);
+                          }
+                          if (Array.isArray(value)) {
+                            return value.join(', ');
+                          }
+                          return String(value);
+                        };
+
+                        // Format key for display (snake_case to Title Case)
+                        const formatKey = (key: string): string => {
+                          return key.replace(/_/g, ' ').toUpperCase();
+                        };
+
+                        // Get unit for known parameter types
+                        const getUnit = (key: string): string => {
+                          if (key.includes('range') || key.includes('distance')) return ' m';
+                          if (key.includes('speed') && !key.includes('projectile')) return ' m/s';
+                          if (key.includes('time') || key.includes('reload') || key.includes('recharge')) return ' s';
+                          if (key.includes('weight') || key.includes('mass')) return ' kg';
+                          if (key.includes('power')) return ' MW';
+                          if (key.includes('heat') || key.includes('cooling')) return ' K';
+                          if (key.includes('size') && key.includes('ammo')) return ' mm';
+                          return '';
+                        };
+
+                        return (
+                          <div style={{ marginTop: 'var(--frigate-space-2)', paddingTop: 'var(--frigate-space-2)', borderTop: '1px dashed var(--frigate-border-base)' }}>
+                            <div style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                              MODULE PARAMETERS
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2px' }}>
+                              {moduleParams.map(({ key, value }) => (
+                                <div key={key} style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  fontSize: 'var(--frigate-font-tiny)',
+                                  padding: '2px 0',
+                                }}>
+                                  <span style={{ color: 'var(--frigate-text-muted)' }}>
+                                    {formatKey(key)}
+                                  </span>
+                                  <span style={{ fontWeight: 600, color: 'var(--frigate-text-primary)' }}>
+                                    {formatValue(key, value)}{getUnit(key)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                     </div>
                   );
                 })()

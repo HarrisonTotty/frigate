@@ -7,24 +7,24 @@ import type { ConnectionLineProps } from './types';
  * Visual states:
  * - Empty slot: dashed line, muted color
  * - Installed: solid line
- * - Selected: highlighted color
+ * - Highlighted (hover): highlighted color
  */
 export function ConnectionLine({
   startX,
   startY,
   endX,
   endY,
-  isSelected = false,
+  isHighlighted = false,
   isEmpty = false,
 }: ConnectionLineProps) {
-  const strokeColor = isSelected
+  const strokeColor = isHighlighted
     ? 'var(--frigate-primary)'
     : isEmpty
       ? 'var(--frigate-border-muted)'
       : 'var(--frigate-border-base)';
 
   const strokeDasharray = isEmpty ? '4 2' : 'none';
-  const strokeWidth = isSelected ? 1.5 : 1;
+  const strokeWidth = isHighlighted ? 1.5 : 1;
 
   return (
     <line
@@ -36,6 +36,7 @@ export function ConnectionLine({
       strokeWidth={strokeWidth}
       strokeDasharray={strokeDasharray}
       strokeLinecap="round"
+      style={{ transition: 'stroke 0.15s ease, stroke-width 0.15s ease' }}
     />
   );
 }

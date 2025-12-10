@@ -8,3 +8,5 @@ export { Gauge } from './components/Gauge';
 export type { GaugeProps } from './components/Gauge';
 export { Select } from './components/Select';
 export type { SelectProps } from './components/Select';
+export { RadarChart } from './components/RadarChart';
+export type { RadarChartProps, RadarChartAxis } from './components/RadarChart';

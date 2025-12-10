@@ -1,27 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ModuleSlotMarkerProps } from './types';
 import { ModuleTooltip, type TooltipStatRow } from '../../components/ModuleTooltip';
-
-/**
- * Abbreviation map for module slot groups
- */
-const GROUP_ABBREVIATIONS: Record<string, string> = {
-  propulsion: 'ENG',
-  power: 'PWR',
-  weapons: 'WPN',
-  defense: 'DEF',
-  sensors: 'SEN',
-  utility: 'UTL',
-  cargo: 'CRG',
-  shields: 'SHD',
-};
-
-/**
- * Get abbreviated label for a module group
- */
-function getGroupAbbreviation(group: string): string {
-  return GROUP_ABBREVIATIONS[group.toLowerCase()] ?? group.slice(0, 3).toUpperCase();
-}
 
 /**
  * Build tooltip stats from slot and variant data
@@ -80,10 +59,12 @@ function buildTooltipTags(
 /**
  * Individual module slot marker on the blueprint
  *
- * Displays as bracketed text label following the design philosophy:
- * - Empty slots: [ENG] EMPTY
- * - Installed: [ENG] Module Name
- * - Selected: highlighted background
+ * Layout:
+ * ┌─────────────────────────┬─────┐
+ * │ Module Slot Name (bold) │ [X] │
+ * │ Module Variant Name     │     │
+ * │ or [SELECT MODULE]      │     │
+ * └─────────────────────────┴─────┘
  *
  * Wraps content in ModuleTooltip for detailed hover information.
  */
@@ -92,32 +73,28 @@ export function ModuleSlotMarker({
   instance,
   variant,
   position,
-  isSelected = false,
+  isHighlighted = false,
   isEmpty = false,
   hasVariants = true,
   onClick,
   onRemove,
+  onMouseEnter,
+  onMouseLeave,
   groupLabel,
 }: ModuleSlotMarkerProps) {
-  const abbreviation = getGroupAbbreviation(position.group);
+  // Track hover state for remove button
+  const [isRemoveHovered, setIsRemoveHovered] = useState(false);
 
   // Determine if this marker is interactive (can open catalog)
   // Only slots with variants are interactive for configuration
   const isInteractive = hasVariants && !!onClick;
 
-  // Determine display label
-  // Empty slot (needs variant): show slot type name + [EMPTY] indicator
-  // Filled slot or no-variant slot: show slot type name + variant name if applicable
+  // Slot type name (bold, first line)
   const slotTypeName = slot?.name ?? groupLabel ?? position.group;
+  // Variant name (second line) or [SELECT MODULE] if empty
   const variantName = variant?.name;
-  const displayLabel = isEmpty
-    ? `${slotTypeName} [EMPTY]`
-    : variantName
-      ? `${slotTypeName}: ${variantName}`
-      : slotTypeName;
 
   // Build tooltip content
-  // Show slot name as title, variant info as subtitle when installed
   const tooltipTitle = slot?.name ?? position.group.toUpperCase();
   const tooltipSubtitle = variant
     ? `${variant.name}${variant.manufacturer ? ` — ${variant.manufacturer}` : ''}${variant.model ? ` ${variant.model}` : ''}`
@@ -130,18 +107,22 @@ export function ModuleSlotMarker({
     position: 'absolute',
     left: `${position.x}%`,
     top: `${position.y}%`,
-    transform: 'translate(-50%, -50%)',
+    transform: position.labelPosition === 'left' ? 'translate(-100%, -50%)' : 'translate(0%, -50%)',
     fontFamily: 'var(--frigate-font-mono)',
-    fontSize: '11px',
-    lineHeight: 1.2,
-    padding: '4px 8px',
-    border: `1px solid ${isSelected ? 'var(--frigate-primary)' : isEmpty ? 'var(--frigate-border-muted)' : 'var(--frigate-border-base)'}`,
-    backgroundColor: isSelected ? 'var(--frigate-bg-selected)' : 'var(--frigate-bg-surface)',
+    fontSize: '10px',
+    lineHeight: 1.3,
+    padding: '3px 6px',
+    border: `1px solid ${isHighlighted ? 'var(--frigate-primary)' : isEmpty ? 'var(--frigate-border-muted)' : 'var(--frigate-border-base)'}`,
+    backgroundColor: isHighlighted ? 'var(--frigate-bg-selected)' : 'var(--frigate-bg-surface)',
     color: isEmpty ? 'var(--frigate-text-muted)' : 'var(--frigate-text-primary)',
     cursor: isInteractive ? 'pointer' : 'default',
-    whiteSpace: 'nowrap',
     userSelect: 'none',
-    zIndex: isSelected ? 10 : 1,
+    zIndex: isHighlighted ? 10 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    maxWidth: '140px',
+    transition: 'border-color 0.15s ease, background-color 0.15s ease',
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -150,6 +131,11 @@ export function ModuleSlotMarker({
     if (isInteractive) {
       onClick?.();
     }
+  };
+
+  const handleRemoveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRemove?.();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -162,23 +148,78 @@ export function ModuleSlotMarker({
     }
   };
 
+  const displayLabel = isEmpty
+    ? `${slotTypeName} [EMPTY]`
+    : variantName
+      ? `${slotTypeName}: ${variantName}`
+      : slotTypeName;
+
   const markerContent = (
     <div
       style={markerStyles}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       tabIndex={0}
       role="button"
-      aria-label={`${position.group} slot: ${displayLabel}${isSelected ? ', selected' : ''}`}
-      aria-pressed={isSelected}
+      aria-label={`${position.group} slot: ${displayLabel}`}
     >
-      <span style={{ color: 'var(--frigate-primary)' }}>[{abbreviation}]</span>
-      {' '}
-      <span style={{
-        borderBottom: isEmpty ? '1px dashed var(--frigate-border-muted)' : 'none',
-      }}>
-        {displayLabel}
-      </span>
+      {/* Content area */}
+      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+        {/* Slot type name (bold) */}
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: '10px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            color: 'var(--frigate-text-primary)',
+          }}
+        >
+          {slotTypeName}
+        </div>
+        {/* Module name or [SELECT MODULE] */}
+        <div
+          style={{
+            fontSize: '9px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            color: isEmpty ? 'var(--frigate-primary)' : 'var(--frigate-text-secondary)',
+            cursor: isEmpty && isInteractive ? 'pointer' : 'inherit',
+          }}
+        >
+          {isEmpty ? '[SELECT MODULE]' : (variantName ?? (hasVariants ? '[SELECT MODULE]' : '[FIXED]'))}
+        </div>
+      </div>
+
+      {/* Remove button */}
+      {onRemove && (
+        <button
+          onClick={handleRemoveClick}
+          onMouseEnter={() => setIsRemoveHovered(true)}
+          onMouseLeave={() => setIsRemoveHovered(false)}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            fontFamily: 'var(--frigate-font-mono)',
+            fontSize: '9px',
+            color: isRemoveHovered ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            cursor: 'pointer',
+            lineHeight: 1,
+            flexShrink: 0,
+            transition: 'color 0.15s ease',
+          }}
+          aria-label={`Remove ${slotTypeName} from ship`}
+          title="Remove slot"
+        >
+          [X]
+        </button>
+      )}
     </div>
   );
 

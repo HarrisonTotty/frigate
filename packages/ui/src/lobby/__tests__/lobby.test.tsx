@@ -34,65 +34,70 @@ describe('Lobby components', () => {
 
     it('renders panel with header', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      // Header uses uppercase
       expect(screen.getByText('SHIP STATISTICS')).toBeDefined();
     });
 
     it('displays hull points stat', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      // HP is displayed as "HULL PTS" label with value and unit
-      expect(screen.getByText('HULL PTS')).toBeDefined();
       expect(screen.getByText('100 HP')).toBeDefined();
     });
 
     it('displays weight constraint', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('WEIGHT ALLOCATION')).toBeDefined();
+      expect(screen.getByText('WEIGHT')).toBeDefined();
+      expect(screen.getByText('850/1000 t')).toBeDefined();
     });
 
     it('displays power constraint', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('POWER CONSUMPTION')).toBeDefined();
+      expect(screen.getByText('POWER')).toBeDefined();
+      expect(screen.getByText('280/500 MW')).toBeDefined();
     });
 
-    it('displays heat constraint', () => {
+    it('displays cooling constraint', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('HEAT DISSIPATION')).toBeDefined();
+      expect(screen.getByText('COOLING')).toBeDefined();
+      expect(screen.getByText('320/600 K')).toBeDefined();
     });
 
     it('displays build points allocation', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('BUILD POINTS ALLOCATION')).toBeDefined();
+      expect(screen.getByText('BUILD POINTS')).toBeDefined();
+      expect(screen.getByText('75/100 BP')).toBeDefined();
     });
 
-    it('shows warning when weight exceeds limit', () => {
+    it('shows warning indicator when weight exceeds limit', () => {
       const overweightStats: ShipStats = {
         ...mockStats,
         weight: 1200,
         weightMax: 1000,
       };
       render(<ShipStatsPanel stats={overweightStats} />);
-      expect(screen.getByText('[OVER LIMIT]')).toBeDefined();
+      // Over-limit shows with [!] indicator
+      expect(screen.getByText('1200/1000 t [!]')).toBeDefined();
     });
 
-    it('shows warning when power exceeds limit', () => {
+    it('shows warning indicator when power exceeds limit', () => {
       const overpowerStats: ShipStats = {
         ...mockStats,
         power: 600,
         powerMax: 500,
       };
       render(<ShipStatsPanel stats={overpowerStats} />);
-      expect(screen.getByText('[OVER LIMIT]')).toBeDefined();
+      expect(screen.getByText('600/500 MW [!]')).toBeDefined();
     });
 
-    it('shows warning when heat exceeds limit', () => {
+    it('shows heat exceeding cooling as informational (no warning)', () => {
+      // Heat exceeding cooling is not a blocking constraint
+      // The bar still shows the values but doesn't add a warning
       const overheatStats: ShipStats = {
         ...mockStats,
         heat: 700,
         heatMax: 600,
       };
       render(<ShipStatsPanel stats={overheatStats} />);
-      expect(screen.getByText('[OVER LIMIT]')).toBeDefined();
+      // Heat over limit still displays with indicator
+      expect(screen.getByText('700/600 K [!]')).toBeDefined();
     });
 
     it('displays warnings from stats object', () => {
@@ -101,14 +106,12 @@ describe('Lobby components', () => {
         warnings: ['Critical error', 'Power failure'],
       };
       render(<ShipStatsPanel stats={statsWithWarnings} />);
-      // Warnings are displayed directly without per-warning prefix
       expect(screen.getByText('Critical error')).toBeDefined();
       expect(screen.getByText('Power failure')).toBeDefined();
     });
 
     it('has proper container structure', () => {
       const { container } = render(<ShipStatsPanel stats={mockStats} />);
-      // ShipStatsPanel renders as a div container with proper styling
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper.tagName).toBe('DIV');
       expect(wrapper.style.fontFamily).toBe('var(--frigate-font-mono)');

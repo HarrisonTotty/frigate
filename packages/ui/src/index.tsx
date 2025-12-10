@@ -17,8 +17,8 @@ export { Grid, Panel, Overlay, Modal, Stack } from './layout';
 export type { GridProps, PanelProps, OverlayProps, ModalProps, StackProps } from './layout';
 
 // Export core components
-export { Button, Badge, ProgressBar, Gauge, Select } from './components';
-export type { ButtonProps, BadgeProps, ProgressBarProps, GaugeProps, SelectProps } from './components';
+export { Button, Badge, ProgressBar, Gauge, Select, RadarChart } from './components';
+export type { ButtonProps, BadgeProps, ProgressBarProps, GaugeProps, SelectProps, RadarChartProps, RadarChartAxis } from './components';
 
 // Export navigation components
 export { Tabs, TabPanel, Accordion } from './navigation';
@@ -28,9 +28,8 @@ export type { TabsProps, TabPanelProps, AccordionProps, Tab, AccordionItem } fro
 export { DataGrid } from './data-grid';
 export type { DataGridProps, DataGridColumn } from './data-grid';
 
-// Export chart components
-export { RadarChart, BarChart, LineChart } from './charts';
-export type { RadarChartProps, BarChartProps, LineChartProps, RadarContact, BarChartData } from './charts';
+// Note: Chart components (BarChart, LineChart) planned for future implementation
+// RadarChart is exported from ./components above
 
 // Export interaction pattern components
 export { KeyboardShortcutProvider, KeyboardShortcutHint, useKeyboardShortcuts, useKeyboardShortcut, formatShortcut } from './keyboard';

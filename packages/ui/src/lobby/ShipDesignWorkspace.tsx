@@ -3,6 +3,7 @@ import type { ModuleInstance, ModuleSlot } from '@frigate/api-client';
 import ModuleSlotBrowser from './ModuleSlotBrowser';
 import { ShipBlueprintCanvas } from './ShipBlueprintView';
 import ShipStatsPanel, { ShipStats } from './ShipStatsPanel';
+import { calculateShipProfile } from './calculateShipProfile';
 import { ModuleCatalog } from '../modules/ModuleCatalog';
 import { useUiBlueprint } from '../hooks/useUiBlueprint';
 import { useShipClass } from '../hooks/useShipClass';
@@ -240,10 +241,6 @@ export function ShipDesignWorkspace({
     // Called from ModuleSlotBrowser - creates empty slot instance
     // The empty slot appears on the blueprint; user can later click it to select a module
     // This allows users to add multiple slots first, then fill them one at a time
-    console.log('[ShipDesignWorkspace] handleModuleAdded called with slotId:', slotId);
-    console.log('[ShipDesignWorkspace] slotsById keys:', Object.keys(slotsById));
-    console.log('[ShipDesignWorkspace] slotsList length:', slotsList.length);
-    console.log('[ShipDesignWorkspace] slot exists in slotsById:', !!slotsById[slotId]);
     try {
       await addInstance(slotId);
       // Don't auto-open catalog - let user add more slots or click to select module when ready
@@ -269,67 +266,116 @@ export function ShipDesignWorkspace({
     setSelectedInstanceId(instanceId);
     // Open catalog to select/change the module for this slot
     const instance = instances.find(i => i.id === instanceId);
-    console.log('[ShipDesignWorkspace] handleSelectInstance:', {
-      instanceId,
-      instance,
-      module_slot_id: instance?.module_slot_id,
-      moduleSlotsById_keys: Object.keys(moduleSlotsById),
-    });
     if (instance) {
       const slotType = moduleSlotsById[instance.module_slot_id];
-      console.log('[ShipDesignWorkspace] slotType lookup:', {
-        slotId: instance.module_slot_id,
-        slotType,
-        hasVariants: slotType?.hasVariants,
-      });
       // Only open catalog if the slot type has variants to choose from
       // Slots without variants (like Deflector Plating) are "finalized" when added
       if (slotType?.hasVariants) {
         setEditingInstanceId(instanceId);
         setEditingSlotType(slotType);
         setCatalogOpen(true);
-      } else {
-        console.log('[ShipDesignWorkspace] Catalog NOT opened - slot has no variants:', slotType?.name);
       }
     }
   };
 
-  // Compute aggregated stats from module slot data
-  // Uses actual slot definitions for type-safe stat aggregation
+  // Compute aggregated stats from module slot and variant data
+  // Power production comes from power core variants (energy_production)
+  // Cooling capacity comes from cooling system variants (generated_cooling) + base ship cooling
+  // Power consumption and heat generation come from all modules
   const stats: ShipStats = useMemo(() => {
+    // Base native cooling capacity based on ship size
+    const getBaseCooling = (size: string | undefined): number => {
+      switch (size) {
+        case 'Small': return 100;
+        case 'Medium': return 200;
+        case 'Large': return 400;
+        default: return 100; // Default to small if unknown
+      }
+    };
+
     const s: ShipStats = {
       cost: 0,
       weight: 0,
       weightMax: shipClass?.max_weight ?? 0,
       hp: 0,
-      power: 0,
-      powerMax: shipClass?.max_power ?? 0,
-      heat: 0,
-      heatMax: shipClass?.max_heat ?? 0,
+      power: 0,      // Total power consumption
+      powerMax: 0,   // Total power production (from power cores)
+      heat: 0,       // Total heat generation
+      heatMax: getBaseCooling(shipClass?.size),    // Base cooling + cooling systems
       buildPointsUsed: 0,
       buildPointsMax: shipClass?.build_points ?? 100,
       warnings: [],
+      missingRequired: [],
     };
 
     let missingSlotCount = 0;
+
+    // Track which slot types have been installed
+    const installedSlotTypes = new Set<string>();
 
     for (const inst of instances) {
       // Look up the module slot definition to get base stats
       const slot = moduleSlotsById[inst.module_slot_id];
 
       if (slot) {
-        // Type-safe access to slot base stats
+        installedSlotTypes.add(slot.id);
+
+        // Check if this is a weapon (Offense group) - weapons only consume power when firing
+        const isWeapon = Array.isArray(slot.groups) && slot.groups.includes('Offense');
+
+        // Add base stats from slot definition
         s.buildPointsUsed += typeof slot.base_cost === 'number' ? slot.base_cost : 0;
         s.weight += typeof slot.base_weight === 'number' ? slot.base_weight : 0;
         s.hp += typeof slot.base_hp === 'number' ? slot.base_hp : 0;
-        s.power += typeof slot.base_power_consumption === 'number' ? slot.base_power_consumption : 0;
+        // Weapons only consume power when firing, so exclude from baseline power calculation
+        if (!isWeapon) {
+          s.power += typeof slot.base_power_consumption === 'number' ? slot.base_power_consumption : 0;
+        }
         s.heat += typeof slot.base_heat_generation === 'number' ? slot.base_heat_generation : 0;
 
-        // Note: Variant additional stats would require variant data to be loaded
-        // Currently, the component doesn't cache variant data for all instances
-        // TODO: If variant_id is set, fetch/cache variant data to include additional_* stats
+        // If a variant is selected, add variant stats
+        if (inst.variant_id && variantsById[inst.variant_id]) {
+          const variant = variantsById[inst.variant_id] as unknown as Record<string, unknown>;
+
+          // Add variant cost to build points
+          if (typeof variant.cost === 'number') {
+            s.buildPointsUsed += variant.cost;
+          }
+
+          // Add variant additional stats
+          if (typeof variant.additional_weight === 'number') {
+            s.weight += variant.additional_weight;
+          }
+          if (typeof variant.additional_hp === 'number') {
+            s.hp += variant.additional_hp;
+          }
+          // Weapons only consume power when firing, so exclude from baseline power calculation
+          if (!isWeapon && typeof variant.additional_power_consumption === 'number') {
+            s.power += variant.additional_power_consumption;
+          }
+          if (typeof variant.additional_heat_generation === 'number') {
+            s.heat += variant.additional_heat_generation;
+          }
+
+          // Power cores provide energy_production (adds to powerMax)
+          if (slot.id === 'power-core' && typeof variant.energy_production === 'number') {
+            s.powerMax += variant.energy_production;
+          }
+
+          // Cooling systems provide generated_cooling (adds to heatMax)
+          if (slot.id === 'cooling-system' && typeof variant.generated_cooling === 'number') {
+            s.heatMax += variant.generated_cooling;
+          }
+        }
       } else {
         missingSlotCount++;
+      }
+    }
+
+    // Check for required modules that haven't been installed
+    for (const slot of slotsList) {
+      if (slot.required && !installedSlotTypes.has(slot.id)) {
+        s.missingRequired?.push(slot.name);
       }
     }
 
@@ -348,20 +394,28 @@ export function ShipDesignWorkspace({
     if (s.weightMax > 0 && s.weight > s.weightMax) {
       s.warnings?.push('Weight limit exceeded');
     }
-    // Power constraint warning
+    // Power constraint warning - consumption exceeds production
     if (s.powerMax > 0 && s.power > s.powerMax) {
-      s.warnings?.push('Power capacity exceeded');
+      s.warnings?.push('Power consumption exceeds production');
     }
-    // Heat constraint warning
-    if (s.heatMax > 0 && s.heat > s.heatMax) {
-      s.warnings?.push('Heat dissipation exceeded');
-    }
+    // Note: Heat exceeding cooling is informational only, not a blocking constraint
+    // Ships can operate with heat deficits (reduced performance, not prevented registration)
     // Warn if ship class data failed to load (using default constraints)
     if (shipClassError) {
       s.warnings?.push('Ship class data unavailable - using defaults');
     }
+
+    // Calculate ship profile for radar chart using extracted function
+    s.profile = calculateShipProfile(
+      instances,
+      moduleSlotsById,
+      variantsById as unknown as Record<string, Record<string, unknown>>,
+      s.hp,
+      { totalSlotTypes: slotsList.length || 18 }
+    );
+
     return s;
-  }, [instances, moduleSlotsById, shipClass, shipClassError]);
+  }, [instances, moduleSlotsById, variantsById, slotsList, shipClass, shipClassError]);
 
   return (
     <div
@@ -462,7 +516,7 @@ export function ShipDesignWorkspace({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '3fr 4fr 3fr',
+          gridTemplateColumns: '1fr 2fr 1fr',
           gap: 'var(--frigate-space-3)',
           padding: 'var(--frigate-space-3)',
           flex: 1,

@@ -1,5 +1,28 @@
 import React from 'react';
-import { ProgressBar } from '../components';
+import { ProgressBar, RadarChart } from '../components';
+
+/**
+ * Validation state for the ship blueprint
+ */
+export type ValidationState = 'valid' | 'incomplete' | 'conflict';
+
+/**
+ * Ship Profile Interface
+ *
+ * Normalized (0-1) values representing ship capabilities across five dimensions.
+ */
+export interface ShipProfile {
+  /** Defense: HP and shield capacity relative to theoretical maximum */
+  defense: number;
+  /** Mobility: Thrust and maneuverability relative to theoretical maximum */
+  mobility: number;
+  /** Offense: Offensive module count relative to theoretical maximum */
+  offense: number;
+  /** Versatility: Number of unique module types installed */
+  versatility: number;
+  /** Utility: Aggregate utility from support modules */
+  utility: number;
+}
 
 /**
  * Ship Statistics Interface
@@ -15,13 +38,13 @@ export interface ShipStats {
   weightMax: number;
   /** Total hull points (structural integrity) */
   hp: number;
-  /** Total power consumption in kilowatts */
+  /** Total power consumption (MW) - sum of all module power draw */
   power: number;
-  /** Maximum power capacity in kilowatts (0 if not set) */
+  /** Total power production (MW) - from power core energy_production */
   powerMax: number;
-  /** Total heat generation in kilowatts thermal */
+  /** Total heat generation (K/s) - sum of all module heat output */
   heat: number;
-  /** Maximum heat dissipation capacity in kilowatts thermal (0 if not set) */
+  /** Total cooling capacity (K/s) - from cooling system generated_cooling */
   heatMax: number;
   /** Build points currently used */
   buildPointsUsed: number;
@@ -29,6 +52,10 @@ export interface ShipStats {
   buildPointsMax: number;
   /** Array of constraint warnings if any limits exceeded */
   warnings?: string[];
+  /** Names of required modules that are missing */
+  missingRequired?: string[];
+  /** Ship capability profile for radar chart visualization */
+  profile?: ShipProfile;
 }
 
 /**
@@ -39,351 +66,432 @@ export interface ShipStatsPanelProps {
   stats: ShipStats;
   /** Optional CSS class name */
   className?: string;
+  /** Callback when Register Schematic button is clicked */
+  onRegister?: () => void;
 }
 
 /**
- * Ship Statistics Panel Component
- * 
- * Displays aggregated ship blueprint statistics in a dense, technical format.
- * Shows key performance indicators with progress bars for constrained resources.
- * Features warning indicators when limits are approached or exceeded.
- * 
- * @example
- * ```tsx
- * <ShipStatsPanel
- *   stats={{
- *     cost: 1500,
- *     weight: 850,
- *     hp: 450,
- *     power: 280,
- *     heat: 320,
- *     buildPointsUsed: 75,
- *     buildPointsMax: 100,
- *     warnings: []
- *   }}
- * />
- * ```
+ * Determine validation state from ship stats
  */
-export function ShipStatsPanel({ stats, className = '' }: ShipStatsPanelProps) {
-  // Calculate percentages for constrained resources
-  const bpPercent = (stats.buildPointsUsed / stats.buildPointsMax) * 100;
-  const bpStatus = bpPercent > 90 ? 'danger' : bpPercent > 70 ? 'warning' : 'primary';
+function getValidationState(stats: ShipStats): ValidationState {
+  const hasConflicts = (stats.warnings?.length ?? 0) > 0;
+  const hasMissing = (stats.missingRequired?.length ?? 0) > 0;
 
-  // Weight constraint calculations
-  const weightPercent = stats.weightMax > 0 ? (stats.weight / stats.weightMax) * 100 : 0;
-  const weightStatus = weightPercent > 100 ? 'danger' : weightPercent > 90 ? 'warning' : 'primary';
-  const weightExceeded = stats.weight > stats.weightMax && stats.weightMax > 0;
+  if (hasConflicts) return 'conflict';
+  if (hasMissing) return 'incomplete';
+  return 'valid';
+}
 
-  // Power constraint calculations
-  const powerPercent = stats.powerMax > 0 ? (stats.power / stats.powerMax) * 100 : 0;
-  const powerStatus = powerPercent > 100 ? 'danger' : powerPercent > 90 ? 'warning' : 'primary';
-  const powerExceeded = stats.power > stats.powerMax && stats.powerMax > 0;
+/**
+ * Get button color based on validation state
+ */
+function getValidationColor(state: ValidationState): string {
+  switch (state) {
+    case 'valid':
+      return 'var(--frigate-success, #22c55e)';
+    case 'incomplete':
+      return 'var(--frigate-warning, #f59e0b)';
+    case 'conflict':
+      return 'var(--frigate-danger, #ef4444)';
+  }
+}
 
-  // Heat constraint calculations
-  const heatPercent = stats.heatMax > 0 ? (stats.heat / stats.heatMax) * 100 : 0;
-  const heatStatus = heatPercent > 100 ? 'danger' : heatPercent > 90 ? 'warning' : 'primary';
-  const heatExceeded = stats.heat > stats.heatMax && stats.heatMax > 0;
-
-  // Helper to format stat rows
-  const StatRow = ({ label, value, unit = '' }: { label: string; value: number | string; unit?: string }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--frigate-space-1) 0' }}>
-      <span style={{ fontSize: 'var(--frigate-font-small)', color: 'var(--frigate-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '5ch' }}>
-        {label}
-      </span>
-      <span style={{ fontSize: 'var(--frigate-font-body)', color: 'var(--frigate-text-primary)', fontWeight: 600, fontFamily: 'var(--frigate-font-mono)' }}>
-        {value}{unit}
-      </span>
-    </div>
-  );
-
+/**
+ * Ship Statistics Panel Header
+ */
+function ShipStatsPanelHeader() {
   return (
     <div
-      className={className}
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
-        backgroundColor: 'var(--frigate-bg-surface)',
-        color: 'var(--frigate-text-primary)',
-        borderRadius: 0,
-        boxShadow: 'none',
+        backgroundColor: 'var(--frigate-bg-base)',
+        padding: 'var(--frigate-space-2)',
+        borderBottom: '1px solid var(--frigate-border-base)',
       }}
     >
-      {/* Header */}
       <div
         style={{
           fontWeight: 800,
           fontSize: 'var(--frigate-font-heading)',
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          marginBottom: 'var(--frigate-space-3)',
-          paddingBottom: 'var(--frigate-space-2)',
-          borderBottom: '1px solid var(--frigate-border-base)',
         }}
       >
         SHIP STATISTICS
       </div>
-
-      {/* Primary Stats Grid (2 columns) */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 'var(--frigate-space-3)',
-          marginBottom: 'var(--frigate-space-4)',
+          fontSize: 'var(--frigate-font-small)',
+          color: 'var(--frigate-text-secondary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          marginTop: 'var(--frigate-space-1)',
         }}
       >
-        <div>
-          <StatRow label="COST" value={stats.cost} unit=" cr" />
-          <StatRow label="WEIGHT" value={stats.weight} unit=" t" />
-          <StatRow label="HULL PTS" value={stats.hp} unit=" HP" />
-        </div>
-        <div>
-          <StatRow label="PWR CON" value={stats.power} unit=" kW" />
-          <StatRow label="HEAT GEN" value={stats.heat} unit=" kWth" />
-          <StatRow label="HARDNESS" value="—" />
-        </div>
+        BLUEPRINT ANALYSIS
       </div>
+    </div>
+  );
+}
 
-      {/* Build Points Constraint */}
-      <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
-        <div
+/**
+ * Ship Statistics Panel Footer
+ */
+function ShipStatsPanelFooter({ warningCount }: { warningCount: number }) {
+  return (
+    <div
+      style={{
+        fontSize: 'var(--frigate-font-tiny)',
+        color: warningCount > 0 ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+        backgroundColor: 'var(--frigate-bg-base)',
+        padding: 'var(--frigate-space-1) var(--frigate-space-2)',
+        borderTop: '1px solid var(--frigate-border-base)',
+        letterSpacing: '0.05em',
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <span>[STATUS: {warningCount > 0 ? 'WARNING' : 'NOMINAL'}]</span>
+      {warningCount > 0 && <span>[{warningCount} ISSUE{warningCount > 1 ? 'S' : ''}]</span>}
+    </div>
+  );
+}
+
+/**
+ * Register Schematic Button
+ */
+function RegisterSchematicButton({
+  stats,
+  onClick,
+}: {
+  stats: ShipStats;
+  onClick?: () => void;
+}) {
+  const validationState = getValidationState(stats);
+  const buttonColor = getValidationColor(validationState);
+  const isDisabled = validationState === 'conflict';
+
+  // Determine tooltip/status text
+  const getStatusText = () => {
+    if (validationState === 'conflict') {
+      return 'Resolve conflicts before registering';
+    }
+    if (validationState === 'incomplete') {
+      const missing = stats.missingRequired ?? [];
+      return `Missing: ${missing.join(', ')}`;
+    }
+    return 'Ready to register';
+  };
+
+  return (
+    <div
+      style={{
+        padding: 'var(--frigate-space-2)',
+        backgroundColor: 'var(--frigate-bg-base)',
+        borderTop: '1px solid var(--frigate-border-base)',
+      }}
+    >
+      <button
+        onClick={onClick}
+        disabled={isDisabled}
+        style={{
+          width: '100%',
+          padding: 'var(--frigate-space-2) var(--frigate-space-3)',
+          backgroundColor: 'transparent',
+          border: `2px solid ${buttonColor}`,
+          color: buttonColor,
+          fontFamily: 'var(--frigate-font-mono)',
+          fontSize: 'var(--frigate-font-small)',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          cursor: isDisabled ? 'not-allowed' : 'pointer',
+          opacity: isDisabled ? 0.5 : 1,
+          transition: 'all 0.15s ease',
+        }}
+        onMouseEnter={(e) => {
+          if (!isDisabled) {
+            e.currentTarget.style.backgroundColor = buttonColor;
+            e.currentTarget.style.color = 'var(--frigate-bg-base)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = buttonColor;
+        }}
+        title={getStatusText()}
+        aria-label={`Register Schematic - ${getStatusText()}`}
+      >
+        REGISTER SCHEMATIC &gt;
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Stat row component for consistent formatting
+ */
+function StatRow({ label, value, unit = '', warning = false }: {
+  label: string;
+  value: number | string;
+  unit?: string;
+  warning?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 'var(--frigate-space-1) 0',
+      }}
+    >
+      <span
+        style={{
+          fontSize: 'var(--frigate-font-tiny)',
+          color: 'var(--frigate-text-secondary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: 'var(--frigate-font-small)',
+          color: warning ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
+          fontWeight: 600,
+          fontFamily: 'var(--frigate-font-mono)',
+        }}
+      >
+        {value}{unit}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Constraint bar component with label
+ */
+function ConstraintBar({
+  label,
+  value,
+  max,
+  unit,
+  showOverLimit = false,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  unit: string;
+  showOverLimit?: boolean;
+}) {
+  const percent = max > 0 ? (value / max) * 100 : 0;
+  const exceeded = value > max && max > 0;
+  const status = exceeded ? 'danger' : percent > 90 ? 'warning' : 'primary';
+
+  return (
+    <div style={{ marginBottom: 'var(--frigate-space-2)' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '2px',
+        }}
+      >
+        <span
           style={{
-            fontSize: 'var(--frigate-font-small)',
+            fontSize: 'var(--frigate-font-tiny)',
             color: 'var(--frigate-text-secondary)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            marginBottom: 'var(--frigate-space-2)',
           }}
         >
-          BUILD POINTS ALLOCATION
-        </div>
-        <ProgressBar
-          value={stats.buildPointsUsed}
-          max={stats.buildPointsMax}
-          variant={bpStatus}
-          showLabel={true}
-          blocks={20}
-        />
-        <div
+          {label}
+        </span>
+        <span
           style={{
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-muted)',
-            marginTop: 'var(--frigate-space-1)',
-            textAlign: 'right',
+            fontSize: 'var(--frigate-font-tiny)',
+            color: exceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            fontWeight: exceeded ? 700 : 400,
           }}
         >
-          {stats.buildPointsUsed} / {stats.buildPointsMax}
-        </div>
+          {value}/{max > 0 ? max : '—'}{unit}
+          {exceeded && showOverLimit && ' [!]'}
+        </span>
       </div>
+      <ProgressBar
+        value={Math.min(value, max)}
+        max={max > 0 ? max : 1}
+        variant={status}
+        showLabel={false}
+        blocks={15}
+      />
+    </div>
+  );
+}
 
-      {/* Weight Constraint */}
-      <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 'var(--frigate-space-2)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
-            WEIGHT ALLOCATION
-          </span>
-          {weightExceeded && (
-            <span
-              style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-danger)',
-                fontWeight: 700,
-              }}
-            >
-              [OVER LIMIT]
-            </span>
-          )}
-        </div>
-        <ProgressBar
-          value={Math.min(stats.weight, stats.weightMax)}
-          max={stats.weightMax > 0 ? stats.weightMax : 1}
-          variant={weightStatus}
-          showLabel={true}
-          blocks={20}
-        />
-        <div
-          style={{
-            fontSize: 'var(--frigate-font-small)',
-            color: weightExceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
-            marginTop: 'var(--frigate-space-1)',
-            textAlign: 'right',
-            fontWeight: weightExceeded ? 700 : 400,
-          }}
-        >
-          {stats.weight} / {stats.weightMax > 0 ? stats.weightMax : '—'} t
-        </div>
-      </div>
+/**
+ * Ship Statistics Panel Component
+ *
+ * Displays aggregated ship blueprint statistics in a dense, technical format.
+ * Shows key performance indicators with progress bars for constrained resources.
+ * Features warning indicators when limits are approached or exceeded.
+ */
+export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsPanelProps) {
+  const warningCount = stats.warnings?.length ?? 0;
 
-      {/* Power Constraint */}
-      <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 'var(--frigate-space-2)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
-            POWER CONSUMPTION
-          </span>
-          {powerExceeded && (
-            <span
-              style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-danger)',
-                fontWeight: 700,
-              }}
-            >
-              [OVER LIMIT]
-            </span>
-          )}
-        </div>
-        <ProgressBar
-          value={Math.min(stats.power, stats.powerMax)}
-          max={stats.powerMax > 0 ? stats.powerMax : 1}
-          variant={powerStatus}
-          showLabel={true}
-          blocks={20}
-        />
-        <div
-          style={{
-            fontSize: 'var(--frigate-font-small)',
-            color: powerExceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
-            marginTop: 'var(--frigate-space-1)',
-            textAlign: 'right',
-            fontWeight: powerExceeded ? 700 : 400,
-          }}
-        >
-          {stats.power} / {stats.powerMax > 0 ? stats.powerMax : '—'} kW
-        </div>
-      </div>
+  // Check for constraint violations
+  const weightExceeded = stats.weight > stats.weightMax && stats.weightMax > 0;
+  const powerExceeded = stats.power > stats.powerMax && stats.powerMax > 0;
+  const heatExceeded = stats.heat > stats.heatMax && stats.heatMax > 0;
+  const bpExceeded = stats.buildPointsUsed > stats.buildPointsMax;
 
-      {/* Heat Constraint */}
-      <div style={{ marginBottom: 'var(--frigate-space-4)' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 'var(--frigate-space-2)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
-            HEAT DISSIPATION
-          </span>
-          {heatExceeded && (
-            <span
-              style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-danger)',
-                fontWeight: 700,
-              }}
-            >
-              [OVER LIMIT]
-            </span>
-          )}
-        </div>
-        <ProgressBar
-          value={Math.min(stats.heat, stats.heatMax)}
-          max={stats.heatMax > 0 ? stats.heatMax : 1}
-          variant={heatStatus}
-          showLabel={true}
-          blocks={20}
-        />
-        <div
-          style={{
-            fontSize: 'var(--frigate-font-small)',
-            color: heatExceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
-            marginTop: 'var(--frigate-space-1)',
-            textAlign: 'right',
-            fontWeight: heatExceeded ? 700 : 400,
-          }}
-        >
-          {stats.heat} / {stats.heatMax > 0 ? stats.heatMax : '—'} kWth
-        </div>
-      </div>
+  return (
+    <div
+      className={className}
+      style={{
+        fontFamily: 'var(--frigate-font-mono)',
+        background: 'var(--frigate-bg-base)',
+        color: 'var(--frigate-text-primary)',
+        border: '1px solid var(--frigate-border-base)',
+        borderRadius: 0,
+        boxShadow: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        height: '100%',
+      }}
+      aria-label="Ship Statistics"
+      role="region"
+    >
+      {/* Header */}
+      <ShipStatsPanelHeader />
 
-      {/* Constraints Section */}
+      {/* Content */}
       <div
         style={{
-          marginBottom: 'var(--frigate-space-3)',
-          paddingBottom: 'var(--frigate-space-3)',
-          borderBottom: '1px solid var(--frigate-border-base)',
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-secondary)',
+          flex: 1,
+          padding: 'var(--frigate-space-2)',
+          overflow: 'auto',
+          backgroundColor: 'var(--frigate-bg-surface)',
         }}
       >
-        <div style={{ textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--frigate-space-2)' }}>
-          CONSTRAINTS
+        {/* Primary Stats */}
+        <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
+          <StatRow label="COST" value={stats.cost} unit=" CR" />
+          <StatRow label="HULL" value={stats.hp} unit=" HP" />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--frigate-space-2)', fontSize: 'var(--frigate-font-tiny)' }}>
-          <div>MAX BUILD: {stats.buildPointsMax} BP</div>
-          <div>MAX WEIGHT: {stats.weightMax > 0 ? `${stats.weightMax} t` : '—'}</div>
-          <div>MAX POWER: {stats.powerMax > 0 ? `${stats.powerMax} kW` : '—'}</div>
-          <div>MAX HEAT: {stats.heatMax > 0 ? `${stats.heatMax} kWth` : '—'}</div>
-        </div>
-      </div>
 
-      {/* Warnings Section */}
-      {stats.warnings && stats.warnings.length > 0 && (
-        <div style={{ paddingTop: 'var(--frigate-space-2)' }}>
+        {/* Constraint Bars */}
+        <ConstraintBar
+          label="BUILD POINTS"
+          value={stats.buildPointsUsed}
+          max={stats.buildPointsMax}
+          unit=" BP"
+          showOverLimit={bpExceeded}
+        />
+        <ConstraintBar
+          label="WEIGHT"
+          value={stats.weight}
+          max={stats.weightMax}
+          unit=" t"
+          showOverLimit={weightExceeded}
+        />
+        <ConstraintBar
+          label="POWER"
+          value={stats.power}
+          max={stats.powerMax}
+          unit=" MW"
+          showOverLimit={powerExceeded}
+        />
+        <ConstraintBar
+          label="COOLING"
+          value={stats.heat}
+          max={stats.heatMax}
+          unit=" K"
+          showOverLimit={heatExceeded}
+        />
+
+        {/* Warnings Section */}
+        {warningCount > 0 && (
           <div
             style={{
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-danger)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              marginBottom: 'var(--frigate-space-2)',
-              fontWeight: 700,
+              marginTop: 'var(--frigate-space-3)',
+              paddingTop: 'var(--frigate-space-2)',
+              borderTop: '1px solid var(--frigate-border-base)',
             }}
           >
-            [WARNING] WARNINGS [{stats.warnings.length}]
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
-            {stats.warnings.map((warning, idx) => (
+            <div
+              style={{
+                fontSize: 'var(--frigate-font-tiny)',
+                color: 'var(--frigate-danger)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: 'var(--frigate-space-1)',
+                fontWeight: 700,
+              }}
+            >
+              WARNINGS
+            </div>
+            {stats.warnings!.map((warning, idx) => (
               <div
                 key={idx}
                 style={{
-                  fontSize: 'var(--frigate-font-small)',
+                  fontSize: 'var(--frigate-font-tiny)',
                   color: 'var(--frigate-danger)',
-                  paddingLeft: 'var(--frigate-space-2)',
+                  paddingLeft: 'var(--frigate-space-1)',
                   borderLeft: '2px solid var(--frigate-danger)',
+                  marginBottom: '2px',
                 }}
               >
                 {warning}
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Ship Profile Radar Chart */}
+        {stats.profile && (
+          <div
+            style={{
+              marginTop: 'var(--frigate-space-3)',
+              paddingTop: 'var(--frigate-space-2)',
+              borderTop: '1px solid var(--frigate-border-base)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 'var(--frigate-font-tiny)',
+                color: 'var(--frigate-text-secondary)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: 'var(--frigate-space-2)',
+                fontWeight: 700,
+                textAlign: 'center',
+              }}
+            >
+              CAPABILITY PROFILE
+            </div>
+            <RadarChart
+              axes={[
+                { id: 'D', label: 'Defense', value: stats.profile.defense },
+                { id: 'M', label: 'Mobility', value: stats.profile.mobility },
+                { id: 'O', label: 'Offense', value: stats.profile.offense },
+                { id: 'V', label: 'Versatility', value: stats.profile.versatility },
+                { id: 'U', label: 'Utility', value: stats.profile.utility },
+              ]}
+              size={180}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <ShipStatsPanelFooter warningCount={warningCount} />
+
+      {/* Register Schematic Button */}
+      <RegisterSchematicButton stats={stats} onClick={onRegister} />
     </div>
   );
 }

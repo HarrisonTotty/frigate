@@ -15,13 +15,6 @@ function normalizeSlot(slot: any): ModuleSlot {
   // Use typeof check because the API may only send one field, and we need to handle explicit false values
   normalized.hasVariants = typeof slot.hasVariants === 'boolean' ? slot.hasVariants : !!slot.has_varients;
   normalized.has_varients = normalized.hasVariants; // Keep for backward compat
-  console.log('[useCatalog] normalizeSlot:', {
-    id: slot.id,
-    name: slot.name,
-    'slot.hasVariants': slot.hasVariants,
-    'slot.has_varients': slot.has_varients,
-    'normalized.hasVariants': normalized.hasVariants,
-  });
   return normalized as ModuleSlot;
 }
 
@@ -69,16 +62,12 @@ export function useCatalog(apiBase = '') {
   }, [fetchJson, slotsById]);
 
   const getModuleVariants = useCallback(async (slotId: string) => {
-    console.log('[useCatalog] getModuleVariants called for slotId:', slotId);
     // If we already have variants for this slot in cache, return those
     const existing = Object.values(variantsById).filter(v => v.type === slotId);
-    console.log('[useCatalog] cached variants check:', { variantsById, existing });
     if (existing.length > 0) return existing;
 
-    // First fetch the list of variant IDs
-    console.log('[useCatalog] fetching variant list from API:', `/v1/catalog/modules/${slotId}`);
+    // Fetch the list of variant IDs
     const data = await fetchJson(`/v1/catalog/modules/${slotId}`);
-    console.log('[useCatalog] API response (variant IDs):', data);
 
     // data.variants is an array of variant IDs (strings), not variant objects
     // We need to fetch each variant's details
@@ -89,7 +78,6 @@ export function useCatalog(apiBase = '') {
         return normalizeVariant({ ...variantData, type: slotId });
       })
     );
-    console.log('[useCatalog] fetched variant details:', variantDetails);
 
     const byId: Record<string, ModuleVariant> = {};
     for (const v of variantDetails) byId[v.id] = v;

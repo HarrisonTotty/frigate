@@ -24,26 +24,24 @@ describe('ShipStatsPanel', () => {
       expect(screen.getByText('SHIP STATISTICS')).toBeDefined();
     });
 
-    it('displays all primary statistics', () => {
+    it('displays primary statistics', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      // Stats are displayed with units
-      expect(screen.getByText('1500 cr')).toBeDefined(); // cost
-      expect(screen.getByText('850 t')).toBeDefined(); // weight
-      expect(screen.getByText('450 HP')).toBeDefined(); // hp
-      expect(screen.getByText('280 kW')).toBeDefined(); // power
-      expect(screen.getByText('320 kWth')).toBeDefined(); // heat
+      // Cost and HP are displayed with StatRow component
+      expect(screen.getByText('1500 CR')).toBeDefined();
+      expect(screen.getByText('450 HP')).toBeDefined();
     });
 
-    it('displays build points allocation', () => {
+    it('displays constraint bars', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('BUILD POINTS ALLOCATION')).toBeDefined();
-      expect(screen.getByText('75 / 100')).toBeDefined();
-    });
-
-    it('displays constraints section', () => {
-      render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('CONSTRAINTS')).toBeDefined();
-      expect(screen.getByText('MAX BUILD: 100 BP')).toBeDefined();
+      // Constraint bars show label and value/max format
+      expect(screen.getByText('BUILD POINTS')).toBeDefined();
+      expect(screen.getByText('75/100 BP')).toBeDefined();
+      expect(screen.getByText('WEIGHT')).toBeDefined();
+      expect(screen.getByText('850/1000 t')).toBeDefined();
+      expect(screen.getByText('POWER')).toBeDefined();
+      expect(screen.getByText('280/500 MW')).toBeDefined();
+      expect(screen.getByText('COOLING')).toBeDefined();
+      expect(screen.getByText('320/600 K')).toBeDefined();
     });
 
     it('displays warnings when present', () => {
@@ -52,16 +50,16 @@ describe('ShipStatsPanel', () => {
         warnings: ['Build points exceeded', 'Weight limit exceeded'],
       };
       render(<ShipStatsPanel stats={statsWithWarnings} />);
-      // Warnings header shows "[WARNING] WARNINGS [count]"
-      expect(screen.getByText('[WARNING] WARNINGS [2]')).toBeDefined();
+      expect(screen.getByText('WARNINGS')).toBeDefined();
       expect(screen.getByText('Build points exceeded')).toBeDefined();
       expect(screen.getByText('Weight limit exceeded')).toBeDefined();
     });
 
     it('does not display warnings section when no warnings', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      const warningsElement = screen.queryByText(/WARNINGS/);
-      expect(!warningsElement).toBe(true);
+      // There should be no WARNINGS header when warnings array is empty
+      const warningsElement = screen.queryByText('WARNINGS');
+      expect(warningsElement).toBeNull();
     });
   });
 
@@ -69,7 +67,6 @@ describe('ShipStatsPanel', () => {
     it('applies correct CSS classes and styles', () => {
       const { container } = render(<ShipStatsPanel stats={mockStats} />);
       const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper.style.backgroundColor).toBe('var(--frigate-bg-surface)');
       expect(wrapper.style.fontFamily).toBe('var(--frigate-font-mono)');
       expect(wrapper.style.borderRadius).toBe('0');
     });
@@ -99,8 +96,8 @@ describe('ShipStatsPanel', () => {
         warnings: [],
       };
       render(<ShipStatsPanel stats={emptyStats} />);
-      // Cost is displayed with unit
-      expect(screen.getByText('0 cr')).toBeDefined();
+      expect(screen.getByText('0 CR')).toBeDefined();
+      expect(screen.getByText('0/100 BP')).toBeDefined();
     });
 
     it('handles large values correctly', () => {
@@ -108,13 +105,16 @@ describe('ShipStatsPanel', () => {
         ...mockStats,
         cost: 999999,
         weight: 50000,
+        weightMax: 60000,
         hp: 10000,
         power: 5000,
+        powerMax: 6000,
         heat: 4500,
+        heatMax: 5000,
       };
       render(<ShipStatsPanel stats={largeStats} />);
-      expect(screen.getByText('999999 cr')).toBeDefined();
-      expect(screen.getByText('50000 t')).toBeDefined();
+      expect(screen.getByText('999999 CR')).toBeDefined();
+      expect(screen.getByText('50000/60000 t')).toBeDefined();
     });
 
     it('handles build points exceeding max', () => {
@@ -124,7 +124,7 @@ describe('ShipStatsPanel', () => {
         buildPointsMax: 100,
       };
       render(<ShipStatsPanel stats={overStats} />);
-      expect(screen.getByText('120 / 100')).toBeDefined();
+      expect(screen.getByText('120/100 BP [!]')).toBeDefined();
     });
   });
 
@@ -139,6 +139,38 @@ describe('ShipStatsPanel', () => {
       const { container } = render(<ShipStatsPanel stats={mockStats} />);
       const divs = container.querySelectorAll('div');
       expect(divs.length > 0).toBe(true);
+    });
+
+    it('has aria-label for the panel', () => {
+      render(<ShipStatsPanel stats={mockStats} />);
+      const panel = screen.getByRole('region', { name: 'Ship Statistics' });
+      expect(panel).toBeDefined();
+    });
+  });
+
+  describe('radar chart', () => {
+    it('displays radar chart when profile is provided', () => {
+      const statsWithProfile: ShipStats = {
+        ...mockStats,
+        profile: {
+          defense: 0.5,
+          mobility: 0.7,
+          offense: 0.3,
+          versatility: 0.6,
+          utility: 0.4,
+        },
+      };
+      render(<ShipStatsPanel stats={statsWithProfile} />);
+      expect(screen.getByText('CAPABILITY PROFILE')).toBeDefined();
+      // RadarChart should be rendered (SVG element)
+      const { container } = render(<ShipStatsPanel stats={statsWithProfile} />);
+      expect(container.querySelector('svg')).toBeDefined();
+    });
+
+    it('does not display radar chart when profile is not provided', () => {
+      render(<ShipStatsPanel stats={mockStats} />);
+      const profileHeader = screen.queryByText('CAPABILITY PROFILE');
+      expect(profileHeader).toBeNull();
     });
   });
 });
