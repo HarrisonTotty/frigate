@@ -6,6 +6,9 @@ import { ShipStatsPanel, type ShipStats } from '../ShipStatsPanel';
 describe('ShipStatsPanel', () => {
   const mockStats: ShipStats = {
     cost: 1500,
+    creditCost: 150000,
+    creditBudget: 1000000,
+    shipClassCost: 50000,
     weight: 850,
     weightMax: 1000,
     hp: 450,
@@ -26,8 +29,8 @@ describe('ShipStatsPanel', () => {
 
     it('displays primary statistics', () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      // Cost and HP are displayed with StatRow component
-      expect(screen.getByText('1500 CR')).toBeDefined();
+      // Cost is displayed with formatted creditCost, HP is displayed with StatRow
+      expect(screen.getByText('150,000 CR')).toBeDefined();
       expect(screen.getByText('450 HP')).toBeDefined();
     });
 
@@ -84,6 +87,9 @@ describe('ShipStatsPanel', () => {
     it('handles zero values correctly', () => {
       const emptyStats: ShipStats = {
         cost: 0,
+        creditCost: 0,
+        creditBudget: 1000000,
+        shipClassCost: 0,
         weight: 0,
         weightMax: 1000,
         hp: 0,
@@ -100,10 +106,10 @@ describe('ShipStatsPanel', () => {
       expect(screen.getByText('0/100 BP')).toBeDefined();
     });
 
-    it('handles large values correctly', () => {
+    it('handles large credit values correctly', () => {
       const largeStats: ShipStats = {
         ...mockStats,
-        cost: 999999,
+        creditCost: 999999,
         weight: 50000,
         weightMax: 60000,
         hp: 10000,
@@ -113,8 +119,28 @@ describe('ShipStatsPanel', () => {
         heatMax: 5000,
       };
       render(<ShipStatsPanel stats={largeStats} />);
-      expect(screen.getByText('999999 CR')).toBeDefined();
+      // creditCost is formatted with thousand separators
+      expect(screen.getByText('999,999 CR')).toBeDefined();
+      // Weight doesn't use thousand separators
       expect(screen.getByText('50000/60000 t')).toBeDefined();
+    });
+
+    it('displays credit constraint bar when budget is set', () => {
+      render(<ShipStatsPanel stats={mockStats} />);
+      // Credit constraint bar should be shown when creditBudget > 0
+      expect(screen.getByText('CREDITS')).toBeDefined();
+      expect(screen.getByText('150,000/1,000,000 CR')).toBeDefined();
+    });
+
+    it('shows credit warning when cost exceeds budget', () => {
+      const overBudgetStats: ShipStats = {
+        ...mockStats,
+        creditCost: 1500000,
+        creditBudget: 1000000,
+      };
+      render(<ShipStatsPanel stats={overBudgetStats} />);
+      // Over-limit shows with [!] indicator
+      expect(screen.getByText('1,500,000/1,000,000 CR [!]')).toBeDefined();
     });
 
     it('handles build points exceeding max', () => {

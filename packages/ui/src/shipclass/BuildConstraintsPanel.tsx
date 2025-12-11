@@ -21,8 +21,20 @@ export interface BuildConstraintsPanelProps {
   currentModules?: number;
   /** Current build points used (optional, for showing usage bars) */
   currentBuildPoints?: number;
+  /** Ship class credit cost (optional, for ship creation) */
+  shipClassCost?: number;
+  /** Team's current credit balance (optional, for ship creation) */
+  teamCredits?: number;
   /** Additional CSS class name */
   className?: string;
+}
+
+/**
+ * Format credit values with thousand separators
+ */
+function formatCredits(value: number | undefined): string {
+  if (value === undefined || value === null) return '---';
+  return value.toLocaleString();
 }
 
 /**
@@ -39,6 +51,8 @@ export function BuildConstraintsPanel({
   currentWeight,
   currentModules,
   currentBuildPoints,
+  shipClassCost,
+  teamCredits,
   className = '',
 }: BuildConstraintsPanelProps): React.ReactElement {
   // Calculate percentages for usage bars
@@ -268,6 +282,71 @@ export function BuildConstraintsPanel({
             </>
           )}
         </div>
+
+        {/* Credits (shown when shipClassCost or teamCredits is provided) */}
+        {(shipClassCost !== undefined || teamCredits !== undefined) && (
+          <div style={{ marginTop: 'var(--frigate-space-3)', paddingTop: 'var(--frigate-space-3)', borderTop: '1px solid var(--frigate-border-base)' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 'var(--frigate-space-2)',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: 'var(--frigate-font-mono)',
+                  fontSize: 'var(--frigate-font-small)',
+                  color: 'var(--frigate-text-secondary)',
+                }}
+              >
+                SHIP COST:
+              </div>
+              <div
+                style={{
+                  fontFamily: 'var(--frigate-font-mono)',
+                  fontSize: 'var(--frigate-font-small)',
+                  color: 'var(--frigate-text-primary)',
+                  fontWeight: 600,
+                }}
+              >
+                {formatCredits(shipClassCost)} CR
+              </div>
+            </div>
+            {teamCredits !== undefined && (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--frigate-font-mono)',
+                    fontSize: 'var(--frigate-font-small)',
+                    color: 'var(--frigate-text-secondary)',
+                  }}
+                >
+                  TEAM BALANCE:
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--frigate-font-mono)',
+                    fontSize: 'var(--frigate-font-small)',
+                    color: shipClassCost !== undefined && teamCredits < shipClassCost
+                      ? 'var(--frigate-danger)'
+                      : 'var(--frigate-success)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatCredits(teamCredits)} CR
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

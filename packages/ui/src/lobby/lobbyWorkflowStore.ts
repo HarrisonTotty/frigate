@@ -11,7 +11,7 @@ import { persist } from 'zustand/middleware';
 /**
  * Workflow steps
  */
-export type WorkflowStep = 'player' | 'team' | 'ship' | 'design';
+export type WorkflowStep = 'player' | 'team' | 'ship' | 'design' | 'inventory';
 
 /**
  * Lobby workflow state
@@ -28,7 +28,10 @@ export interface LobbyWorkflowState {
   
   /** Selected blueprint/ship ID */
   selectedBlueprintId: string | null;
-  
+
+  /** Registered schematic ID (after design step completion) */
+  registeredSchematicId: string | null;
+
   /** Whether there are unsaved changes in the current step */
   hasUnsavedChanges: boolean;
   
@@ -40,7 +43,10 @@ export interface LobbyWorkflowState {
   
   /** Set the selected blueprint and advance to ship design */
   setBlueprint: (blueprintId: string) => void;
-  
+
+  /** Register schematic and advance to inventory step */
+  registerSchematic: (schematicId: string) => void;
+
   /** Go back to the previous step */
   goBack: () => void;
   
@@ -57,6 +63,7 @@ export interface LobbyWorkflowState {
   clearPlayer: () => void;
   clearTeam: () => void;
   clearBlueprint: () => void;
+  clearSchematic: () => void;
   
   /** Validate persisted state against server (auto-resume) */
   validatePersistedState: (apiUrl: string) => Promise<boolean>;
@@ -76,6 +83,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
       selectedPlayerId: null,
       selectedTeamId: null,
       selectedBlueprintId: null,
+      registeredSchematicId: null,
       hasUnsavedChanges: false,
 
       // Set player and advance
@@ -108,10 +116,19 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
         });
       },
 
+      // Register schematic and advance to inventory
+      registerSchematic: (schematicId: string) => {
+        set({
+          registeredSchematicId: schematicId,
+          currentStep: 'inventory',
+          hasUnsavedChanges: false,
+        });
+      },
+
       // Go back to previous step
       goBack: () => {
-        const { currentStep, selectedPlayerId, selectedTeamId } = get();
-        
+        const { currentStep } = get();
+
         switch (currentStep) {
           case 'team':
             set({ currentStep: 'player', hasUnsavedChanges: false });
@@ -122,6 +139,9 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
           case 'design':
             set({ currentStep: 'ship', hasUnsavedChanges: false });
             break;
+          case 'inventory':
+            set({ currentStep: 'design', hasUnsavedChanges: false });
+            break;
           case 'player':
             // Already at first step
             break;
@@ -130,14 +150,14 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
 
       // Navigate to specific step (with validation)
       goToStep: (step: WorkflowStep): boolean => {
-        const { selectedPlayerId, selectedTeamId, selectedBlueprintId } = get();
-        
+        const { selectedPlayerId, selectedTeamId, selectedBlueprintId, registeredSchematicId } = get();
+
         // Validate prerequisites
         switch (step) {
           case 'player':
             set({ currentStep: 'player', hasUnsavedChanges: false });
             return true;
-            
+
           case 'team':
             if (!selectedPlayerId) {
               console.warn('Cannot navigate to team selection without a player');
@@ -145,7 +165,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
             }
             set({ currentStep: 'team', hasUnsavedChanges: false });
             return true;
-            
+
           case 'ship':
             if (!selectedPlayerId || !selectedTeamId) {
               console.warn('Cannot navigate to ship selection without player and team');
@@ -153,7 +173,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
             }
             set({ currentStep: 'ship', hasUnsavedChanges: false });
             return true;
-            
+
           case 'design':
             if (!selectedPlayerId || !selectedTeamId || !selectedBlueprintId) {
               console.warn('Cannot navigate to ship design without player, team, and blueprint');
@@ -161,7 +181,15 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
             }
             set({ currentStep: 'design', hasUnsavedChanges: false });
             return true;
-            
+
+          case 'inventory':
+            if (!selectedPlayerId || !selectedTeamId || !selectedBlueprintId || !registeredSchematicId) {
+              console.warn('Cannot navigate to inventory without player, team, blueprint, and registered schematic');
+              return false;
+            }
+            set({ currentStep: 'inventory', hasUnsavedChanges: false });
+            return true;
+
           default:
             return false;
         }
@@ -179,6 +207,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
           selectedPlayerId: null,
           selectedTeamId: null,
           selectedBlueprintId: null,
+          registeredSchematicId: null,
           hasUnsavedChanges: false,
         });
       },
@@ -189,6 +218,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
           selectedPlayerId: null,
           selectedTeamId: null,
           selectedBlueprintId: null,
+          registeredSchematicId: null,
           currentStep: 'player',
           hasUnsavedChanges: false,
         });
@@ -199,16 +229,27 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
         set({
           selectedTeamId: null,
           selectedBlueprintId: null,
+          registeredSchematicId: null,
           currentStep: 'team',
           hasUnsavedChanges: false,
         });
       },
 
-      // Clear blueprint
+      // Clear blueprint (and dependent selections)
       clearBlueprint: () => {
         set({
           selectedBlueprintId: null,
+          registeredSchematicId: null,
           currentStep: 'ship',
+          hasUnsavedChanges: false,
+        });
+      },
+
+      // Clear registered schematic
+      clearSchematic: () => {
+        set({
+          registeredSchematicId: null,
+          currentStep: 'design',
           hasUnsavedChanges: false,
         });
       },
@@ -284,6 +325,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
         selectedPlayerId: state.selectedPlayerId,
         selectedTeamId: state.selectedTeamId,
         selectedBlueprintId: state.selectedBlueprintId,
+        registeredSchematicId: state.registeredSchematicId,
         currentStep: state.currentStep,
       }),
     }

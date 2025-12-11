@@ -30,8 +30,14 @@ export interface ShipProfile {
  * Represents aggregated statistics for a ship blueprint.
  */
 export interface ShipStats {
-  /** Total construction cost in credits */
+  /** Total construction cost in credits (legacy field, use creditCost instead) */
   cost: number;
+  /** Total credit cost of ship design (ship class + all modules) */
+  creditCost: number;
+  /** Team's available credit budget */
+  creditBudget: number;
+  /** Credit cost of ship class alone (for breakdown display) */
+  shipClassCost: number;
   /** Total ship weight in metric tons */
   weight: number;
   /** Maximum weight allowed by ship class (in metric tons) */
@@ -278,16 +284,20 @@ function ConstraintBar({
   max,
   unit,
   showOverLimit = false,
+  formatValue,
 }: {
   label: string;
   value: number;
   max: number;
   unit: string;
   showOverLimit?: boolean;
+  /** Optional formatter for large numbers (e.g., credits) */
+  formatValue?: (v: number) => string;
 }) {
   const percent = max > 0 ? (value / max) * 100 : 0;
   const exceeded = value > max && max > 0;
   const status = exceeded ? 'danger' : percent > 90 ? 'warning' : 'primary';
+  const fmt = formatValue ?? ((v: number) => String(v));
 
   return (
     <div style={{ marginBottom: 'var(--frigate-space-2)' }}>
@@ -316,7 +326,7 @@ function ConstraintBar({
             fontWeight: exceeded ? 700 : 400,
           }}
         >
-          {value}/{max > 0 ? max : '—'}{unit}
+          {fmt(value)}/{max > 0 ? fmt(max) : '—'}{unit}
           {exceeded && showOverLimit && ' [!]'}
         </span>
       </div>
@@ -346,6 +356,10 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
   const powerExceeded = stats.power > stats.powerMax && stats.powerMax > 0;
   const heatExceeded = stats.heat > stats.heatMax && stats.heatMax > 0;
   const bpExceeded = stats.buildPointsUsed > stats.buildPointsMax;
+  const creditsExceeded = stats.creditBudget > 0 && stats.creditCost > stats.creditBudget;
+
+  // Format credit values with thousand separators
+  const formatCredits = (value: number): string => value.toLocaleString();
 
   return (
     <div
@@ -379,11 +393,26 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
       >
         {/* Primary Stats */}
         <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
-          <StatRow label="COST" value={stats.cost} unit=" CR" />
+          <StatRow
+            label="COST"
+            value={formatCredits(stats.creditCost)}
+            unit=" CR"
+            warning={creditsExceeded}
+          />
           <StatRow label="HULL" value={stats.hp} unit=" HP" />
         </div>
 
         {/* Constraint Bars */}
+        {stats.creditBudget > 0 && (
+          <ConstraintBar
+            label="CREDITS"
+            value={stats.creditCost}
+            max={stats.creditBudget}
+            unit=" CR"
+            showOverLimit={creditsExceeded}
+            formatValue={formatCredits}
+          />
+        )}
         <ConstraintBar
           label="BUILD POINTS"
           value={stats.buildPointsUsed}

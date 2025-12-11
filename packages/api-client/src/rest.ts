@@ -69,7 +69,8 @@ function mapTeam(payload: unknown): Team {
     id: ensureString(payload.id),
     name: ensureString(payload.name),
     faction: ensureString(payload.faction),
-    members: mapArray(payload.members, (value) => ensureString(value))
+    members: mapArray(payload.members, (value) => ensureString(value)),
+    credits: typeof payload.credits === 'number' ? payload.credits : 0
   };
 }
 

@@ -52,6 +52,7 @@ const mockTeams = [
     faction: 'Terran Federation',
     members: ['p1', 'p5', 'p8', 'p12', 'p15', 'p18', 'p22', 'p28'],
     status: 'recruiting' as const,
+    credits: 500000,
   },
   {
     id: 't2',
@@ -59,6 +60,7 @@ const mockTeams = [
     faction: 'Belt Alliance',
     members: ['p2', 'p9', 'p14', 'p19', 'p25'],
     status: 'active' as const,
+    credits: 250000,
   },
   {
     id: 't3',
@@ -66,6 +68,7 @@ const mockTeams = [
     faction: 'Mars Coalition',
     members: ['p3', 'p6', 'p10', 'p13', 'p16', 'p20', 'p23', 'p26', 'p29', 'p31', 'p34', 'p37'],
     status: 'in-mission' as const,
+    credits: 1000000,
   },
 ];
 

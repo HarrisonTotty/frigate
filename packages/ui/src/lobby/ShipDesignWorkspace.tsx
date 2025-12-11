@@ -163,11 +163,12 @@ export function ShipDesignWorkspace({
   apiUrl,
   blueprintId,
   className = '',
+  team,
   onBack,
 }: ShipDesignWorkspaceProps) {
   const { blueprint, addInstance, removeInstance, setVariant, ensureOpen } = useUiBlueprint({ blueprintId, apiBase: apiUrl });
   const { slotsList, slotsById, variantsById, getModuleSlots, getModuleVariant } = useCatalog(apiUrl);
-  const { goBack } = useLobbyWorkflowStore();
+  const { goBack, registerSchematic } = useLobbyWorkflowStore();
   
   // Fetch the full blueprint from API to get shipClass
   const [blueprintData, setBlueprintData] = useState<{ id: string; name: string; class: string; team_id: string } | null>(null);
@@ -220,6 +221,15 @@ export function ShipDesignWorkspace({
   const handleBackClick = () => {
     goBack();
     if (onBack) onBack();
+  };
+
+  // Handle register schematic - transition to inventory workspace
+  const handleRegisterSchematic = () => {
+    // Use the blueprint ID as the schematic ID for now
+    // In a full implementation, this might create a new schematic record on the server
+    console.log('[ShipDesignWorkspace] handleRegisterSchematic called with blueprintId:', blueprintId);
+    registerSchematic(blueprintId);
+    console.log('[ShipDesignWorkspace] registerSchematic completed');
   };
 
   // Blueprint instances are the source of truth - convert to mutable array
@@ -293,8 +303,17 @@ export function ShipDesignWorkspace({
       }
     };
 
+    // Get ship class credit cost
+    const shipClassCreditCost = shipClass?.cost ?? 0;
+
+    // Get team credit budget (passed via team prop, default to 0 if not available)
+    const teamCredits = team?.credits ?? 0;
+
     const s: ShipStats = {
-      cost: 0,
+      cost: 0,  // Legacy field
+      creditCost: shipClassCreditCost,  // Start with ship class cost
+      creditBudget: teamCredits,
+      shipClassCost: shipClassCreditCost,
       weight: 0,
       weightMax: shipClass?.max_weight ?? 0,
       hp: 0,
@@ -325,6 +344,8 @@ export function ShipDesignWorkspace({
 
         // Add base stats from slot definition
         s.buildPointsUsed += typeof slot.base_cost === 'number' ? slot.base_cost : 0;
+        // Add slot credit cost
+        s.creditCost += typeof slot.credit_cost === 'number' ? slot.credit_cost : 0;
         s.weight += typeof slot.base_weight === 'number' ? slot.base_weight : 0;
         s.hp += typeof slot.base_hp === 'number' ? slot.base_hp : 0;
         // Weapons only consume power when firing, so exclude from baseline power calculation
@@ -340,6 +361,10 @@ export function ShipDesignWorkspace({
           // Add variant cost to build points
           if (typeof variant.cost === 'number') {
             s.buildPointsUsed += variant.cost;
+          }
+          // Add variant credit cost
+          if (typeof variant.credit_cost === 'number') {
+            s.creditCost += variant.credit_cost;
           }
 
           // Add variant additional stats
@@ -390,6 +415,10 @@ export function ShipDesignWorkspace({
     if (s.buildPointsUsed > s.buildPointsMax) {
       s.warnings?.push('Build points exceeded');
     }
+    // Credit constraint warning
+    if (s.creditBudget > 0 && s.creditCost > s.creditBudget) {
+      s.warnings?.push('Insufficient credits');
+    }
     // Weight constraint warning
     if (s.weightMax > 0 && s.weight > s.weightMax) {
       s.warnings?.push('Weight limit exceeded');
@@ -415,7 +444,7 @@ export function ShipDesignWorkspace({
     );
 
     return s;
-  }, [instances, moduleSlotsById, variantsById, slotsList, shipClass, shipClassError]);
+  }, [instances, moduleSlotsById, variantsById, slotsList, shipClass, shipClassError, team]);
 
   return (
     <div
@@ -555,7 +584,7 @@ export function ShipDesignWorkspace({
 
         {/* Right Column: Ship Statistics Panel */}
         <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-          <ShipStatsPanel stats={stats} />
+          <ShipStatsPanel stats={stats} onRegister={handleRegisterSchematic} />
         </div>
       </div>
 

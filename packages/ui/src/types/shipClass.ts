@@ -117,6 +117,8 @@ export interface ShipClassSummary {
   max_modules: number;
   /** Build points required */
   build_points: number;
+  /** Credit cost to construct this ship class */
+  cost?: number;
 }
 
 /**
@@ -145,6 +147,8 @@ export interface ShipClassDetails {
   base_shields: number;
   /** Build points required to construct this ship class */
   build_points: number;
+  /** Credit cost to construct this ship class */
+  cost?: number;
   /** Maximum power capacity in kilowatts (optional - may not be set for all ship classes) */
   max_power?: number;
   /** Maximum heat dissipation capacity in kilowatts thermal (optional - may not be set for all ship classes) */

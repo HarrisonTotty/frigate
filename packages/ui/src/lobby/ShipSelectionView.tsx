@@ -199,6 +199,7 @@ export function ShipSelectionView({
       {/* Enhanced Ship Creation Modal - Phase 4.12.4 */}
       <EnhancedShipCreationModal
         factionId={team.faction}
+        team={{ id: team.id, credits: team.credits ?? 0 }}
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreate={handleCreateShip}

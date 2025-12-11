@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { 
-  FrigateShell, 
-  MainMenu, 
+import {
+  FrigateShell,
+  MainMenu,
   Settings,
   PlayerSelectionView,
   TeamSelectionView,
   ShipSelectionView,
   ShipDesignWorkspace,
+  InventoryWorkspace,
   AlertProvider,
   AlertManager,
   checkServerHealth,
@@ -17,6 +18,8 @@ import {
   useLobbyWorkflowStore,
 } from "@frigate/ui";
 import { invoke } from "@tauri-apps/api/core";
+import { useAutoSetup } from "./hooks/useAutoSetup";
+import { AutoSetupOverlay } from "./components/AutoSetupOverlay";
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -27,6 +30,39 @@ function App() {
   const [recentServers, setRecentServers] = useState<string[]>(getRecentServers());
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState<string>('');
+
+  // Auto-setup from CLI arguments
+  const {
+    cliArgs,
+    state: autoSetupState,
+    hasAutoSetup,
+    continueManually,
+    serverUrl: autoSetupServerUrl,
+  } = useAutoSetup({
+    onConnect: (url) => {
+      console.log('[App] Auto-setup connected to:', url);
+      setServerUrl(url);
+      setConnectionStatus('connected');
+      addRecentServer(url);
+      setRecentServers(getRecentServers());
+    },
+    onComplete: () => {
+      console.log('[App] Auto-setup complete');
+      setIsConnected(true);
+    },
+    onError: (error) => {
+      console.error('[App] Auto-setup error:', error);
+    },
+  });
+
+  // Handle continue manually - set connected state with server URL from auto-setup
+  const handleContinueManually = useCallback(() => {
+    continueManually();
+    if (autoSetupServerUrl) {
+      setServerUrl(autoSetupServerUrl);
+      setIsConnected(true);
+    }
+  }, [continueManually, autoSetupServerUrl]);
 
   const handleConnect = useCallback(async (url: string) => {
     const validation = validateServerUrl(url);
@@ -80,6 +116,17 @@ function App() {
       window.close();
     }
   }, []);
+
+  // Show auto-setup overlay during CLI-driven setup
+  if (hasAutoSetup && autoSetupState.step !== 'idle' && autoSetupState.step !== 'complete') {
+    return (
+      <AutoSetupOverlay
+        state={autoSetupState}
+        cliArgs={cliArgs}
+        onContinueManually={autoSetupState.step === 'error' ? handleContinueManually : undefined}
+      />
+    );
+  }
 
   // Show main menu if not connected
   if (!isConnected) {
@@ -258,14 +305,14 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
     case 'design': {
       const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
       const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
-      
+
       // Show loading state while data is being fetched
       if (loadingPlayers || loadingTeams || !currentPlayer || !currentTeam || !selectedBlueprintId) {
         return (
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             height: '100vh',
             fontFamily: 'var(--frigate-font-mono)',
             color: 'var(--frigate-text-secondary)',
@@ -274,7 +321,7 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           </div>
         );
       }
-      
+
       return (
         <ShipDesignWorkspace
           apiUrl={apiUrl}
@@ -283,6 +330,43 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           blueprintId={selectedBlueprintId}
           onBack={() => {}}
           onDisconnect={handleDisconnect}
+        />
+      );
+    }
+
+    case 'inventory': {
+      const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
+      const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
+
+      // Show loading state while data is being fetched
+      if (loadingPlayers || loadingTeams || !currentPlayer || !currentTeam || !selectedBlueprintId) {
+        return (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh',
+            fontFamily: 'var(--frigate-font-mono)',
+            color: 'var(--frigate-text-secondary)',
+          }}>
+            LOADING INVENTORY WORKSPACE...
+          </div>
+        );
+      }
+
+      return (
+        <InventoryWorkspace
+          apiUrl={apiUrl}
+          player={currentPlayer}
+          team={currentTeam}
+          blueprintId={selectedBlueprintId}
+          availableWeight={100} // TODO: Calculate from ship design
+          installedModules={[]} // TODO: Get from blueprint
+          onBack={() => {}}
+          onDisconnect={handleDisconnect}
+          onRegisterCargo={() => {
+            console.log('Cargo registered!');
+          }}
         />
       );
     }

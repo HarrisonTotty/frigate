@@ -64,7 +64,13 @@ export class HyperionApiClient {
 export type { FetchImplementation } from "./http";
 export { HttpClient, ApiError } from "./http";
 export { RestClient } from "./rest";
-export { CatalogResource } from "./catalog";
+export {
+  CatalogResource,
+  fetchAmmoCategories,
+  fetchAmmoInCategory,
+  fetchAmmoDetails,
+  fetchAllAmmunition,
+} from "./catalog";
 export { HyperionGraphQLClient, GraphQLApiError } from "./graphql";
 export { WebSocketManager } from "./websocket";
 export * from "./types";

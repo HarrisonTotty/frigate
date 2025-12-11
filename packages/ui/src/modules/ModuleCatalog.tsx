@@ -90,6 +90,14 @@ function useFocusTrap(isOpen: boolean, onClose?: () => void) {
   return { containerRef, handleKeyDown };
 }
 
+/**
+ * Format credit values with thousand separators
+ */
+function formatCredits(value: number | undefined): string {
+  if (value === undefined || value === null || value === 0) return '---';
+  return value.toLocaleString();
+}
+
 export interface ModuleCatalogProps {
   isOpen: boolean;
   slotType?: ModuleSlot | null;
@@ -367,6 +375,11 @@ export function ModuleCatalog({
                 const variantCost = (slotType?.base_cost ?? 0) + (v.cost ?? 0);
                 const wouldExceedBudget = buildPointsUsed + variantCost > maxBuildPoints;
 
+                // Calculate credit cost (slot credit_cost + variant credit_cost)
+                const slotCreditCost = typeof slotType?.credit_cost === 'number' ? slotType.credit_cost : 0;
+                const variantCreditCost = typeof v.credit_cost === 'number' ? v.credit_cost : 0;
+                const totalCreditCost = slotCreditCost + variantCreditCost;
+
                 return (
                 <div
                   key={v.id}
@@ -418,6 +431,11 @@ export function ModuleCatalog({
                       marginTop: 'var(--frigate-space-1)',
                     }}>
                       COST: {variantCost} BP
+                      {totalCreditCost > 0 && (
+                        <span style={{ marginLeft: '8px', color: 'var(--frigate-text-muted)' }}>
+                          | {formatCredits(totalCreditCost)} CR
+                        </span>
+                      )}
                     </div>
                   </div>
                   <Button
@@ -478,10 +496,18 @@ export function ModuleCatalog({
                   const currentVariant = currentVariantId ? remoteVariants?.find(v => v.id === currentVariantId) : null;
                   if (!selectedVariant) return null;
 
-                  // Calculate cost delta from current variant
+                  // Calculate cost delta from current variant (BP)
                   const selectedCost = (slotType?.base_cost ?? 0) + (selectedVariant.cost ?? 0);
                   const currentCost = currentVariant ? (slotType?.base_cost ?? 0) + (currentVariant.cost ?? 0) : 0;
                   const costDelta = currentVariant ? selectedCost - currentCost : null;
+
+                  // Calculate credit cost delta from current variant
+                  const slotCreditCost = typeof slotType?.credit_cost === 'number' ? slotType.credit_cost : 0;
+                  const selectedCreditCost = slotCreditCost + (typeof selectedVariant.credit_cost === 'number' ? selectedVariant.credit_cost : 0);
+                  const currentCreditCost = currentVariant
+                    ? slotCreditCost + (typeof currentVariant.credit_cost === 'number' ? currentVariant.credit_cost : 0)
+                    : 0;
+                  const creditCostDelta = currentVariant ? selectedCreditCost - currentCreditCost : null;
 
                   // Type assertion for extended variant properties
                   const v = selectedVariant as ModuleVariant & {
@@ -530,7 +556,7 @@ export function ModuleCatalog({
                       {/* Cost with Delta */}
                       <div style={{ marginBottom: 'var(--frigate-space-2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <div style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)', textTransform: 'uppercase' }}>COST</div>
+                          <div style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)', textTransform: 'uppercase' }}>BUILD COST</div>
                           <div style={{ fontWeight: 700 }}>{selectedCost} BP</div>
                         </div>
                         {costDelta !== null && costDelta !== 0 && (
@@ -543,6 +569,25 @@ export function ModuleCatalog({
                           </div>
                         )}
                       </div>
+
+                      {/* Credit Cost with Delta */}
+                      {selectedCreditCost > 0 && (
+                        <div style={{ marginBottom: 'var(--frigate-space-2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-tiny)', textTransform: 'uppercase' }}>CREDIT COST</div>
+                            <div style={{ fontWeight: 700 }}>{formatCredits(selectedCreditCost)} CR</div>
+                          </div>
+                          {creditCostDelta !== null && creditCostDelta !== 0 && (
+                            <div style={{
+                              color: creditCostDelta > 0 ? 'var(--frigate-warning)' : 'var(--frigate-success)',
+                              fontWeight: 700,
+                              fontSize: 'var(--frigate-font-small)',
+                            }}>
+                              {creditCostDelta > 0 ? '+' : ''}{formatCredits(Math.abs(creditCostDelta))} CR
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Stats Grid */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--frigate-space-2)', marginBottom: 'var(--frigate-space-2)' }}>
@@ -577,7 +622,7 @@ export function ModuleCatalog({
                         // Common properties to exclude from module-specific display
                         const commonProps = new Set([
                           'id', 'type', 'name', 'model', 'manufacturer', 'desc', 'description', 'lore',
-                          'cost', 'additional_hp', 'additional_power_consumption', 'additional_heat_generation',
+                          'cost', 'credit_cost', 'additional_hp', 'additional_power_consumption', 'additional_heat_generation',
                           'additional_weight', 'stats'
                         ]);
 

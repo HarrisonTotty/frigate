@@ -22,6 +22,8 @@ export interface Team {
   readonly name: string;
   readonly faction: string;
   readonly members: readonly string[];
+  /** Team's current credit balance */
+  readonly credits: number;
 }
 
 export interface BlueprintModule {
@@ -350,7 +352,10 @@ export interface ModuleSlot {
   
   /** Base cost in build points to add this slot to a ship */
   readonly base_cost: number;
-  
+
+  /** Credit cost to add this slot to a ship */
+  readonly credit_cost?: number;
+
   /** Maximum number of slots of this type allowed on a ship */
   readonly max_slots: number;
   
@@ -400,7 +405,10 @@ export interface ModuleVariant {
   
   /** Variant cost in build points (added to slot base_cost) */
   readonly cost: number;
-  
+
+  /** Credit cost of this variant (added to slot credit_cost) */
+  readonly credit_cost?: number;
+
   /** Additional HP beyond slot base_hp */
   readonly additional_hp: number;
   
@@ -492,10 +500,140 @@ export interface AddModuleRequest {
 
 /**
  * Request to update a module variant selection
- * 
+ *
  * Used with PATCH /v1/blueprints/<id>/modules/<module_id>
  */
 export interface UpdateModuleVariantRequest {
   /** Variant ID to configure for this module instance */
   readonly variant_id: string;
+}
+
+// ============================================================================
+// Ammunition & Inventory Types
+// ============================================================================
+
+/**
+ * Ammunition category identifiers
+ *
+ * Categories correspond to weapon system types:
+ * - kinetic: Projectile weapons (railguns, cannons) - requires ammo_type + ammo_size match
+ * - missiles: Guided missiles - any missile works if launcher installed
+ * - torpedos: Heavy torpedoes - any torpedo works if tube installed
+ */
+export type AmmoCategory = 'kinetic' | 'missiles' | 'torpedos';
+
+/**
+ * Ammunition configuration from catalog API
+ *
+ * Defined in HYPERION `data/ammo/<category>/*.yaml` files.
+ * Fetched via GET /v1/catalog/ammo/<category>/<ammo_id>
+ */
+export interface Ammunition {
+  /** Unique ammunition ID */
+  readonly id: string;
+
+  /** Display name */
+  readonly name: string;
+
+  /** Brief description */
+  readonly description: string;
+
+  /** Ammunition category (kinetic, missiles, torpedos) */
+  readonly category: AmmoCategory;
+
+  /**
+   * Ammo type for kinetic weapons (e.g., "shell", "slug", "ap")
+   * Used with ammo_size to match compatible weapons
+   */
+  readonly ammo_type?: string;
+
+  /**
+   * Ammo size for kinetic weapons (e.g., "50mm", "100mm", "200mm")
+   * Used with ammo_type to match compatible weapons
+   */
+  readonly ammo_size?: string;
+
+  /** Cost per unit in credits */
+  readonly cost: number;
+
+  /** Weight per unit in metric tons */
+  readonly weight: number;
+
+  /** Impact damage on direct hit */
+  readonly impact_damage: number;
+
+  /** Blast radius for explosive rounds in meters (0 for pure kinetic) */
+  readonly blast_radius: number;
+
+  /** Blast damage within radius */
+  readonly blast_damage: number;
+
+  /** Projectile velocity in m/s */
+  readonly velocity: number;
+
+  /** Armor penetration value (higher = better against armored targets) */
+  readonly armor_penetration: number;
+}
+
+/**
+ * Inventory item representing loaded ammunition or cargo
+ */
+export interface InventoryItem {
+  /** Ammunition or cargo item ID */
+  readonly itemId: string;
+
+  /** Quantity loaded */
+  readonly quantity: number;
+}
+
+/**
+ * Ship inventory state
+ *
+ * Represents cargo loaded onto a ship after design is complete.
+ * Weight and credit constraints apply.
+ */
+export interface ShipInventory {
+  /** Loaded ammunition by category */
+  readonly ammunition: readonly InventoryItem[];
+
+  /** Other cargo items (future expansion) */
+  readonly cargo: readonly InventoryItem[];
+
+  /** Total weight of all inventory items */
+  readonly totalWeight: number;
+
+  /** Total credit cost of all inventory items */
+  readonly totalCost: number;
+}
+
+/**
+ * Ammunition catalog response from HYPERION API
+ *
+ * Response from GET /v1/catalog/ammo/<category>
+ */
+export interface AmmoCategoryResponse {
+  /** Category ID */
+  readonly category: AmmoCategory;
+
+  /** List of ammunition IDs in this category */
+  readonly ammo: readonly string[];
+}
+
+/**
+ * Request to add ammunition to ship inventory
+ */
+export interface AddInventoryItemRequest {
+  /** Ammunition ID to add */
+  readonly item_id: string;
+
+  /** Quantity to add */
+  readonly quantity: number;
+}
+
+/**
+ * Request to update inventory item quantity
+ */
+export interface UpdateInventoryItemRequest {
+  /** New quantity (0 to remove) */
+  readonly quantity: number;
 }

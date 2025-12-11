@@ -20,6 +20,9 @@ describe('Lobby components', () => {
   describe('ShipStatsPanel', () => {
     const mockStats: ShipStats = {
       cost: 1500,
+      creditCost: 150000,
+      creditBudget: 1000000,
+      shipClassCost: 50000,
       weight: 850,
       weightMax: 1000,
       hp: 100,

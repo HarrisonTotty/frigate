@@ -22,6 +22,8 @@ import type { ShipClassSummary, ShipClassDetails } from '../types/shipClass';
 export interface EnhancedShipCreationModalProps {
   /** Team faction ID for faction-specific data */
   factionId: string | null;
+  /** Team object with credits for cost validation */
+  team?: { id: string; credits: number } | null;
   /** Whether modal is open */
   isOpen: boolean;
   /** Callback when modal closes */
@@ -32,6 +34,14 @@ export interface EnhancedShipCreationModalProps {
   isCreating?: boolean;
   /** Additional CSS class name */
   className?: string;
+}
+
+/**
+ * Format credit values with thousand separators
+ */
+function formatCredits(value: number | undefined): string {
+  if (value === undefined || value === null) return '---';
+  return value.toLocaleString();
 }
 
 /**
@@ -56,6 +66,7 @@ function generateAbbreviation(name: string): string {
  */
 export function EnhancedShipCreationModal({
   factionId,
+  team,
   isOpen,
   onClose,
   onCreate,
@@ -237,6 +248,8 @@ export function EnhancedShipCreationModal({
                 maxWeight={selectedClassDetails.max_weight}
                 maxModules={selectedClassDetails.max_modules}
                 buildPoints={selectedClassDetails.build_points}
+                shipClassCost={selectedClassDetails.cost}
+                teamCredits={team?.credits}
               />
             )}
 
@@ -245,24 +258,49 @@ export function EnhancedShipCreationModal({
               style={{
                 marginTop: 'auto',
                 display: 'flex',
-                gap: 'var(--frigate-space-3)',
+                flexDirection: 'column',
+                gap: 'var(--frigate-space-2)',
               }}
             >
-              <Button
-                variant="primary"
-                onClick={handleCreate}
-                disabled={isCreating || !shipName.trim() || !selectedClassId}
-                style={{ flex: 1 }}
-              >
-                {isCreating ? '[CREATING...]' : '[CREATE]'}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={onClose}
-                disabled={isCreating}
-              >
-                [CANCEL]
-              </Button>
+              {/* Insufficient credits warning */}
+              {team && selectedClassDetails?.cost !== undefined && team.credits < selectedClassDetails.cost && (
+                <div
+                  style={{
+                    padding: 'var(--frigate-space-2)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid var(--frigate-danger)',
+                    fontFamily: 'var(--frigate-font-mono)',
+                    fontSize: 'var(--frigate-font-tiny)',
+                    color: 'var(--frigate-danger)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  [!] INSUFFICIENT CREDITS: NEED {formatCredits(selectedClassDetails.cost)} CR, HAVE {formatCredits(team.credits)} CR
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 'var(--frigate-space-3)' }}>
+                <Button
+                  variant="primary"
+                  onClick={handleCreate}
+                  disabled={
+                    isCreating ||
+                    !shipName.trim() ||
+                    !selectedClassId ||
+                    (team !== undefined && team !== null && selectedClassDetails?.cost !== undefined && team.credits < selectedClassDetails.cost)
+                  }
+                  style={{ flex: 1 }}
+                >
+                  {isCreating ? '[CREATING...]' : '[CREATE]'}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={onClose}
+                  disabled={isCreating}
+                >
+                  [CANCEL]
+                </Button>
+              </div>
             </div>
           </div>
 

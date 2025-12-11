@@ -1,13 +1,15 @@
 /**
- * Catalog API client for Frigate module system (Phase 1.2)
- * Provides functions to fetch module slots and variants from the backend.
- * Uses new TypeScript types defined in types.ts.
+ * Catalog API client for Frigate module system
+ * Provides functions to fetch module slots, variants, and ammunition from the backend.
+ * Uses TypeScript types defined in types.ts.
  */
 import type {
   ModuleSlot,
   ModuleVariant,
   ModuleSlotsResponse,
-  ModuleVariantsResponse
+  ModuleVariantsResponse,
+  Ammunition,
+  AmmoCategory,
 } from './types';
 
 // API endpoint paths (server exposes /v1/catalog/...)
@@ -15,6 +17,11 @@ const MODULE_SLOTS_ENDPOINT = '/v1/catalog/module-slots';
 const MODULE_SLOT_DETAIL = (slotId: string) => `/v1/catalog/module-slots/${slotId}`;
 const MODULE_VARIANTS_FOR_SLOT = (slotId: string) => `/v1/catalog/modules/${slotId}`;
 const MODULE_VARIANT_DETAIL = (slotId: string, variantId: string) => `/v1/catalog/modules/${slotId}/${variantId}`;
+
+// Ammunition API endpoint paths
+const AMMO_CATEGORIES_ENDPOINT = '/v1/catalog/ammo';
+const AMMO_CATEGORY_LIST = (category: AmmoCategory) => `/v1/catalog/ammo/${category}`;
+const AMMO_DETAIL = (category: AmmoCategory, ammoId: string) => `/v1/catalog/ammo/${category}/${ammoId}`;
 
 /**
  * Fetch all module slots from the backend.
@@ -104,4 +111,136 @@ export class CatalogResource {
     const response = await this.http.get(MODULE_VARIANT_DETAIL(slotId, variantId));
     return response as ModuleVariant;
   }
+
+  // ============================================================================
+  // Ammunition Catalog Methods
+  // ============================================================================
+
+  /**
+   * Get all ammunition categories
+   * @returns Array of category identifiers ('kinetic', 'missiles', 'torpedos')
+   */
+  public async getAmmoCategories(): Promise<AmmoCategory[]> {
+    const response = await this.http.get(AMMO_CATEGORIES_ENDPOINT);
+    return response as AmmoCategory[];
+  }
+
+  /**
+   * Get all ammunition IDs in a category
+   * @param category - The ammunition category
+   * @returns Array of ammunition IDs
+   */
+  public async getAmmoInCategory(category: AmmoCategory): Promise<string[]> {
+    const response = await this.http.get(AMMO_CATEGORY_LIST(category));
+    return response as string[];
+  }
+
+  /**
+   * Get detailed ammunition information
+   * @param category - The ammunition category
+   * @param ammoId - The ammunition ID
+   * @returns Ammunition details
+   */
+  public async getAmmoDetails(category: AmmoCategory, ammoId: string): Promise<Ammunition> {
+    const response = await this.http.get(AMMO_DETAIL(category, ammoId));
+    // Normalize and add category field if not present
+    return {
+      ...response,
+      category,
+    } as Ammunition;
+  }
+
+  /**
+   * Get all ammunition across all categories with full details
+   * @returns Array of all ammunition with complete details
+   */
+  public async getAllAmmunition(): Promise<Ammunition[]> {
+    const categories = await this.getAmmoCategories();
+    const allAmmo: Ammunition[] = [];
+
+    for (const category of categories) {
+      const ammoIds = await this.getAmmoInCategory(category);
+      const ammoDetails = await Promise.all(
+        ammoIds.map(async (ammoId) => this.getAmmoDetails(category, ammoId))
+      );
+      allAmmo.push(...ammoDetails);
+    }
+
+    return allAmmo;
+  }
+}
+
+// ============================================================================
+// Standalone Ammunition Functions (for use without CatalogResource)
+// ============================================================================
+
+/**
+ * Fetch ammunition categories from the backend
+ * @param apiBase - Base URL for the API (e.g., 'http://localhost:3000')
+ * @returns Array of category identifiers
+ */
+export async function fetchAmmoCategories(apiBase = ''): Promise<AmmoCategory[]> {
+  const url = apiBase ? `${apiBase}${AMMO_CATEGORIES_ENDPOINT}` : AMMO_CATEGORIES_ENDPOINT;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ammo categories: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Fetch ammunition IDs in a category
+ * @param category - The ammunition category
+ * @param apiBase - Base URL for the API
+ * @returns Array of ammunition IDs
+ */
+export async function fetchAmmoInCategory(
+  category: AmmoCategory,
+  apiBase = ''
+): Promise<string[]> {
+  const url = apiBase ? `${apiBase}${AMMO_CATEGORY_LIST(category)}` : AMMO_CATEGORY_LIST(category);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ammo in ${category}: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Fetch detailed ammunition information
+ * @param category - The ammunition category
+ * @param ammoId - The ammunition ID
+ * @param apiBase - Base URL for the API
+ * @returns Ammunition details
+ */
+export async function fetchAmmoDetails(
+  category: AmmoCategory,
+  ammoId: string,
+  apiBase = ''
+): Promise<Ammunition> {
+  const url = apiBase ? `${apiBase}${AMMO_DETAIL(category, ammoId)}` : AMMO_DETAIL(category, ammoId);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ammo ${ammoId}: ${res.status}`);
+  const data = await res.json();
+  // Normalize and add category field if not present
+  return {
+    ...data,
+    category,
+  } as Ammunition;
+}
+
+/**
+ * Fetch all ammunition across all categories with full details
+ * @param apiBase - Base URL for the API
+ * @returns Array of all ammunition with complete details
+ */
+export async function fetchAllAmmunition(apiBase = ''): Promise<Ammunition[]> {
+  const categories = await fetchAmmoCategories(apiBase);
+  const allAmmo: Ammunition[] = [];
+
+  for (const category of categories) {
+    const ammoIds = await fetchAmmoInCategory(category, apiBase);
+    const ammoDetails = await Promise.all(
+      ammoIds.map(async (ammoId) => fetchAmmoDetails(category, ammoId, apiBase))
+    );
+    allAmmo.push(...ammoDetails);
+  }
+
+  return allAmmo;
 }

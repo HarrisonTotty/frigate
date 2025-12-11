@@ -5,6 +5,14 @@ import React from 'react';
 import { Select, Badge } from '../components';
 import type { ShipClassSummary, ShipClassDetails } from '../types/shipClass';
 
+/**
+ * Format credit values with thousand separators
+ */
+function formatCredits(value: number | undefined): string {
+  if (value === undefined || value === null) return '---';
+  return value.toLocaleString();
+}
+
 export interface ShipClassSelectProps {
   selectedClassId: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -52,7 +60,7 @@ export function ShipClassSelect({
         ) : (
           availableClasses.map((shipClass) => (
             <option key={shipClass.id} value={shipClass.id}>
-              {shipClass.name.toUpperCase()} - {shipClass.build_points} BP
+              {shipClass.name.toUpperCase()} - {formatCredits(shipClass.cost)} CR - {shipClass.build_points} BP
             </option>
           ))
         )}

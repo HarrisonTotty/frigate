@@ -49,3 +49,32 @@ export * from './ModuleSlotCategoryTabs';
 
 export { ShipStatsPanel } from './ShipStatsPanel';
 export type { ShipStats, ShipStatsPanelProps, ShipProfile, ValidationState } from './ShipStatsPanel';
+
+// Inventory Workspace
+export { InventoryWorkspace } from './InventoryWorkspace';
+export type { InventoryWorkspaceProps, Player as InventoryPlayer, Team as InventoryTeam } from './InventoryWorkspace';
+
+export { AmmunitionBrowser } from './AmmunitionBrowser';
+export type { AmmunitionBrowserProps } from './AmmunitionBrowser';
+
+export { AmmunitionCard } from './AmmunitionCard';
+export type { AmmunitionCardProps } from './AmmunitionCard';
+
+export { LoadedInventoryPanel } from './LoadedInventoryPanel';
+export type { LoadedInventoryPanelProps } from './LoadedInventoryPanel';
+
+export { InventoryConstraintsPanel } from './InventoryConstraintsPanel';
+export type { InventoryConstraintsPanelProps, InventoryStats } from './InventoryConstraintsPanel';
+
+export { AmmunitionDetailModal } from './AmmunitionDetailModal';
+export type { AmmunitionDetailModalProps } from './AmmunitionDetailModal';
+
+// Compatibility utilities
+export {
+  extractWeaponCompatibility,
+  checkAmmoCompatibility,
+  getIncompatibilityReason,
+  getCompatibleWeapons,
+  filterCompatibleAmmo,
+} from './utils/ammoCompatibility';
+export type { WeaponCompatibility, CompatibilityResult } from './utils/ammoCompatibility';

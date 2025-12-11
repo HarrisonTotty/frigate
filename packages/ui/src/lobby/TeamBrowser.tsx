@@ -31,6 +31,8 @@ export interface Team {
   faction: string;
   members: string[];
   status?: 'recruiting' | 'active' | 'in-mission' | 'disbanded';
+  /** Team's current credit balance */
+  credits?: number;
 }
 
 /**

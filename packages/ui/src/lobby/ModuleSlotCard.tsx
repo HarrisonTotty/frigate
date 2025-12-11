@@ -2,6 +2,14 @@ import React from 'react';
 import type { ModuleSlot } from '@frigate/api-client';
 import { ModuleTooltip, type TooltipStatRow } from '../components/ModuleTooltip';
 
+/**
+ * Format credit values with thousand separators
+ */
+function formatCredits(value: number | undefined): string {
+  if (value === undefined || value === null || value === 0) return '---';
+  return value.toLocaleString();
+}
+
 export interface ModuleSlotCardProps {
   slot: ModuleSlot;
   currentCount: number;
@@ -44,9 +52,13 @@ export function ModuleSlotCard({
   // ASCII borders are decorative - use CSS to contain them within card width
   // The card uses overflow: hidden to clip any overflow gracefully
 
+  // Get credit cost (optional field)
+  const safeCreditCost = typeof slot.credit_cost === 'number' ? slot.credit_cost : 0;
+
   // Build tooltip stats
   const tooltipStats: TooltipStatRow[] = [
     { label: 'BASE COST', value: safeBaseCost, unit: 'BP' },
+    { label: 'CREDIT COST', value: safeCreditCost > 0 ? formatCredits(safeCreditCost) : '---', unit: safeCreditCost > 0 ? 'CR' : '' },
     { label: 'MAX SLOTS', value: safeMaxSlots },
     { label: 'INSTALLED', value: currentCount },
   ];
@@ -164,7 +176,14 @@ export function ModuleSlotCard({
             fontSize: 'var(--frigate-font-tiny)',
             color: 'var(--frigate-text-secondary)',
           }}>
-            <span>{safeBaseCost} BP</span>
+            <span>
+              {safeBaseCost} BP
+              {safeCreditCost > 0 && (
+                <span style={{ marginLeft: '8px', color: 'var(--frigate-text-muted)' }}>
+                  | {formatCredits(safeCreditCost)} CR
+                </span>
+              )}
+            </span>
             {!canAdd && (
               <span style={{ color: 'var(--frigate-warning)', fontWeight: 700 }}>
                 [OVER BUDGET]

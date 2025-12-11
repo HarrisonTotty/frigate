@@ -7,6 +7,7 @@ import {
   TeamSelectionView,
   ShipSelectionView,
   ShipDesignWorkspace,
+  InventoryWorkspace,
   AlertProvider,
   AlertManager,
   checkServerHealth,
@@ -164,6 +165,17 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
   };
 
   // Route to appropriate view based on workflow step
+  console.log('[LobbyWorkflow] Rendering with currentStep:', currentStep);
+  console.log('[LobbyWorkflow] selectedPlayerId:', selectedPlayerId, 'selectedTeamId:', selectedTeamId, 'selectedBlueprintId:', selectedBlueprintId);
+  console.log('[LobbyWorkflow] players array:', players, 'teams array:', teams);
+
+  // Debug: Check if we're about to hit the inventory case
+  if (currentStep === 'inventory') {
+    const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
+    const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
+    console.log('[LobbyWorkflow] INVENTORY CASE - currentPlayer:', currentPlayer, 'currentTeam:', currentTeam, 'blueprintId:', selectedBlueprintId);
+  }
+
   switch (currentStep) {
     case 'player':
       return (
@@ -245,6 +257,48 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           blueprintId={selectedBlueprintId}
           onBack={() => reset()}
           onDisconnect={handleDisconnect}
+        />
+      );
+    }
+
+    case 'inventory': {
+      console.log('[LobbyWorkflow] ENTERING INVENTORY CASE');
+      const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
+      const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
+      console.log('[LobbyWorkflow] inventory - currentPlayer:', currentPlayer, 'currentTeam:', currentTeam);
+
+      // Show loading state while data is being fetched
+      if (!currentPlayer || !currentTeam || !selectedBlueprintId) {
+        console.log('[LobbyWorkflow] SHOWING LOADING SCREEN - missing:', !currentPlayer ? 'player' : '', !currentTeam ? 'team' : '', !selectedBlueprintId ? 'blueprintId' : '');
+        return (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh',
+            fontFamily: 'var(--frigate-font-mono)',
+            color: 'var(--frigate-text-secondary)',
+          }}>
+            LOADING INVENTORY WORKSPACE...
+          </div>
+        );
+      }
+
+      console.log('[LobbyWorkflow] RENDERING INVENTORY WORKSPACE');
+      return (
+        <InventoryWorkspace
+          apiUrl={apiUrl}
+          player={currentPlayer}
+          team={currentTeam}
+          blueprintId={selectedBlueprintId}
+          availableWeight={100} // TODO: Calculate from ship design
+          installedModules={[]} // TODO: Get from blueprint
+          onBack={() => {}}
+          onDisconnect={handleDisconnect}
+          onRegisterCargo={() => {
+            // TODO: Handle cargo registration - advance to next step or complete
+            console.log('Cargo registered!');
+          }}
         />
       );
     }

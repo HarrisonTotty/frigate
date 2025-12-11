@@ -53,8 +53,8 @@ export { CenteredModal, ConfirmationModal, FormModal, FormField, FormSelect } fr
 export type { CenteredModalProps, ConfirmationModalProps, FormModalProps, FormFieldProps, FormSelectProps } from './modals';
 
 // Export lobby components
-export { PlayerRegistration, TeamBrowser, TeamMembership, LobbyView, PlayerSelectionView, TeamSelectionView, ShipSelectionView, ShipDesignWorkspace } from './lobby';
-export type { Player, PlayerRegistrationProps, Team, Faction, TeamBrowserProps, TeamMembershipProps, LobbyViewProps, PlayerSelectionViewProps, TeamSelectionViewProps, ShipSelectionViewProps, ShipDesignWorkspaceProps } from './lobby';
+export { PlayerRegistration, TeamBrowser, TeamMembership, LobbyView, PlayerSelectionView, TeamSelectionView, ShipSelectionView, ShipDesignWorkspace, InventoryWorkspace } from './lobby';
+export type { Player, PlayerRegistrationProps, Team, Faction, TeamBrowserProps, TeamMembershipProps, LobbyViewProps, PlayerSelectionViewProps, TeamSelectionViewProps, ShipSelectionViewProps, ShipDesignWorkspaceProps, InventoryWorkspaceProps } from './lobby';
 
 export { EnhancedShipCreationModal } from './lobby/EnhancedShipCreationModal';
 export type { EnhancedShipCreationModalProps } from './lobby/EnhancedShipCreationModal';
