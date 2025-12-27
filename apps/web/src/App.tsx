@@ -16,7 +16,11 @@ import {
   validateServerUrl,
   retryWithBackoff,
   useLobbyWorkflowStore,
-} from "@frigate/ui";type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
+} from "@frigate/ui";
+import type { SchematicData, SchematicModule } from "@frigate/ui";
+import { useSchematicFile } from "./hooks/useSchematicFile";
+
+type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -116,6 +120,37 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
   const { currentStep, selectedPlayerId, selectedTeamId, selectedBlueprintId, reset } = useLobbyWorkflowStore();
   const [players, setPlayers] = useState<any[]>([]);
   const [teams, setTeams] = useState<any[]>([]);
+
+  // Schematic file operations
+  const { saveSchematic, loadSchematic, loading: schematicLoading } = useSchematicFile();
+
+  // Schematic save handler - converts SchematicData to SchematicFile format
+  const handleSaveSchematic = useCallback(async (schematic: SchematicData): Promise<boolean> => {
+    return saveSchematic({
+      version: schematic.version,
+      name: schematic.name,
+      ship_class: schematic.ship_class,
+      modules: schematic.modules.map((m: SchematicModule) => ({
+        slot: m.slot,
+        module: m.module,
+      })),
+    });
+  }, [saveSchematic]);
+
+  // Schematic load handler - converts SchematicFile to SchematicData format
+  const handleLoadSchematic = useCallback(async (): Promise<SchematicData | null> => {
+    const file = await loadSchematic();
+    if (!file) return null;
+    return {
+      version: file.version,
+      name: file.name,
+      ship_class: file.ship_class,
+      modules: file.modules.map((m): SchematicModule => ({
+        slot: m.slot,
+        module: m.module,
+      })),
+    };
+  }, [loadSchematic]);
 
   // Load players to get the current player data
   useEffect(() => {
@@ -257,6 +292,9 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           blueprintId={selectedBlueprintId}
           onBack={() => reset()}
           onDisconnect={handleDisconnect}
+          onSaveSchematic={handleSaveSchematic}
+          onLoadSchematic={handleLoadSchematic}
+          schematicLoading={schematicLoading}
         />
       );
     }

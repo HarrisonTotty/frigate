@@ -15,7 +15,7 @@ export { ShipSelectionView } from './ShipSelectionView';
 export type { ShipSelectionViewProps } from './ShipSelectionView';
 
 export { ShipDesignWorkspace } from './ShipDesignWorkspace';
-export type { ShipDesignWorkspaceProps } from './ShipDesignWorkspace';
+export type { ShipDesignWorkspaceProps, SchematicData, SchematicModule } from './ShipDesignWorkspace';
 
 export { TeamBrowser } from './TeamBrowser';
 export type { TeamBrowserProps, Team } from './TeamBrowser';

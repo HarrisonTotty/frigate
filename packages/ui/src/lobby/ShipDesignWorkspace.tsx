@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import type { ModuleInstance, ModuleSlot } from '@frigate/api-client';
 import ModuleSlotBrowser from './ModuleSlotBrowser';
 import { ShipBlueprintCanvas } from './ShipBlueprintView';
@@ -10,6 +10,26 @@ import { useShipClass } from '../hooks/useShipClass';
 import { useCatalog } from '../hooks/useCatalog';
 import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
 import { Grid } from '../layout';
+import { ConfirmationModal } from '../modals';
+import { useAlertSafe } from '../alerts';
+
+/**
+ * Schematic module slot assignment
+ */
+export interface SchematicModule {
+  slot: string;
+  module: string | null;
+}
+
+/**
+ * Ship schematic data structure
+ */
+export interface SchematicData {
+  version: number;
+  name: string;
+  ship_class: string;
+  modules: SchematicModule[];
+}
 
 /**
  * Ship Design Workspace Props
@@ -29,19 +49,54 @@ export interface ShipDesignWorkspaceProps {
   onBack?: () => void;
   /** Callback when user disconnects */
   onDisconnect?: () => void;
+  /** Callback to save current design as schematic file */
+  onSaveSchematic?: (schematic: SchematicData) => Promise<boolean>;
+  /** Callback to load schematic from file - returns schematic or null if cancelled */
+  onLoadSchematic?: () => Promise<SchematicData | null>;
+  /** Whether a schematic file operation is in progress */
+  schematicLoading?: boolean;
 }
 
 /**
  * Workspace Header Component
- * 
+ *
  * Displays the workspace title and quick actions.
  */
 interface WorkspaceHeaderProps {
   blueprintName?: string;
   onBack?: () => void;
+  onSave?: () => void;
+  onLoad?: () => void;
+  saveDisabled?: boolean;
+  schematicLoading?: boolean;
 }
 
-function WorkspaceHeader({ blueprintName = 'SHIP BLUEPRINT', onBack }: WorkspaceHeaderProps) {
+function WorkspaceHeader({
+  blueprintName = 'SHIP BLUEPRINT',
+  onBack,
+  onSave,
+  onLoad,
+  saveDisabled,
+  schematicLoading,
+}: WorkspaceHeaderProps) {
+  const buttonStyle: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    color: 'var(--frigate-text-secondary)',
+    fontFamily: 'var(--frigate-font-mono)',
+    fontSize: 'var(--frigate-font-small)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+  };
+
+  const disabledStyle: React.CSSProperties = {
+    ...buttonStyle,
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  };
+
   return (
     <div
       style={{
@@ -65,35 +120,51 @@ function WorkspaceHeader({ blueprintName = 'SHIP BLUEPRINT', onBack }: Workspace
       >
         {blueprintName}
       </div>
-      {onBack && (
-        <button
-          onClick={onBack}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--frigate-text-secondary)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-          }}
-          aria-label="Go back"
-        >
-          [BACK]
-        </button>
-      )}
+      <div style={{ display: 'flex', gap: 'var(--frigate-space-3)' }}>
+        {onLoad && (
+          <button
+            onClick={onLoad}
+            disabled={schematicLoading}
+            style={schematicLoading ? disabledStyle : buttonStyle}
+            aria-label="Load schematic from file"
+          >
+            {schematicLoading ? '[LOADING...]' : '[LOAD]'}
+          </button>
+        )}
+        {onSave && (
+          <button
+            onClick={onSave}
+            disabled={saveDisabled || schematicLoading}
+            style={saveDisabled || schematicLoading ? disabledStyle : buttonStyle}
+            aria-label="Save schematic to file"
+          >
+            {schematicLoading ? '[SAVING...]' : '[SAVE]'}
+          </button>
+        )}
+        {onBack && (
+          <button
+            onClick={onBack}
+            style={buttonStyle}
+            aria-label="Go back"
+          >
+            [BACK]
+          </button>
+        )}
+      </div>
     </div>
   );
 }
 
 /**
  * Workspace Footer Component
- * 
+ *
  * Displays workspace-wide keyboard hints and status.
  */
-function WorkspaceFooter() {
+interface WorkspaceFooterProps {
+  hasSchematicSupport?: boolean;
+}
+
+function WorkspaceFooter({ hasSchematicSupport }: WorkspaceFooterProps) {
   return (
     <div
       style={{
@@ -111,7 +182,9 @@ function WorkspaceFooter() {
         [WORKSPACE: DESIGN PHASE | STATUS: ACTIVE]
       </div>
       <div style={{ letterSpacing: '0.05em' }}>
-        [ALT+S: SAVE | ALT+C: CANCEL | F1: HELP]
+        {hasSchematicSupport
+          ? '[ALT+S: SAVE SCHEMATIC | ALT+L: LOAD SCHEMATIC | ALT+C: CANCEL | F1: HELP]'
+          : '[ALT+S: SAVE | ALT+C: CANCEL | F1: HELP]'}
       </div>
     </div>
   );
@@ -165,10 +238,18 @@ export function ShipDesignWorkspace({
   className = '',
   team,
   onBack,
+  onSaveSchematic,
+  onLoadSchematic,
+  schematicLoading = false,
 }: ShipDesignWorkspaceProps) {
   const { blueprint, addInstance, removeInstance, setVariant, ensureOpen } = useUiBlueprint({ blueprintId, apiBase: apiUrl });
   const { slotsList, slotsById, variantsById, getModuleSlots, getModuleVariant } = useCatalog(apiUrl);
-  const { goBack, registerSchematic } = useLobbyWorkflowStore();
+  const { goBack, registerSchematic, pendingSchematic, clearPendingSchematic } = useLobbyWorkflowStore();
+  const alert = useAlertSafe();
+
+  // Confirmation modal state for loading schematic
+  const [loadConfirmOpen, setLoadConfirmOpen] = useState(false);
+  const [pendingLoadSchematic, setPendingLoadSchematic] = useState<SchematicData | null>(null);
   
   // Fetch the full blueprint from API to get shipClass
   const [blueprintData, setBlueprintData] = useState<{ id: string; name: string; class: string; team_id: string } | null>(null);
@@ -234,6 +315,202 @@ export function ShipDesignWorkspace({
 
   // Blueprint instances are the source of truth - convert to mutable array
   const instances = Array.from(blueprint?.instances ?? []);
+
+  // Build schematic from current blueprint state
+  const buildSchematicFromBlueprint = useCallback((): SchematicData | null => {
+    if (!blueprintData) return null;
+
+    const modules: SchematicModule[] = instances.map((instance) => ({
+      slot: instance.module_slot_id,
+      module: instance.variant_id || null,
+    }));
+
+    return {
+      version: 1,
+      name: blueprintData.name,
+      ship_class: blueprintData.class,
+      modules,
+    };
+  }, [blueprintData, instances]);
+
+  // Apply loaded schematic to current blueprint
+  const applySchematicToBlueprint = useCallback(
+    async (schematic: SchematicData): Promise<{ success: boolean; warnings: string[] }> => {
+      const warnings: string[] = [];
+
+      // Note: When loading in design workspace, name and ship_class are IGNORED
+      // Only modules are applied to the current blueprint
+
+      // Validate schematic version
+      if (schematic.version !== 1) {
+        const msg = `Unsupported schematic version: ${schematic.version}`;
+        console.error('[ShipDesignWorkspace]', msg);
+        return { success: false, warnings: [msg] };
+      }
+
+      // Check for ship class mismatch (warning only, still proceed)
+      if (blueprintData && schematic.ship_class !== blueprintData.class) {
+        warnings.push(
+          `Schematic is for ship class '${schematic.ship_class}', but current blueprint is '${blueprintData.class}'. Some modules may not be compatible.`
+        );
+      }
+
+      // Clear existing modules first
+      for (const instance of instances) {
+        try {
+          await removeInstance(instance.id);
+        } catch (err) {
+          console.warn('[ShipDesignWorkspace] Failed to remove instance during schematic load:', err);
+        }
+      }
+
+      // Add modules from schematic, tracking any that fail
+      let addedCount = 0;
+      const failedSlots: string[] = [];
+
+      for (const mod of schematic.modules) {
+        // Validate slot exists in catalog
+        const slotExists = slotsById[mod.slot];
+        if (!slotExists) {
+          failedSlots.push(mod.slot);
+          console.warn(`[ShipDesignWorkspace] Unknown module slot '${mod.slot}' - skipping`);
+          continue;
+        }
+
+        try {
+          await addInstance(mod.slot, mod.module);
+          addedCount++;
+        } catch (err) {
+          failedSlots.push(mod.slot);
+          console.warn(`[ShipDesignWorkspace] Failed to add module slot '${mod.slot}':`, err);
+        }
+      }
+
+      // Report failed slots
+      if (failedSlots.length > 0) {
+        warnings.push(
+          `${failedSlots.length} module(s) could not be loaded: ${failedSlots.join(', ')}`
+        );
+      }
+
+      console.log(
+        `[ShipDesignWorkspace] Applied schematic: ${addedCount}/${schematic.modules.length} modules loaded`
+      );
+
+      return { success: true, warnings };
+    },
+    [instances, removeInstance, addInstance, slotsById, blueprintData]
+  );
+
+  // Handle save schematic button
+  const handleSaveSchematic = useCallback(async () => {
+    if (!onSaveSchematic) return;
+
+    const schematic = buildSchematicFromBlueprint();
+    if (schematic) {
+      const saved = await onSaveSchematic(schematic);
+      if (saved) {
+        console.log('[ShipDesignWorkspace] Schematic saved successfully');
+      }
+    }
+  }, [buildSchematicFromBlueprint, onSaveSchematic]);
+
+  // Handle load schematic button - with confirmation if modules exist
+  const handleLoadSchematic = useCallback(async () => {
+    if (!onLoadSchematic) return;
+
+    const schematic = await onLoadSchematic();
+    if (schematic) {
+      // If there are existing modules, show confirmation dialog
+      if (instances.length > 0) {
+        setPendingLoadSchematic(schematic);
+        setLoadConfirmOpen(true);
+      } else {
+        // No modules to replace, apply directly
+        const result = await applySchematicToBlueprint(schematic);
+        if (!result.success) {
+          alert.danger('SCHEMATIC LOAD FAILED', result.warnings[0]);
+        } else if (result.warnings.length > 0) {
+          // Show warnings but operation succeeded
+          for (const warning of result.warnings) {
+            alert.warning('SCHEMATIC WARNING', warning);
+          }
+          alert.success('SCHEMATIC LOADED', `Loaded "${schematic.name}" configuration`);
+        } else {
+          alert.success('SCHEMATIC LOADED', `Loaded "${schematic.name}" configuration`);
+        }
+      }
+    }
+  }, [onLoadSchematic, applySchematicToBlueprint, instances.length, alert]);
+
+  // Confirm loading schematic (replaces existing modules)
+  const handleConfirmLoadSchematic = useCallback(async () => {
+    if (!pendingLoadSchematic) return;
+
+    const result = await applySchematicToBlueprint(pendingLoadSchematic);
+    if (!result.success) {
+      alert.danger('SCHEMATIC LOAD FAILED', result.warnings[0]);
+    } else if (result.warnings.length > 0) {
+      // Show warnings but operation succeeded
+      for (const warning of result.warnings) {
+        alert.warning('SCHEMATIC WARNING', warning);
+      }
+      alert.success('SCHEMATIC LOADED', `Loaded "${pendingLoadSchematic.name}" configuration`);
+    } else {
+      alert.success('SCHEMATIC LOADED', `Loaded "${pendingLoadSchematic.name}" configuration`);
+    }
+
+    setPendingLoadSchematic(null);
+    setLoadConfirmOpen(false);
+  }, [pendingLoadSchematic, applySchematicToBlueprint, alert]);
+
+  // Cancel loading schematic
+  const handleCancelLoadSchematic = useCallback(() => {
+    setPendingLoadSchematic(null);
+    setLoadConfirmOpen(false);
+  }, []);
+
+  // Keyboard shortcuts for schematic operations
+  useEffect(() => {
+    if (!onSaveSchematic && !onLoadSchematic) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Alt+S: Save schematic
+      if (e.altKey && e.key.toLowerCase() === 's' && onSaveSchematic) {
+        e.preventDefault();
+        handleSaveSchematic();
+      }
+      // Alt+L: Load schematic
+      if (e.altKey && e.key.toLowerCase() === 'l' && onLoadSchematic) {
+        e.preventDefault();
+        handleLoadSchematic();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onSaveSchematic, onLoadSchematic, handleSaveSchematic, handleLoadSchematic]);
+
+  // Apply pending schematic on mount (from ship creation modal)
+  const [pendingSchematicApplied, setPendingSchematicApplied] = useState(false);
+  useEffect(() => {
+    if (pendingSchematic && blueprintId && !pendingSchematicApplied) {
+      setPendingSchematicApplied(true);
+      console.log('[ShipDesignWorkspace] Applying pending schematic from creation modal');
+      applySchematicToBlueprint(pendingSchematic).then((result) => {
+        clearPendingSchematic();
+        console.log('[ShipDesignWorkspace] Pending schematic applied and cleared');
+        // Show any warnings from the load
+        if (!result.success) {
+          alert.danger('SCHEMATIC LOAD FAILED', result.warnings[0]);
+        } else if (result.warnings.length > 0) {
+          for (const warning of result.warnings) {
+            alert.warning('SCHEMATIC WARNING', warning);
+          }
+        }
+      });
+    }
+  }, [pendingSchematic, blueprintId, pendingSchematicApplied, applySchematicToBlueprint, clearPendingSchematic, alert]);
 
   // Use the catalog's slotsById directly - it's populated by getModuleSlots()
   // This ensures we're using the same data source as the ModuleSlotBrowserCore
@@ -459,7 +736,14 @@ export function ShipDesignWorkspace({
       }}
     >
       {/* Header */}
-      <WorkspaceHeader blueprintName={blueprint?.name ?? 'SHIP BLUEPRINT'} onBack={handleBackClick} />
+      <WorkspaceHeader
+        blueprintName={blueprint?.name ?? 'SHIP BLUEPRINT'}
+        onBack={handleBackClick}
+        onSave={onSaveSchematic ? handleSaveSchematic : undefined}
+        onLoad={onLoadSchematic ? handleLoadSchematic : undefined}
+        saveDisabled={!blueprintData}
+        schematicLoading={schematicLoading}
+      />
 
       {/* Error Banner - Blueprint Loading Failure */}
       {blueprintError && (
@@ -589,7 +873,7 @@ export function ShipDesignWorkspace({
       </div>
 
       {/* Footer */}
-      <WorkspaceFooter />
+      <WorkspaceFooter hasSchematicSupport={!!onSaveSchematic || !!onLoadSchematic} />
 
       {/* Module Catalog Modal */}
       <ModuleCatalog
@@ -623,6 +907,18 @@ export function ShipDesignWorkspace({
           setEditingInstanceId(null);
           setEditingSlotType(null);
         }}
+      />
+
+      {/* Load Schematic Confirmation Modal */}
+      <ConfirmationModal
+        title="REPLACE MODULE CONFIGURATION?"
+        message={`Loading schematic "${pendingLoadSchematic?.name ?? 'unknown'}" will replace your current ${instances.length} module(s). This action cannot be undone.`}
+        isOpen={loadConfirmOpen}
+        onConfirm={handleConfirmLoadSchematic}
+        onCancel={handleCancelLoadSchematic}
+        confirmLabel="LOAD SCHEMATIC"
+        cancelLabel="CANCEL"
+        isDanger={true}
       />
     </div>
   );

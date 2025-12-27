@@ -15,49 +15,130 @@ export interface ShipListProps {
 function generateAbbreviation(name: string): string {
   const words = name.toUpperCase().split(/\s+/);
   if (words.length === 1) return words[0].substring(0, 6);
-  return words.map(w => w[0]).join('').substring(0, 6);
+  return words.map((w) => w[0]).join('').substring(0, 6);
 }
 
-export function ShipList({ ships, loading, availableShipClasses, onSelectShip }: ShipListProps): React.ReactElement {
+/**
+ * Empty state component - simple centered text
+ */
+function EmptyState(): React.ReactElement {
+  return (
+    <div
+      style={{
+        fontFamily: 'var(--frigate-font-mono)',
+        fontSize: 'var(--frigate-font-small)',
+        color: 'var(--frigate-text-muted)',
+        textAlign: 'center',
+        padding: 'var(--frigate-space-6) var(--frigate-space-4)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+      }}
+    >
+      <div style={{ marginBottom: 'var(--frigate-space-2)' }}>
+        [ NO SHIPS AVAILABLE ]
+      </div>
+      <div style={{ fontSize: 'var(--frigate-font-tiny)', opacity: 0.7 }}>
+        CREATE OR JOIN A SHIP TO BEGIN
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Ship row component
+ */
+function ShipRow({
+  ship,
+  classInfo,
+  onSelect,
+}: {
+  ship: Blueprint;
+  classInfo: ShipClassSummary | undefined;
+  onSelect: () => void;
+}): React.ReactElement {
+  const crewCount = ship.crew?.length || 0;
+  const maxCrew = (classInfo as { max_modules?: number })?.max_modules || 9;
+  const isInMission = ship.crew?.some((c) => c.ready) || false;
+  const classAbbrev = classInfo ? generateAbbreviation(classInfo.name) : ship.class.toUpperCase();
+
+  return (
+    <div
+      style={{
+        fontFamily: 'var(--frigate-font-mono)',
+        fontSize: 'var(--frigate-font-small)',
+        padding: 'var(--frigate-space-2) var(--frigate-space-3)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottom: '1px solid var(--frigate-border-base)',
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--frigate-space-2)',
+          }}
+        >
+          <span
+            style={{
+              color: 'var(--frigate-text-primary)',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+            }}
+          >
+            {ship.name}
+          </span>
+          {isInMission && (
+            <Badge variant="warning" size="sm">
+              [ACTIVE]
+            </Badge>
+          )}
+        </div>
+        <div
+          style={{
+            color: 'var(--frigate-text-secondary)',
+            marginTop: 'var(--frigate-space-1)',
+          }}
+        >
+          {classAbbrev} / CREW: {crewCount}/{maxCrew}
+        </div>
+      </div>
+      <Button variant="primary" size="sm" onClick={onSelect} disabled={isInMission}>
+        JOIN
+      </Button>
+    </div>
+  );
+}
+
+export function ShipList({
+  ships,
+  loading,
+  availableShipClasses,
+  onSelectShip,
+}: ShipListProps): React.ReactElement {
   return (
     <Panel title="SHIP SELECTION" fullHeight>
-      <Stack gap={4}>
-        {loading ? (
-          <LoadingText message="LOADING SHIPS..." />
-        ) : ships.length === 0 ? (
-          <div style={{ padding: 'var(--frigate-space-8)', textAlign: 'center', color: 'var(--frigate-text-muted)', fontFamily: 'var(--frigate-font-mono)' }}>
-            NO SHIPS AVAILABLE
-          </div>
-        ) : (
-          <Stack gap={2}>
-            {ships.map((ship) => {
-              const classInfo = availableShipClasses.find(sc => sc.id === ship.class);
-              const crewCount = ship.crew?.length || 0;
-              const maxCrew = (classInfo as any)?.max_modules || 9;
-              const isInMission = ship.crew?.some((c) => c.ready) || false;
-
-              return (
-                <div key={ship.id} style={{ backgroundColor: 'var(--frigate-bg-surface)', border: '1px solid var(--frigate-border-base)', padding: 'var(--frigate-space-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)', marginBottom: 'var(--frigate-space-1)' }}>
-                      <span style={{ fontFamily: 'var(--frigate-font-mono)', fontSize: 'var(--frigate-font-body)', color: 'var(--frigate-text-primary)', fontWeight: 600 }}>
-                        {ship.name}
-                      </span>
-                      {isInMission && (<Badge variant="warning" size="sm">IN MISSION</Badge>)}
-                    </div>
-                    <div style={{ fontFamily: 'var(--frigate-font-mono)', fontSize: 'var(--frigate-font-small)', color: 'var(--frigate-text-secondary)' }}>
-                      {classInfo ? generateAbbreviation(classInfo.name) : ship.class.toUpperCase()} • {crewCount}/{maxCrew} CREW
-                    </div>
-                  </div>
-                  <Button variant="primary" size="sm" onClick={() => onSelectShip(ship.id)} disabled={isInMission}>
-                    [JOIN]
-                  </Button>
-                </div>
-              );
-            })}
-          </Stack>
-        )}
-      </Stack>
+      {loading ? (
+        <LoadingText message="LOADING SHIPS..." />
+      ) : ships.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <Stack gap={0}>
+          {ships.map((ship) => {
+            const classInfo = availableShipClasses.find((sc) => sc.id === ship.class);
+            return (
+              <ShipRow
+                key={ship.id}
+                ship={ship}
+                classInfo={classInfo}
+                onSelect={() => onSelectShip(ship.id)}
+              />
+            );
+          })}
+        </Stack>
+      )}
     </Panel>
   );
 }

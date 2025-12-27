@@ -6,11 +6,26 @@ import { Select, Badge } from '../components';
 import type { ShipClassSummary, ShipClassDetails } from '../types/shipClass';
 
 /**
- * Format credit values with thousand separators
+ * Format credit values without thousand separators (cleaner for monospace display)
  */
 function formatCredits(value: number | undefined): string {
   if (value === undefined || value === null) return '---';
-  return value.toLocaleString();
+  return String(value);
+}
+
+/**
+ * Format the ship class option label in the format:
+ * <ship class>    [<credits>] [<build points>]
+ */
+function formatShipClassLabel(
+  name: string,
+  cost: number | undefined,
+  buildPoints: number | undefined
+): string {
+  const shipName = name.toUpperCase();
+  const creditsStr = `[${formatCredits(cost)} CR]`;
+  const bpStr = `[${buildPoints ?? '---'} BP]`;
+  return `${shipName}    ${creditsStr} ${bpStr}`;
 }
 
 export interface ShipClassSelectProps {
@@ -60,7 +75,7 @@ export function ShipClassSelect({
         ) : (
           availableClasses.map((shipClass) => (
             <option key={shipClass.id} value={shipClass.id}>
-              {shipClass.name.toUpperCase()} - {formatCredits(shipClass.cost)} CR - {shipClass.build_points} BP
+              {formatShipClassLabel(shipClass.name, shipClass.cost, shipClass.build_points)}
             </option>
           ))
         )}

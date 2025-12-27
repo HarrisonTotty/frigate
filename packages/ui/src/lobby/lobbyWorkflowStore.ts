@@ -1,12 +1,13 @@
 /**
  * Lobby workflow state management
- * 
+ *
  * Tracks progression through the sequential lobby workflow:
  * Player Selection → Team Selection → Ship Selection → Ship Design
  */
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { SchematicData } from './ShipDesignWorkspace';
 
 /**
  * Workflow steps
@@ -34,7 +35,10 @@ export interface LobbyWorkflowState {
 
   /** Whether there are unsaved changes in the current step */
   hasUnsavedChanges: boolean;
-  
+
+  /** Pending schematic to apply after ship creation (from LOAD SCHEMATIC in creation modal) */
+  pendingSchematic: SchematicData | null;
+
   /** Set the selected player and advance to team selection */
   setPlayer: (playerId: string) => void;
   
@@ -64,7 +68,13 @@ export interface LobbyWorkflowState {
   clearTeam: () => void;
   clearBlueprint: () => void;
   clearSchematic: () => void;
-  
+
+  /** Set pending schematic (to apply after ship creation) */
+  setPendingSchematic: (schematic: SchematicData | null) => void;
+
+  /** Clear pending schematic (after it's been applied) */
+  clearPendingSchematic: () => void;
+
   /** Validate persisted state against server (auto-resume) */
   validatePersistedState: (apiUrl: string) => Promise<boolean>;
   
@@ -85,6 +95,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
       selectedBlueprintId: null,
       registeredSchematicId: null,
       hasUnsavedChanges: false,
+      pendingSchematic: null,
 
       // Set player and advance
       setPlayer: (playerId: string) => {
@@ -209,6 +220,7 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
           selectedBlueprintId: null,
           registeredSchematicId: null,
           hasUnsavedChanges: false,
+          pendingSchematic: null,
         });
       },
 
@@ -253,7 +265,17 @@ export const useLobbyWorkflowStore = create<LobbyWorkflowState>()(
           hasUnsavedChanges: false,
         });
       },
-      
+
+      // Set pending schematic (to apply after ship creation)
+      setPendingSchematic: (schematic: SchematicData | null) => {
+        set({ pendingSchematic: schematic });
+      },
+
+      // Clear pending schematic (after it's been applied)
+      clearPendingSchematic: () => {
+        set({ pendingSchematic: null });
+      },
+
       // Validate persisted state against server (auto-resume)
       validatePersistedState: async (apiUrl: string): Promise<boolean> => {
         const { selectedPlayerId, selectedTeamId, selectedBlueprintId } = get();

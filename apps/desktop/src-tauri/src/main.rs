@@ -6,10 +6,14 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod schematic;
+
 use clap::Parser;
 use log::{debug, error, info, trace, warn, LevelFilter};
+use schematic::SchematicFile;
 use std::fs::File;
 use std::path::PathBuf;
+use tauri_plugin_dialog::DialogExt;
 
 /// Frigate Desktop - Spaceship Bridge Simulation Game Client
 #[derive(Parser, Debug)]
@@ -194,6 +198,74 @@ fn close_application(app_handle: tauri::AppHandle) {
     app_handle.exit(0);
 }
 
+/// Save a schematic file to disk
+///
+/// Opens a native save file dialog and writes the schematic as YAML.
+/// Returns true if saved successfully, false if cancelled.
+#[tauri::command]
+async fn save_schematic_file(
+    app: tauri::AppHandle,
+    schematic: SchematicFile,
+) -> Result<bool, String> {
+    // Validate schematic
+    schematic.validate()?;
+
+    // Serialize to YAML
+    let yaml = serde_yaml::to_string(&schematic)
+        .map_err(|e| format!("Failed to serialize schematic: {}", e))?;
+
+    // Open save dialog with .yaml filter
+    let file_path = app
+        .dialog()
+        .file()
+        .add_filter("Ship Schematic", &["yaml", "yml"])
+        .set_file_name(&format!("{}.yaml", schematic.name))
+        .blocking_save_file();
+
+    // Write file if path selected
+    if let Some(path) = file_path {
+        let path_str = path.to_string();
+        std::fs::write(&path_str, yaml)
+            .map_err(|e| format!("Failed to write file: {}", e))?;
+        info!("Saved schematic to: {}", path_str);
+        Ok(true)
+    } else {
+        info!("Save schematic cancelled by user");
+        Ok(false) // User cancelled
+    }
+}
+
+/// Load a schematic file from disk
+///
+/// Opens a native file picker dialog and reads a YAML schematic file.
+/// Returns the parsed schematic or None if cancelled.
+#[tauri::command]
+async fn load_schematic_file(app: tauri::AppHandle) -> Result<Option<SchematicFile>, String> {
+    // Open file picker dialog
+    let file_path = app
+        .dialog()
+        .file()
+        .add_filter("Ship Schematic", &["yaml", "yml"])
+        .blocking_pick_file();
+
+    // Read and parse file if selected
+    if let Some(path) = file_path {
+        let path_str = path.to_string();
+        let contents = std::fs::read_to_string(&path_str)
+            .map_err(|e| format!("Failed to read file: {}", e))?;
+
+        let schematic: SchematicFile = serde_yaml::from_str(&contents)
+            .map_err(|e| format!("Failed to parse schematic: {}", e))?;
+
+        schematic.validate()?;
+        info!("Loaded schematic from: {}", path_str);
+        Ok(Some(schematic))
+    } else {
+        info!("Load schematic cancelled by user");
+        Ok(None) // User cancelled
+    }
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -239,8 +311,15 @@ fn main() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .manage(cli_args)
-        .invoke_handler(tauri::generate_handler![close_application, js_log, get_cli_args])
+        .invoke_handler(tauri::generate_handler![
+            close_application,
+            js_log,
+            get_cli_args,
+            save_schematic_file,
+            load_schematic_file,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running Frigate Tauri application");
 }

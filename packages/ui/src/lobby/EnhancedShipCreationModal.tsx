@@ -19,6 +19,14 @@ import { ModalShipClassDetailPanel } from './ModalShipClassDetailPanel';
 // ...existing code...
 import type { ShipClassSummary, ShipClassDetails } from '../types/shipClass';
 
+/** Schematic data structure for pre-loading ship configurations */
+export interface SchematicDataForModal {
+  version: number;
+  name: string;
+  ship_class: string;
+  modules: { slot: string; module: string | null }[];
+}
+
 export interface EnhancedShipCreationModalProps {
   /** Team faction ID for faction-specific data */
   factionId: string | null;
@@ -34,6 +42,12 @@ export interface EnhancedShipCreationModalProps {
   isCreating?: boolean;
   /** Additional CSS class name */
   className?: string;
+  /** Callback to load schematic from file - returns schematic data or null if cancelled */
+  onLoadSchematic?: () => Promise<SchematicDataForModal | null>;
+  /** Callback when schematic is loaded (to store for later application) */
+  onSchematicLoaded?: (schematic: SchematicDataForModal) => void;
+  /** Whether schematic file operation is in progress */
+  schematicLoading?: boolean;
 }
 
 /**
@@ -72,10 +86,15 @@ export function EnhancedShipCreationModal({
   onCreate,
   isCreating = false,
   className = '',
+  onLoadSchematic,
+  onSchematicLoaded,
+  schematicLoading = false,
 }: EnhancedShipCreationModalProps): React.ReactElement | null {
   const [shipName, setShipName] = useState('');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [schematicIndicator, setSchematicIndicator] = useState<string | null>(null);
+  const [schematicWarning, setSchematicWarning] = useState<string | null>(null);
   
   const shipClassStore = useShipClassStore();
   
@@ -117,12 +136,47 @@ export function EnhancedShipCreationModal({
   
   const handleCreate = async () => {
     if (!shipName.trim() || !selectedClassId) return;
-    
+
     await onCreate(shipName, selectedClassId);
     // Reset form
     setShipName('');
+    setSchematicIndicator(null);
+    setSchematicWarning(null);
   };
-  
+
+  // Handle load schematic button
+  const handleLoadSchematic = async () => {
+    if (!onLoadSchematic) return;
+
+    // Clear previous warnings
+    setSchematicWarning(null);
+
+    const schematic = await onLoadSchematic();
+    if (schematic) {
+      // Pre-fill name and class from schematic
+      setShipName(schematic.name);
+
+      // Find matching ship class by ID
+      const matchingClass = availableClasses.find(
+        (c) => c.id.toLowerCase() === schematic.ship_class.toLowerCase()
+      );
+      if (matchingClass) {
+        setSelectedClassId(matchingClass.id);
+      } else {
+        // Warn user that schematic's ship class is not available
+        setSchematicWarning(
+          `Schematic ship class "${schematic.ship_class}" not available for this faction. Please select a compatible class manually.`
+        );
+      }
+
+      // Store schematic for later application in design workspace
+      onSchematicLoaded?.(schematic);
+
+      // Show indicator that schematic is loaded
+      setSchematicIndicator(schematic.name);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !isCreating && shipName.trim()) {
       handleCreate();
@@ -262,6 +316,40 @@ export function EnhancedShipCreationModal({
                 gap: 'var(--frigate-space-2)',
               }}
             >
+              {/* Schematic loaded indicator */}
+              {schematicIndicator && (
+                <div
+                  style={{
+                    padding: 'var(--frigate-space-2)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    border: '1px solid var(--frigate-success, #22c55e)',
+                    fontFamily: 'var(--frigate-font-mono)',
+                    fontSize: 'var(--frigate-font-tiny)',
+                    color: 'var(--frigate-success, #22c55e)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  [✓] SCHEMATIC LOADED: {schematicIndicator}
+                </div>
+              )}
+              {/* Schematic ship class mismatch warning */}
+              {schematicWarning && (
+                <div
+                  style={{
+                    padding: 'var(--frigate-space-2)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    border: '1px solid var(--frigate-warning, #f59e0b)',
+                    fontFamily: 'var(--frigate-font-mono)',
+                    fontSize: 'var(--frigate-font-tiny)',
+                    color: 'var(--frigate-warning, #f59e0b)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  [!] {schematicWarning}
+                </div>
+              )}
               {/* Insufficient credits warning */}
               {team && selectedClassDetails?.cost !== undefined && team.credits < selectedClassDetails.cost && (
                 <div
@@ -279,12 +367,24 @@ export function EnhancedShipCreationModal({
                   [!] INSUFFICIENT CREDITS: NEED {formatCredits(selectedClassDetails.cost)} CR, HAVE {formatCredits(team.credits)} CR
                 </div>
               )}
+              {/* Load Schematic Button */}
+              {onLoadSchematic && (
+                <Button
+                  variant="secondary"
+                  onClick={handleLoadSchematic}
+                  disabled={isCreating || schematicLoading}
+                  style={{ width: '100%' }}
+                >
+                  {schematicLoading ? '[LOADING...]' : '[LOAD SCHEMATIC]'}
+                </Button>
+              )}
               <div style={{ display: 'flex', gap: 'var(--frigate-space-3)' }}>
                 <Button
                   variant="primary"
                   onClick={handleCreate}
                   disabled={
                     isCreating ||
+                    schematicLoading ||
                     !shipName.trim() ||
                     !selectedClassId ||
                     (team !== undefined && team !== null && selectedClassDetails?.cost !== undefined && team.credits < selectedClassDetails.cost)
@@ -296,7 +396,7 @@ export function EnhancedShipCreationModal({
                 <Button
                   variant="secondary"
                   onClick={onClose}
-                  disabled={isCreating}
+                  disabled={isCreating || schematicLoading}
                 >
                   [CANCEL]
                 </Button>

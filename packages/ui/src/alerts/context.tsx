@@ -38,6 +38,56 @@ export function useAlert() {
   };
 }
 
+/**
+ * Safe version of useAlert that returns no-op functions when AlertProvider is not present.
+ * Use this in reusable components that may be rendered outside an AlertProvider.
+ */
+export function useAlertSafe() {
+  const context = useContext(AlertContext);
+
+  // No-op functions that just log to console
+  const noop = {
+    info: (title: string, message?: string) => {
+      console.info(`[Alert] INFO: ${title}`, message);
+      return '';
+    },
+    success: (title: string, message?: string) => {
+      console.info(`[Alert] SUCCESS: ${title}`, message);
+      return '';
+    },
+    warning: (title: string, message?: string) => {
+      console.warn(`[Alert] WARNING: ${title}`, message);
+      return '';
+    },
+    danger: (title: string, message?: string) => {
+      console.error(`[Alert] DANGER: ${title}`, message);
+      return '';
+    },
+    critical: (title: string, message?: string) => {
+      console.error(`[Alert] CRITICAL: ${title}`, message);
+      return '';
+    },
+  };
+
+  if (!context) {
+    return noop;
+  }
+
+  const { addAlert } = context;
+  return {
+    info: (title: string, message?: string, options?: Partial<Alert>) =>
+      addAlert({ severity: 'info', title, message, ...options }),
+    success: (title: string, message?: string, options?: Partial<Alert>) =>
+      addAlert({ severity: 'success', title, message, timeout: 3000, ...options }),
+    warning: (title: string, message?: string, options?: Partial<Alert>) =>
+      addAlert({ severity: 'warning', title, message, timeout: 5000, ...options }),
+    danger: (title: string, message?: string, options?: Partial<Alert>) =>
+      addAlert({ severity: 'danger', title, message, timeout: 0, requiresAck: true, ...options }),
+    critical: (title: string, message?: string, options?: Partial<Alert>) =>
+      addAlert({ severity: 'critical', title, message, timeout: 0, requiresAck: true, playSound: true, ...options }),
+  };
+}
+
 export function AlertProvider({ children }: { children: React.ReactNode }) {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
