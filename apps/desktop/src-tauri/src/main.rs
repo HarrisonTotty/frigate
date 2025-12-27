@@ -225,12 +225,12 @@ async fn save_schematic_file(
     // Write file if path selected
     if let Some(path) = file_path {
         let path_str = path.to_string();
-        std::fs::write(&path_str, yaml)
+        std::fs::write(&path_str, &yaml)
             .map_err(|e| format!("Failed to write file: {}", e))?;
         info!("Saved schematic to: {}", path_str);
         Ok(true)
     } else {
-        info!("Save schematic cancelled by user");
+        debug!("Save schematic cancelled by user");
         Ok(false) // User cancelled
     }
 }

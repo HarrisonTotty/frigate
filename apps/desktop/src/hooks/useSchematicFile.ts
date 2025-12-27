@@ -28,9 +28,11 @@ export interface UseSchematicFileReturn {
 
 /**
  * Check if running in Tauri environment
+ * Tauri 2.0 uses __TAURI_INTERNALS__ instead of __TAURI__
  */
 const isTauri = (): boolean => {
-  return typeof window !== 'undefined' && '__TAURI__' in window;
+  return typeof window !== 'undefined' &&
+    ('__TAURI__' in window || '__TAURI_INTERNALS__' in window);
 };
 
 /**

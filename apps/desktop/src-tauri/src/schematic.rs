@@ -124,4 +124,159 @@ mod tests {
         };
         assert!(empty_class.validate().is_err());
     }
+
+    #[test]
+    fn test_schematic_validation_error_messages() {
+        let invalid_version = SchematicFile {
+            version: 2,
+            name: "Test".to_string(),
+            ship_class: "frigate".to_string(),
+            modules: vec![],
+        };
+        let err = invalid_version.validate().unwrap_err();
+        assert!(err.contains("Unsupported schematic version"));
+        assert!(err.contains("2"));
+
+        let empty_name = SchematicFile {
+            version: 1,
+            name: String::new(),
+            ship_class: "frigate".to_string(),
+            modules: vec![],
+        };
+        let err = empty_name.validate().unwrap_err();
+        assert!(err.contains("name cannot be empty"));
+
+        let empty_class = SchematicFile {
+            version: 1,
+            name: "Test".to_string(),
+            ship_class: String::new(),
+            modules: vec![],
+        };
+        let err = empty_class.validate().unwrap_err();
+        assert!(err.contains("Ship class cannot be empty"));
+    }
+
+    #[test]
+    fn test_schematic_with_many_modules() {
+        let modules: Vec<SchematicModule> = (0..100)
+            .map(|i| SchematicModule {
+                slot: format!("slot-{}", i),
+                module: if i % 2 == 0 {
+                    Some(format!("module-{}", i))
+                } else {
+                    None
+                },
+            })
+            .collect();
+
+        let schematic = SchematicFile {
+            version: 1,
+            name: "Large Ship".to_string(),
+            ship_class: "dreadnought".to_string(),
+            modules,
+        };
+
+        assert!(schematic.validate().is_ok());
+
+        // Round-trip serialization
+        let yaml = serde_yaml::to_string(&schematic).unwrap();
+        let parsed: SchematicFile = serde_yaml::from_str(&yaml).unwrap();
+
+        assert_eq!(parsed.modules.len(), 100);
+        assert_eq!(parsed.modules[0].module, Some("module-0".to_string()));
+        assert_eq!(parsed.modules[1].module, None);
+        assert_eq!(parsed.modules[50].module, Some("module-50".to_string()));
+    }
+
+    #[test]
+    fn test_schematic_special_characters_in_name() {
+        let schematic = SchematicFile {
+            version: 1,
+            name: "Ship: The 'Ultimate' Test!".to_string(),
+            ship_class: "cruiser".to_string(),
+            modules: vec![],
+        };
+
+        assert!(schematic.validate().is_ok());
+
+        let yaml = serde_yaml::to_string(&schematic).unwrap();
+        let parsed: SchematicFile = serde_yaml::from_str(&yaml).unwrap();
+        assert_eq!(parsed.name, "Ship: The 'Ultimate' Test!");
+    }
+
+    #[test]
+    fn test_schematic_module_clone() {
+        let module = SchematicModule {
+            slot: "power-core".to_string(),
+            module: Some("fusion-reactor".to_string()),
+        };
+
+        let cloned = module.clone();
+        assert_eq!(cloned.slot, module.slot);
+        assert_eq!(cloned.module, module.module);
+    }
+
+    #[test]
+    fn test_schematic_file_clone() {
+        let schematic = SchematicFile {
+            version: 1,
+            name: "Original".to_string(),
+            ship_class: "frigate".to_string(),
+            modules: vec![SchematicModule {
+                slot: "engine".to_string(),
+                module: Some("ion-drive".to_string()),
+            }],
+        };
+
+        let cloned = schematic.clone();
+        assert_eq!(cloned.version, schematic.version);
+        assert_eq!(cloned.name, schematic.name);
+        assert_eq!(cloned.ship_class, schematic.ship_class);
+        assert_eq!(cloned.modules.len(), schematic.modules.len());
+    }
+
+    #[test]
+    fn test_current_version_constant() {
+        assert_eq!(SchematicFile::CURRENT_VERSION, 1);
+    }
+
+    #[test]
+    fn test_schematic_deserialization_from_yaml_string() {
+        let yaml = r#"
+version: 1
+name: My Ship
+ship_class: corvette
+modules:
+  - slot: power-core
+    module: fusion-mk1
+  - slot: shield
+    module: null
+"#;
+
+        let schematic: SchematicFile = serde_yaml::from_str(yaml).unwrap();
+        assert_eq!(schematic.version, 1);
+        assert_eq!(schematic.name, "My Ship");
+        assert_eq!(schematic.ship_class, "corvette");
+        assert_eq!(schematic.modules.len(), 2);
+        assert_eq!(schematic.modules[0].slot, "power-core");
+        assert_eq!(schematic.modules[0].module, Some("fusion-mk1".to_string()));
+        assert_eq!(schematic.modules[1].slot, "shield");
+        assert_eq!(schematic.modules[1].module, None);
+    }
+
+    #[test]
+    fn test_schematic_empty_modules_list() {
+        let schematic = SchematicFile {
+            version: 1,
+            name: "Empty Ship".to_string(),
+            ship_class: "shuttle".to_string(),
+            modules: vec![],
+        };
+
+        assert!(schematic.validate().is_ok());
+
+        let yaml = serde_yaml::to_string(&schematic).unwrap();
+        let parsed: SchematicFile = serde_yaml::from_str(&yaml).unwrap();
+        assert_eq!(parsed.modules.len(), 0);
+    }
 }
