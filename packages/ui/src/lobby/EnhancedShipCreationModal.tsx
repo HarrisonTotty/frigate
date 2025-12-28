@@ -6,7 +6,7 @@
  * Right column: real-time detail panel with specs, bonuses, and constraints
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../components';
 import { Stack } from '../layout';
 import { LoadingText } from '../loading';
@@ -48,6 +48,8 @@ export interface EnhancedShipCreationModalProps {
   onSchematicLoaded?: (schematic: SchematicDataForModal) => void;
   /** Whether schematic file operation is in progress */
   schematicLoading?: boolean;
+  /** Initial schematic data to pre-fill the form (from external [LOAD SCHEMATIC] button) */
+  initialSchematic?: SchematicDataForModal | null;
 }
 
 /**
@@ -89,19 +91,29 @@ export function EnhancedShipCreationModal({
   onLoadSchematic,
   onSchematicLoaded,
   schematicLoading = false,
+  initialSchematic,
 }: EnhancedShipCreationModalProps): React.ReactElement | null {
   const [shipName, setShipName] = useState('');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [schematicIndicator, setSchematicIndicator] = useState<string | null>(null);
   const [schematicWarning, setSchematicWarning] = useState<string | null>(null);
-  
+
+  // Ref to track which schematic has been applied (to prevent re-applying)
+  const appliedSchematicRef = useRef<SchematicDataForModal | null>(null);
+  // Ref for callback to avoid dependency issues
+  const onSchematicLoadedRef = useRef(onSchematicLoaded);
+  onSchematicLoadedRef.current = onSchematicLoaded;
+
   const shipClassStore = useShipClassStore();
   
   // Load ship classes filtered by faction
   useEffect(() => {
     if (isOpen) {
       shipClassStore.loadShipClasses(factionId || undefined);
+    } else {
+      // Reset applied schematic ref when modal closes
+      appliedSchematicRef.current = null;
     }
   }, [isOpen, factionId]);
   
@@ -128,7 +140,37 @@ export function EnhancedShipCreationModal({
       setSelectedClassId(availableClasses[0].id);
     }
   }, [availableClasses, selectedClassId]);
-  
+
+  // Apply initial schematic when modal opens with one (from external LOAD SCHEMATIC button)
+  useEffect(() => {
+    // Guard: only apply if we haven't already applied this exact schematic
+    if (isOpen && initialSchematic && availableClasses.length > 0 && appliedSchematicRef.current !== initialSchematic) {
+      appliedSchematicRef.current = initialSchematic;
+
+      // Pre-fill name and class from schematic
+      setShipName(initialSchematic.name);
+
+      // Find matching ship class by ID
+      const matchingClass = availableClasses.find(
+        (c) => c.id.toLowerCase() === initialSchematic.ship_class.toLowerCase()
+      );
+      if (matchingClass) {
+        setSelectedClassId(matchingClass.id);
+      } else {
+        // Warn user that schematic's ship class is not available
+        setSchematicWarning(
+          `Schematic ship class "${initialSchematic.ship_class}" not available for this faction. Please select a compatible class manually.`
+        );
+      }
+
+      // Store schematic for later application in design workspace (use ref to avoid dependency)
+      onSchematicLoadedRef.current?.(initialSchematic);
+
+      // Show indicator that schematic is loaded
+      setSchematicIndicator(initialSchematic.name);
+    }
+  }, [isOpen, initialSchematic, availableClasses]);
+
   // Get detailed info for selected class
   const selectedClassDetails = selectedClassId 
     ? shipClassStore.shipClassDetails[selectedClassId] 

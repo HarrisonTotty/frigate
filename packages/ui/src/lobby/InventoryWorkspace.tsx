@@ -12,6 +12,8 @@ import type { Ammunition, ModuleInstance, ModuleVariant } from '@frigate/api-cli
 import { useAmmunition } from '../hooks/useAmmunition';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
+import { useUiBlueprint } from '../hooks/useUiBlueprint';
+import { useCatalog } from '../hooks/useCatalog';
 import { AmmunitionBrowser } from './AmmunitionBrowser';
 import { LoadedInventoryPanel } from './LoadedInventoryPanel';
 import { InventoryConstraintsPanel, type InventoryStats } from './InventoryConstraintsPanel';
@@ -51,11 +53,11 @@ export interface InventoryWorkspaceProps {
   team: Team;
   /** Blueprint ID for this ship */
   blueprintId: string;
-  /** Remaining weight capacity after module installation */
-  availableWeight: number;
-  /** Blueprint's installed modules (for compatibility filtering) */
-  installedModules: ModuleInstance[];
-  /** Variant data for installed modules */
+  /** Remaining weight capacity after module installation (optional - fetched from blueprint if not provided) */
+  availableWeight?: number;
+  /** Blueprint's installed modules (optional - fetched from blueprint if not provided) */
+  installedModules?: ModuleInstance[];
+  /** Variant data for installed modules (optional - fetched from catalog if not provided) */
   variantsById?: Record<string, ModuleVariant>;
   /** Ship design credit cost (to calculate remaining credits) */
   shipDesignCost?: number;
@@ -193,9 +195,9 @@ export function InventoryWorkspace({
   player,
   team,
   blueprintId,
-  availableWeight,
-  installedModules,
-  variantsById = {},
+  availableWeight: availableWeightProp,
+  installedModules: installedModulesProp,
+  variantsById: variantsByIdProp,
   shipDesignCost = 0,
   onBack,
   onRegisterCargo,
@@ -203,6 +205,68 @@ export function InventoryWorkspace({
 }: InventoryWorkspaceProps): React.ReactElement {
   // Fetch ammunition catalog
   const { ammunition, loading, error, refetch } = useAmmunition(apiUrl);
+
+  // Fetch blueprint data from store (for installed modules)
+  const { blueprint, ensureOpen } = useUiBlueprint({ blueprintId, apiBase: apiUrl });
+
+  // Fetch module catalog (for variant data with ammo_type/ammo_size)
+  const { variantsById: catalogVariantsById, getModuleVariants, getModuleSlots } = useCatalog(apiUrl);
+
+  // Track whether we've already loaded data to prevent infinite loops
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Track whether compatibility data has been set in the store
+  const [compatibilityReady, setCompatibilityReady] = useState(false);
+
+  // Ensure blueprint is loaded - only run once on mount
+  useEffect(() => {
+    ensureOpen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blueprintId]);
+
+  // Load module slots and variants for installed modules - only run once when blueprint is available
+  useEffect(() => {
+    // Skip if we've already loaded or if props were provided
+    if (dataLoaded || installedModulesProp || variantsByIdProp) return;
+
+    const instances = blueprint?.instances;
+    if (!instances || instances.length === 0) return;
+
+    const loadVariants = async () => {
+      try {
+        // First load all module slots
+        await getModuleSlots();
+
+        // Then load variants for each unique slot type in the blueprint
+        const slotTypes = new Set(instances.map(inst => inst.module_slot_id));
+
+        for (const slotType of slotTypes) {
+          try {
+            await getModuleVariants(slotType);
+          } catch (err) {
+            console.warn(`[InventoryWorkspace] Failed to load variants for slot ${slotType}:`, err);
+          }
+        }
+
+        setDataLoaded(true);
+      } catch (err) {
+        console.error('[InventoryWorkspace] Failed to load module data:', err);
+      }
+    };
+
+    loadVariants();
+    // We intentionally only depend on blueprint?.instances and the prop flags
+    // The getter functions change on every render due to their state dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blueprint?.instances, installedModulesProp, variantsByIdProp]);
+
+  // Use props if provided, otherwise use data from hooks
+  const installedModules = installedModulesProp ?? (blueprint?.instances ? Array.from(blueprint.instances) : []);
+  const variantsById = variantsByIdProp ?? catalogVariantsById;
+
+  // Calculate available weight from blueprint if not provided via props
+  // Default to a reasonable value if we can't calculate it
+  const availableWeight = availableWeightProp ?? 1000; // TODO: Calculate from ship class weight capacity minus module weight
 
   // Inventory store
   const {
@@ -236,7 +300,7 @@ export function InventoryWorkspace({
 
   // Extract weapon compatibility from installed modules
   const weaponCompatibility = useMemo(
-    () => extractWeaponCompatibility(installedModules, variantsById),
+    () => extractWeaponCompatibility(installedModules, variantsById as Record<string, ModuleVariant>),
     [installedModules, variantsById]
   );
 
@@ -265,8 +329,13 @@ export function InventoryWorkspace({
       weaponCompatibility.hasMissileLaunchers,
       weaponCompatibility.hasTorpedoTubes
     );
+    // Mark compatibility as ready once we've set it (even if empty - means no compatible weapons)
+    // But only if we have some basis for the data (props provided or data loaded)
+    if (installedModulesProp || variantsByIdProp || dataLoaded) {
+      setCompatibilityReady(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using kineticAmmoTypesKey as stable proxy for Set
-  }, [kineticAmmoTypesKey, weaponCompatibility.hasMissileLaunchers, weaponCompatibility.hasTorpedoTubes, setCompatibility]);
+  }, [kineticAmmoTypesKey, weaponCompatibility.hasMissileLaunchers, weaponCompatibility.hasTorpedoTubes, setCompatibility, installedModulesProp, variantsByIdProp, dataLoaded]);
 
   // Handle back button
   const handleBack = useCallback(() => {
@@ -462,7 +531,7 @@ export function InventoryWorkspace({
             ammunition={ammunition}
             loading={loading}
             error={error}
-            showCompatibleOnly={showCompatibleOnly}
+            showCompatibleOnly={compatibilityReady && showCompatibleOnly}
             onToggleCompatibleFilter={() => setShowCompatibleOnly(!showCompatibleOnly)}
             onAddAmmo={handleAddAmmo}
             onShowAmmoDetails={handleShowAmmoDetails}

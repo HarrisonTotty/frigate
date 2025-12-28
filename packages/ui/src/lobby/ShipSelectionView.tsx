@@ -7,19 +7,18 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Panel, Stack } from '../layout';
-import { Button, Select } from '../components';
-import { LoadingText } from '../loading';
+import { Button } from '../components';
 import { useAlert } from '../alerts';
 import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
 import { useShipClassStore } from '../stores/shipClassStore';
 import { EnhancedShipCreationModal } from './EnhancedShipCreationModal';
+import type { SchematicDataForModal } from './EnhancedShipCreationModal';
 import { ShipClassBrowser } from '../shipclass';
 import ShipSelectionHeader from './ShipSelectionHeader';
 import ShipList from './ShipList';
 import type { Player } from './PlayerSelectionView';
 import type { Team } from './TeamBrowser';
-import type { Blueprint, ShipClass } from './BlueprintList';
+import type { Blueprint } from './BlueprintList';
 
 export interface ShipSelectionViewProps {
   apiUrl: string;
@@ -28,10 +27,10 @@ export interface ShipSelectionViewProps {
   onBack?: () => void;
   onDisconnect?: () => void;
   className?: string;
-}
-
-function formatPlayerId(id: string): string {
-  return id.substring(0, 8).toUpperCase();
+  /** Callback to load schematic from file - returns schematic data or null if cancelled */
+  onLoadSchematic?: () => Promise<SchematicDataForModal | null>;
+  /** Whether a schematic file operation is in progress */
+  schematicLoading?: boolean;
 }
 
 export function ShipSelectionView({
@@ -41,6 +40,8 @@ export function ShipSelectionView({
   onBack,
   onDisconnect,
   className = '',
+  onLoadSchematic,
+  schematicLoading = false,
 }: ShipSelectionViewProps): React.ReactElement {
   const [ships, setShips] = useState<Blueprint[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,7 @@ export function ShipSelectionView({
   const [creating, setCreating] = useState(false);
 
   const alert = useAlert();
-  const { setBlueprint, goBack } = useLobbyWorkflowStore();
+  const { setBlueprint, goBack, setPendingSchematic } = useLobbyWorkflowStore();
   
   // Phase 4.12.1: Use ship class store with faction-aware filtering
   const shipClassStore = useShipClassStore();
@@ -146,6 +147,68 @@ export function ShipSelectionView({
     if (onBack) onBack();
   };
 
+  // Handle loading a schematic file - creates ship directly and advances to design workspace
+  const handleLoadSchematic = async () => {
+    if (!onLoadSchematic) return;
+
+    const schematic = await onLoadSchematic();
+    if (!schematic) return;
+
+    // Validate schematic has required fields
+    if (!schematic.name || !schematic.ship_class) {
+      alert.danger('Invalid Schematic', 'Schematic must have a name and ship class');
+      return;
+    }
+
+    // Create the ship directly using schematic data
+    setCreating(true);
+    try {
+      const response = await fetch(`${apiUrl}/v1/blueprints`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: schematic.name,
+          ship_class: schematic.ship_class,
+          team_id: team.id,
+          player_id: player.id,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.id) {
+          // Store the schematic in workflow for application in design workspace
+          setPendingSchematic({
+            version: schematic.version,
+            name: schematic.name,
+            ship_class: schematic.ship_class,
+            modules: schematic.modules.map((m) => ({
+              slot: m.slot,
+              module: m.module,
+            })),
+          });
+
+          alert.success('Schematic Loaded', `Creating ${schematic.name} from schematic...`);
+          // Advance to design workspace - the pending schematic will be applied there
+          setBlueprint(data.id);
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert.danger('Creation Failed', errorData.error || 'Failed to create ship from schematic');
+      }
+    } catch (error) {
+      console.error('Failed to create ship from schematic:', error);
+      alert.danger('Network Error', 'Failed to connect to server');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // Close the creation modal
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+  };
+
   // Phase 4.12.1: Get ship classes from store (sorted by build points)
   const availableShipClasses = shipClassStore.sortShipClasses(
     shipClassStore.shipClasses,
@@ -178,6 +241,15 @@ export function ShipSelectionView({
               <Button variant="primary" onClick={() => setShowCreateModal(true)}>
                 [CREATE NEW SHIP]
               </Button>
+              {onLoadSchematic && (
+                <Button
+                  variant="primary"
+                  onClick={handleLoadSchematic}
+                  disabled={schematicLoading}
+                >
+                  {schematicLoading ? '[LOADING...]' : '[LOAD SCHEMATIC]'}
+                </Button>
+              )}
               <Button variant="secondary" onClick={() => setShowBrowser(true)}>
                 [BROWSE SHIP CLASSES]
               </Button>
@@ -201,7 +273,7 @@ export function ShipSelectionView({
         factionId={team.faction}
         team={{ id: team.id, credits: team.credits ?? 0 }}
         isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={handleCloseModal}
         onCreate={handleCreateShip}
         isCreating={creating}
       />

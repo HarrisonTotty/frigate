@@ -43,3 +43,6 @@ apps/desktop/src-tauri/target/
 
 # Storybook static files
 **/storybook-static/
+
+# Temporary Directory
+/tmp

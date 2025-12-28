@@ -2,6 +2,13 @@
 
 Frigate is the default frontend of HYPERION. It is a modular React application built using TypeScript, Vite, and Tailwind CSS. Frigate provides the user interface for players to interact with the HYPERION spaceship bridge simulation game.
 
+## Documentation
+
+Documentation for Frigate can be found in the `docs/` directory. In particular:
+
+* `architecture.md` - Details the high-level architecture of the frontend.
+* `design.md` - Details the overall visual design philosophy of the project.
+
 ## Visual Design Guidelines
 
 Frigate follows a strict design system philosophy to ensure consistency and maintainability across the UI. Key guidelines include:

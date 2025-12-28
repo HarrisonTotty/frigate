@@ -331,6 +331,8 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           team={currentTeam}
           onBack={() => {}}
           onDisconnect={handleDisconnect}
+          onLoadSchematic={handleLoadSchematic}
+          schematicLoading={schematicLoading}
         />
       );
     }
@@ -396,8 +398,6 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           player={currentPlayer}
           team={currentTeam}
           blueprintId={selectedBlueprintId}
-          availableWeight={100} // TODO: Calculate from ship design
-          installedModules={[]} // TODO: Get from blueprint
           onBack={() => {}}
           onDisconnect={handleDisconnect}
           onRegisterCargo={() => {

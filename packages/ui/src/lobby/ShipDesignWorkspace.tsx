@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import type { ModuleInstance, ModuleSlot } from '@frigate/api-client';
 import ModuleSlotBrowser from './ModuleSlotBrowser';
 import { ShipBlueprintCanvas } from './ShipBlueprintView';
@@ -380,6 +380,15 @@ export function ShipDesignWorkspace({
         try {
           await addInstance(mod.slot, mod.module);
           addedCount++;
+
+          // Fetch variant details into the catalog cache so stats can be calculated
+          if (mod.module) {
+            try {
+              await getModuleVariant(mod.slot, mod.module);
+            } catch (variantErr) {
+              console.warn(`[ShipDesignWorkspace] Failed to fetch variant '${mod.module}' for slot '${mod.slot}':`, variantErr);
+            }
+          }
         } catch (err) {
           failedSlots.push(mod.slot);
           console.warn(`[ShipDesignWorkspace] Failed to add module slot '${mod.slot}':`, err);
@@ -399,7 +408,7 @@ export function ShipDesignWorkspace({
 
       return { success: true, warnings };
     },
-    [instances, removeInstance, addInstance, slotsById, blueprintData]
+    [instances, removeInstance, addInstance, slotsById, blueprintData, getModuleVariant]
   );
 
   // Handle save schematic button
@@ -492,10 +501,13 @@ export function ShipDesignWorkspace({
   }, [onSaveSchematic, onLoadSchematic, handleSaveSchematic, handleLoadSchematic]);
 
   // Apply pending schematic on mount (from ship creation modal)
-  const [pendingSchematicApplied, setPendingSchematicApplied] = useState(false);
+  // Wait for slotsById to be populated before applying
+  // Use a ref to prevent multiple applications (state updates can cause re-runs)
+  const pendingSchematicAppliedRef = useRef(false);
+  const slotsLoaded = Object.keys(slotsById).length > 0;
   useEffect(() => {
-    if (pendingSchematic && blueprintId && !pendingSchematicApplied) {
-      setPendingSchematicApplied(true);
+    if (pendingSchematic && blueprintId && !pendingSchematicAppliedRef.current && slotsLoaded) {
+      pendingSchematicAppliedRef.current = true;
       console.log('[ShipDesignWorkspace] Applying pending schematic from creation modal');
       applySchematicToBlueprint(pendingSchematic).then((result) => {
         clearPendingSchematic();
@@ -510,7 +522,7 @@ export function ShipDesignWorkspace({
         }
       });
     }
-  }, [pendingSchematic, blueprintId, pendingSchematicApplied, applySchematicToBlueprint, clearPendingSchematic, alert]);
+  }, [pendingSchematic, blueprintId, slotsLoaded, applySchematicToBlueprint, clearPendingSchematic, alert]);
 
   // Use the catalog's slotsById directly - it's populated by getModuleSlots()
   // This ensures we're using the same data source as the ModuleSlotBrowserCore

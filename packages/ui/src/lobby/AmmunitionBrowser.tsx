@@ -8,6 +8,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { Ammunition, AmmoCategory } from '@frigate/api-client';
 import { AmmunitionCard } from './AmmunitionCard';
+import { Select } from '../components';
 
 /**
  * Category display labels
@@ -234,28 +235,17 @@ function BrowserHeader({
           >
             SORT:
           </span>
-          <select
+          <Select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortOption)}
-            style={{
-              padding: 'var(--frigate-space-1)',
-              backgroundColor: 'var(--frigate-bg-surface)',
-              border: '1px solid var(--frigate-border-base)',
-              borderRadius: 0,
-              color: 'var(--frigate-text-primary)',
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-tiny)',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-            }}
-            aria-label="Sort ammunition by"
+            size="sm"
           >
             {Object.entries(SORT_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
     </div>
