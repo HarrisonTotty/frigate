@@ -1,9 +1,9 @@
-import type { ModuleSlot, ModuleInstance, ModuleVariant } from '@frigate/api-client';
+import type { ModuleSlot, ModuleInstance, ModuleVariant } from "@frigate/api-client";
 
 /**
  * Ship size category for silhouette selection
  */
-export type ShipSize = 'small' | 'medium' | 'large';
+export type ShipSize = "small" | "medium" | "large";
 
 /**
  * Position for a module slot marker on the blueprint canvas
@@ -20,7 +20,7 @@ export interface SlotPosition {
   /** Attachment point Y on ship silhouette (percentage) */
   attachY: number;
   /** Label position relative to marker */
-  labelPosition: 'left' | 'right' | 'top' | 'bottom';
+  labelPosition: "left" | "right" | "top" | "bottom";
 }
 
 /**

@@ -5,7 +5,7 @@
  * the hard sci-fi design philosophy.
  */
 
-import React, { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
+import React, { useState, useRef, useEffect, useCallback, ReactNode } from "react";
 
 /**
  * Stat row for displaying a key-value pair
@@ -34,7 +34,7 @@ export interface ModuleTooltipProps {
   /** Tags to display (e.g., "[REQUIRED]", "[HAS VARIANTS]") */
   tags?: string[];
   /** Tooltip position relative to target */
-  position?: 'top' | 'bottom' | 'left' | 'right';
+  position?: "top" | "bottom" | "left" | "right";
   /** Delay before showing tooltip (ms) */
   delay?: number;
   /** Whether tooltip is disabled */
@@ -80,7 +80,7 @@ export function ModuleTooltip({
   description,
   stats = [],
   tags = [],
-  position = 'right',
+  position: _position = "right",
   delay = 200,
   disabled = false,
   maxWidth = 280,
@@ -164,7 +164,7 @@ export function ModuleTooltip({
         onMouseMove={handleMouseMove}
         onFocus={showTooltip}
         onBlur={hideTooltip}
-        style={{ display: 'contents' }}
+        style={{ display: "contents" }}
       >
         {children}
       </div>
@@ -174,127 +174,130 @@ export function ModuleTooltip({
           ref={tooltipRef}
           role="tooltip"
           style={{
-            position: 'fixed',
+            position: "fixed",
             left: `${coords.x}px`,
             top: `${coords.y}px`,
             zIndex: 9999,
             maxWidth: `${maxWidth}px`,
-            pointerEvents: 'none',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-tiny)',
-            backgroundColor: 'var(--frigate-bg-raised)',
-            border: '1px solid var(--frigate-primary)',
-            color: 'var(--frigate-text-primary)',
-            padding: 'var(--frigate-space-2)',
+            pointerEvents: "none",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-tiny)",
+            backgroundColor: "var(--frigate-bg-raised)",
+            border: "1px solid var(--frigate-primary)",
+            color: "var(--frigate-text-primary)",
+            padding: "var(--frigate-space-2)",
           }}
         >
-            {/* Header */}
+          {/* Header */}
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: "var(--frigate-font-small)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              marginBottom: subtitle || tags.length > 0 ? "var(--frigate-space-1)" : 0,
+            }}
+          >
+            {title}
+          </div>
+
+          {/* Subtitle */}
+          {subtitle && (
             <div
               style={{
-                fontWeight: 700,
-                fontSize: 'var(--frigate-font-small)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: subtitle || tags.length > 0 ? 'var(--frigate-space-1)' : 0,
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-secondary)",
+                marginBottom: tags.length > 0 ? "var(--frigate-space-1)" : 0,
               }}
             >
-              {title}
+              {subtitle}
             </div>
+          )}
 
-            {/* Subtitle */}
-            {subtitle && (
-              <div
-                style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
-                  marginBottom: tags.length > 0 ? 'var(--frigate-space-1)' : 0,
-                }}
-              >
-                {subtitle}
-              </div>
-            )}
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "var(--frigate-space-1)",
+                marginBottom: "var(--frigate-space-2)",
+              }}
+            >
+              {tags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    fontSize: "var(--frigate-font-tiny)",
+                    color:
+                      tag.includes("WARNING") || tag.includes("REQUIRED")
+                        ? "var(--frigate-warning)"
+                        : "var(--frigate-primary)",
+                    fontWeight: 700,
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 'var(--frigate-space-1)',
-                  marginBottom: 'var(--frigate-space-2)',
-                }}
-              >
-                {tags.map((tag, idx) => (
+          {/* Description */}
+          {description && (
+            <div
+              style={{
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-secondary)",
+                lineHeight: 1.4,
+                marginBottom: stats.length > 0 ? "var(--frigate-space-2)" : 0,
+                borderBottom: stats.length > 0 ? "1px dashed var(--frigate-border-base)" : "none",
+                paddingBottom: stats.length > 0 ? "var(--frigate-space-2)" : 0,
+              }}
+            >
+              {description}
+            </div>
+          )}
+
+          {/* Stats */}
+          {stats.length > 0 && (
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-1)" }}
+            >
+              {stats.map((stat, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <span
-                    key={idx}
                     style={{
-                      fontSize: 'var(--frigate-font-tiny)',
-                      color: tag.includes('WARNING') || tag.includes('REQUIRED')
-                        ? 'var(--frigate-warning)'
-                        : 'var(--frigate-primary)',
-                      fontWeight: 700,
+                      color: "var(--frigate-text-secondary)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
                     }}
                   >
-                    {tag}
+                    {stat.label}
                   </span>
-                ))}
-              </div>
-            )}
-
-            {/* Description */}
-            {description && (
-              <div
-                style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
-                  lineHeight: 1.4,
-                  marginBottom: stats.length > 0 ? 'var(--frigate-space-2)' : 0,
-                  borderBottom: stats.length > 0 ? '1px dashed var(--frigate-border-base)' : 'none',
-                  paddingBottom: stats.length > 0 ? 'var(--frigate-space-2)' : 0,
-                }}
-              >
-                {description}
-              </div>
-            )}
-
-            {/* Stats */}
-            {stats.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
-                {stats.map((stat, idx) => (
-                  <div
-                    key={idx}
+                  <span
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
+                      fontWeight: 600,
+                      color: stat.warning ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
                     }}
                   >
-                    <span
-                      style={{
-                        color: 'var(--frigate-text-secondary)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                      }}
-                    >
-                      {stat.label}
-                    </span>
-                    <span
-                      style={{
-                        fontWeight: 600,
-                        color: stat.warning ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
-                      }}
-                    >
-                      {stat.value}
-                      {stat.unit && (
-                        <span style={{ color: 'var(--frigate-text-muted)', marginLeft: '2px' }}>
-                          {stat.unit}
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+                    {stat.value}
+                    {stat.unit && (
+                      <span style={{ color: "var(--frigate-text-muted)", marginLeft: "2px" }}>
+                        {stat.unit}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </>

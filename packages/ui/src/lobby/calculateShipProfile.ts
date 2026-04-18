@@ -1,4 +1,4 @@
-import type { ShipProfile } from './ShipStatsPanel';
+import type { ShipProfile } from "./ShipStatsPanel";
 
 /**
  * Module slot definition with groups
@@ -50,16 +50,16 @@ export interface ProfileConfig {
  * Default configuration based on Hyperion module data ranges
  */
 export const DEFAULT_PROFILE_CONFIG: ProfileConfig = {
-  maxShields: 4000,       // Heavy Shield Mk3
-  maxHpBonus: 200,        // Reasonable max from modules
-  maxThrust: 1800,        // Plasma engines
-  maxAngular: 1600,       // Plasma thrusters
-  maxOffenseSlots: 10,    // Reasonable max weapon slots
-  totalSlotTypes: 18,     // Default total slot types
-  maxScanRange: 30000,    // Long-range sensors
-  maxCooling: 600,        // Cryogenic cooling
-  maxPower: 500,          // High-energy boson reactor
-  maxStealth: 0.90,       // Active cloaking field
+  maxShields: 4000, // Heavy Shield Mk3
+  maxHpBonus: 200, // Reasonable max from modules
+  maxThrust: 1800, // Plasma engines
+  maxAngular: 1600, // Plasma thrusters
+  maxOffenseSlots: 10, // Reasonable max weapon slots
+  totalSlotTypes: 18, // Default total slot types
+  maxScanRange: 30000, // Long-range sensors
+  maxCooling: 600, // Cryogenic cooling
+  maxPower: 500, // High-energy boson reactor
+  maxStealth: 0.9, // Active cloaking field
 };
 
 /**
@@ -103,7 +103,7 @@ export function calculateShipProfile(
     installedSlotTypes.add(slot.id);
 
     // Count offense modules
-    const isWeapon = Array.isArray(slot.groups) && slot.groups.includes('Offense');
+    const isWeapon = Array.isArray(slot.groups) && slot.groups.includes("Offense");
     if (isWeapon) {
       offenseModuleCount++;
     }
@@ -112,43 +112,43 @@ export function calculateShipProfile(
     if (inst.variant_id && variantsById[inst.variant_id]) {
       const variant = variantsById[inst.variant_id];
 
-      if (typeof variant.max_shield_strength === 'number') {
+      if (typeof variant.max_shield_strength === "number") {
         totalShields += variant.max_shield_strength;
       }
-      if (typeof variant.max_thrust === 'number') {
+      if (typeof variant.max_thrust === "number") {
         totalThrust += variant.max_thrust;
       }
-      if (typeof variant.angular_thrust === 'number') {
+      if (typeof variant.angular_thrust === "number") {
         totalAngularThrust += variant.angular_thrust;
       }
-      if (typeof variant.scan_range === 'number') {
+      if (typeof variant.scan_range === "number") {
         totalScanRange += variant.scan_range;
       }
-      if (typeof variant.generated_cooling === 'number') {
+      if (typeof variant.generated_cooling === "number") {
         totalCooling += variant.generated_cooling;
       }
-      if (typeof variant.energy_production === 'number') {
+      if (typeof variant.energy_production === "number") {
         totalPowerProduction += variant.energy_production;
       }
-      if (typeof variant.detectability_reduction === 'number') {
+      if (typeof variant.detectability_reduction === "number") {
         totalStealthReduction = Math.max(totalStealthReduction, variant.detectability_reduction);
       }
-      if (variant.warp_type === 'warp' || variant.warp_type === 'jump') {
+      if (variant.warp_type === "warp" || variant.warp_type === "jump") {
         hasWarpDrive = true;
       }
     }
   }
 
   // Calculate normalized scores
-  const defenseScore = Math.min(1, (
-    (totalHp / (100 + cfg.maxHpBonus)) * 0.4 +
-    (totalShields / cfg.maxShields) * 0.6
-  ));
+  const defenseScore = Math.min(
+    1,
+    (totalHp / (100 + cfg.maxHpBonus)) * 0.4 + (totalShields / cfg.maxShields) * 0.6
+  );
 
-  const mobilityScore = Math.min(1, (
-    (totalThrust / cfg.maxThrust) * 0.6 +
-    (totalAngularThrust / cfg.maxAngular) * 0.4
-  ));
+  const mobilityScore = Math.min(
+    1,
+    (totalThrust / cfg.maxThrust) * 0.6 + (totalAngularThrust / cfg.maxAngular) * 0.4
+  );
 
   const offenseScore = Math.min(1, offenseModuleCount / cfg.maxOffenseSlots);
 
@@ -160,13 +160,14 @@ export function calculateShipProfile(
   const stealthScore = totalStealthReduction / cfg.maxStealth;
   const warpBonus = hasWarpDrive ? 1 : 0;
 
-  const utilityScore = Math.min(1, (
+  const utilityScore = Math.min(
+    1,
     sensorScore * 0.25 +
-    coolingScore * 0.20 +
-    powerScore * 0.25 +
-    stealthScore * 0.15 +
-    warpBonus * 0.15
-  ));
+      coolingScore * 0.2 +
+      powerScore * 0.25 +
+      stealthScore * 0.15 +
+      warpBonus * 0.15
+  );
 
   return {
     defense: defenseScore,

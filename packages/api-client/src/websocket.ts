@@ -3,7 +3,7 @@ import type {
   ConnectionStatus,
   EventSubscriptionFilter,
   HyperionEvent,
-  HyperionEventType
+  HyperionEventType,
 } from "./types";
 
 export interface WebSocketFactory {
@@ -77,7 +77,7 @@ export class WebSocketManager {
       maxQueueSize: DEFAULT_MAX_QUEUE_SIZE,
       factory: (url, protocols) => new WebSocket(url, protocols),
       logger: () => undefined,
-      ...options
+      ...options,
     } as Required<WebSocketManagerOptions>;
   }
 
@@ -86,7 +86,10 @@ export class WebSocketManager {
   }
 
   public async connect(): Promise<void> {
-    if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+    if (
+      this.socket &&
+      (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)
+    ) {
       return;
     }
     const token = this.options.tokenProvider ? await this.options.tokenProvider() : null;
@@ -96,7 +99,9 @@ export class WebSocketManager {
       this.socket = this.options.factory(url, this.options.protocols);
       this.attachSocketListeners(this.socket);
     } catch (error) {
-      this.options.logger("websocket_factory_error", { error: (error as Error)?.message ?? "unknown" });
+      this.options.logger("websocket_factory_error", {
+        error: (error as Error)?.message ?? "unknown",
+      });
       this.scheduleReconnect();
     }
   }
@@ -112,22 +117,27 @@ export class WebSocketManager {
       try {
         this.socket.close(1000, "client_shutdown");
       } catch (error) {
-        this.options.logger("websocket_close_error", { error: (error as Error)?.message ?? "unknown" });
+        this.options.logger("websocket_close_error", {
+          error: (error as Error)?.message ?? "unknown",
+        });
       }
     }
     this.socket = null;
     this.transition("disconnected");
   }
 
-  public subscribe(handler: (event: HyperionEvent) => void, options?: {
-    readonly types?: HyperionEventType[];
-    readonly filter?: EventSubscriptionFilter;
-  }): () => void {
+  public subscribe(
+    handler: (event: HyperionEvent) => void,
+    options?: {
+      readonly types?: HyperionEventType[];
+      readonly filter?: EventSubscriptionFilter;
+    }
+  ): () => void {
     const subscription: Subscription = {
       id: this.nextSubscriptionId++,
       handler,
       types: options?.types ? new Set(options.types) : undefined,
-      filter: options?.filter
+      filter: options?.filter,
     };
     this.subscriptions.set(subscription.id, subscription);
     return () => {
@@ -169,7 +179,9 @@ export class WebSocketManager {
       const hyperionEvent = parseHyperionEvent(parsed);
       this.enqueueEvent(hyperionEvent);
     } catch (error) {
-      this.options.logger("websocket_message_parse_error", { error: (error as Error)?.message ?? "unknown" });
+      this.options.logger("websocket_message_parse_error", {
+        error: (error as Error)?.message ?? "unknown",
+      });
     }
   };
 
@@ -215,7 +227,9 @@ export class WebSocketManager {
           try {
             subscription.handler(event);
           } catch (error) {
-            this.options.logger("websocket_handler_error", { error: (error as Error)?.message ?? "unknown" });
+            this.options.logger("websocket_handler_error", {
+              error: (error as Error)?.message ?? "unknown",
+            });
           }
         }
       }
@@ -233,7 +247,9 @@ export class WebSocketManager {
       try {
         this.socket.send(JSON.stringify(this.options.heartbeatPayload()));
       } catch (error) {
-        this.options.logger("websocket_heartbeat_error", { error: (error as Error)?.message ?? "unknown" });
+        this.options.logger("websocket_heartbeat_error", {
+          error: (error as Error)?.message ?? "unknown",
+        });
       }
     }, this.options.heartbeatIntervalMs);
   }
@@ -249,7 +265,8 @@ export class WebSocketManager {
     this.clearReconnect();
     this.reconnectAttempts += 1;
     const delay = Math.min(
-      this.options.reconnectInitialDelayMs * this.options.reconnectMultiplier ** (this.reconnectAttempts - 1),
+      this.options.reconnectInitialDelayMs *
+        this.options.reconnectMultiplier ** (this.reconnectAttempts - 1),
       this.options.reconnectMaxDelayMs
     );
     const jitter = Math.random() * this.options.reconnectInitialDelayMs;
@@ -274,7 +291,9 @@ export class WebSocketManager {
       try {
         listener(status, cause);
       } catch (error) {
-        this.options.logger("websocket_status_listener_error", { error: (error as Error)?.message ?? "unknown" });
+        this.options.logger("websocket_status_listener_error", {
+          error: (error as Error)?.message ?? "unknown",
+        });
       }
     }
   }

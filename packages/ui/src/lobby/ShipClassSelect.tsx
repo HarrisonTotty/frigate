@@ -1,15 +1,15 @@
 /**
  * ShipClassSelect - Ship class dropdown for ship creation modal
  */
-import React from 'react';
-import { Select, Badge } from '../components';
-import type { ShipClassSummary, ShipClassDetails } from '../types/shipClass';
+import React from "react";
+import { Select, Badge } from "../components";
+import type { ShipClassSummary, ShipClassDetails } from "../types/shipClass";
 
 /**
  * Format credit values without thousand separators (cleaner for monospace display)
  */
 function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null) return '---';
+  if (value === undefined || value === null) return "---";
   return String(value);
 }
 
@@ -24,7 +24,7 @@ function formatShipClassLabel(
 ): string {
   const shipName = name.toUpperCase();
   const creditsStr = `[${formatCredits(cost)} CR]`;
-  const bpStr = `[${buildPoints ?? '---'} BP]`;
+  const bpStr = `[${buildPoints ?? "---"} BP]`;
   return `${shipName}    ${creditsStr} ${bpStr}`;
 }
 
@@ -50,13 +50,13 @@ export function ShipClassSelect({
       <label
         htmlFor="ship-class"
         style={{
-          display: 'block',
-          marginBottom: 'var(--frigate-space-2)',
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          display: "block",
+          marginBottom: "var(--frigate-space-2)",
+          fontFamily: "var(--frigate-font-mono)",
+          fontSize: "var(--frigate-font-small)",
+          color: "var(--frigate-text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
         }}
       >
         SHIP CLASS:
@@ -83,13 +83,13 @@ export function ShipClassSelect({
       {selectedClassDetails && (
         <div
           style={{
-            marginTop: 'var(--frigate-space-2)',
-            padding: 'var(--frigate-space-2)',
-            backgroundColor: 'var(--frigate-bg-surface)',
-            border: '1px solid var(--frigate-border-base)',
+            marginTop: "var(--frigate-space-2)",
+            padding: "var(--frigate-space-2)",
+            backgroundColor: "var(--frigate-bg-surface)",
+            border: "1px solid var(--frigate-border-base)",
           }}
         >
-          <div style={{ display: 'flex', gap: 'var(--frigate-space-2)', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", gap: "var(--frigate-space-2)", flexWrap: "wrap" }}>
             <Badge variant="default" size="sm">
               {selectedClassDetails.size}
             </Badge>

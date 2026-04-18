@@ -1,16 +1,16 @@
 /**
  * Team browser and creation component
- * 
+ *
  * Displays available teams, faction information, and provides team creation interface.
  * Integrates with HYPERION API /v1/teams and /v1/factions endpoints.
  */
 
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { Panel, Stack, Modal } from '../layout';
-import { Button, Badge } from '../components';
-import { useAlert } from '../alerts';
-import type { Player } from './PlayerRegistration';
+import React, { useState, useEffect } from "react";
+import clsx from "clsx";
+import { Panel, Stack, Modal } from "../layout";
+import { Button, Badge } from "../components";
+import { useAlert } from "../alerts";
+import type { Player } from "./PlayerRegistration";
 
 /**
  * Faction data from HYPERION API
@@ -30,7 +30,7 @@ export interface Team {
   name: string;
   faction: string;
   members: string[];
-  status?: 'recruiting' | 'active' | 'in-mission' | 'disbanded';
+  status?: "recruiting" | "active" | "in-mission" | "disbanded";
   /** Team's current credit balance */
   credits?: number;
 }
@@ -59,14 +59,14 @@ export function TeamBrowser({
   currentPlayer,
   onTeamSelected,
   selectedTeam,
-  className = '',
+  className = "",
 }: TeamBrowserProps) {
   const [teams, setTeams] = useState<Team[]>([]);
   const [factions, setFactions] = useState<Faction[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newTeamName, setNewTeamName] = useState('');
-  const [selectedFactionId, setSelectedFactionId] = useState('');
+  const [newTeamName, setNewTeamName] = useState("");
+  const [selectedFactionId, setSelectedFactionId] = useState("");
   const alert = useAlert();
 
   // Load teams and factions
@@ -82,22 +82,24 @@ export function TeamBrowser({
       if (!response.ok) {
         throw new Error(`Failed to load teams: ${response.statusText}`);
       }
-      
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        console.warn('Server returned non-JSON response for /v1/teams');
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Server returned non-JSON response for /v1/teams");
         setTeams([]);
         return;
       }
-      
+
       const data = await response.json();
       setTeams(Array.isArray(data) ? data : []);
     } catch (error) {
       if (error instanceof SyntaxError) {
-        console.warn('JSON parsing failed for /v1/teams - server may not have implemented this endpoint yet');
+        console.warn(
+          "JSON parsing failed for /v1/teams - server may not have implemented this endpoint yet"
+        );
         setTeams([]);
       } else {
-        alert.danger('Load Failed', `Could not load teams: ${error}`);
+        alert.danger("Load Failed", `Could not load teams: ${error}`);
         setTeams([]);
       }
     } finally {
@@ -111,28 +113,30 @@ export function TeamBrowser({
       if (!response.ok) {
         throw new Error(`Failed to load factions: ${response.statusText}`);
       }
-      
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        console.warn('Server returned non-JSON response for /v1/factions');
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Server returned non-JSON response for /v1/factions");
         setFactions([]);
         return;
       }
-      
+
       const data = await response.json();
       const factionsArray = Array.isArray(data) ? data : [];
       setFactions(factionsArray);
-      
+
       // Set default faction
       if (factionsArray.length > 0 && !selectedFactionId) {
         setSelectedFactionId(factionsArray[0].id);
       }
     } catch (error) {
       if (error instanceof SyntaxError) {
-        console.warn('JSON parsing failed for /v1/factions - server may not have implemented this endpoint yet');
+        console.warn(
+          "JSON parsing failed for /v1/factions - server may not have implemented this endpoint yet"
+        );
         setFactions([]);
       } else {
-        alert.warning('Load Failed', `Could not load factions: ${error}`);
+        alert.warning("Load Failed", `Could not load factions: ${error}`);
         setFactions([]);
       }
     }
@@ -140,20 +144,20 @@ export function TeamBrowser({
 
   const createTeam = async () => {
     if (!newTeamName.trim()) {
-      alert.warning('Invalid Name', 'Please enter a team name');
+      alert.warning("Invalid Name", "Please enter a team name");
       return;
     }
 
     if (!selectedFactionId) {
-      alert.warning('No Faction', 'Please select a faction');
+      alert.warning("No Faction", "Please select a faction");
       return;
     }
 
     setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/v1/teams`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newTeamName.trim(),
           faction: selectedFactionId,
@@ -166,15 +170,15 @@ export function TeamBrowser({
 
       const newTeam = await response.json();
       setTeams((prev) => [...prev, newTeam]);
-      setNewTeamName('');
+      setNewTeamName("");
       setShowCreateModal(false);
-      alert.success('Team Created', `${newTeam.name} has been created!`);
-      
+      alert.success("Team Created", `${newTeam.name} has been created!`);
+
       if (onTeamSelected) {
         onTeamSelected(newTeam);
       }
     } catch (error) {
-      alert.danger('Creation Failed', `Could not create team: ${error}`);
+      alert.danger("Creation Failed", `Could not create team: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -202,9 +206,7 @@ export function TeamBrowser({
                   <div className="text-xs text-text-muted uppercase tracking-wide mb-1">
                     Current Team
                   </div>
-                  <div className="text-lg font-bold text-primary-400">
-                    {selectedTeam.name}
-                  </div>
+                  <div className="text-lg font-bold text-primary-400">{selectedTeam.name}</div>
                   {getFactionById(selectedTeam.faction) && (
                     <div className="text-sm text-text-secondary mt-1">
                       {getFactionById(selectedTeam.faction)!.name}
@@ -224,27 +226,25 @@ export function TeamBrowser({
                 {teams.map((team) => {
                   const faction = getFactionById(team.faction);
                   const isSelected = selectedTeam?.id === team.id;
-                  
+
                   return (
                     <button
                       key={team.id}
                       onClick={() => selectTeam(team)}
                       disabled={loading}
                       className={clsx(
-                        'w-full text-left p-3 rounded border transition-colors',
+                        "w-full text-left p-3 rounded border transition-colors",
                         isSelected
-                          ? 'bg-primary-600 border-primary-500'
-                          : 'bg-background-800 border-primary-700 hover:bg-background-700',
-                        loading && 'opacity-50 cursor-not-allowed'
+                          ? "bg-primary-600 border-primary-500"
+                          : "bg-background-800 border-primary-700 hover:bg-background-700",
+                        loading && "opacity-50 cursor-not-allowed"
                       )}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="font-medium truncate">{team.name}</div>
                           {faction && (
-                            <div className="text-xs text-text-muted mt-1">
-                              {faction.name}
-                            </div>
+                            <div className="text-xs text-text-muted mt-1">{faction.name}</div>
                           )}
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
@@ -261,7 +261,7 @@ export function TeamBrowser({
             </div>
           ) : (
             <div className="text-center py-8 text-text-muted">
-              {loading ? 'Loading teams...' : 'No teams available. Create one to get started!'}
+              {loading ? "Loading teams..." : "No teams available. Create one to get started!"}
             </div>
           )}
 
@@ -275,14 +275,8 @@ export function TeamBrowser({
             >
               Create New Team
             </Button>
-            <Button
-              onClick={loadTeams}
-              variant="ghost"
-              size="sm"
-              disabled={loading}
-              fullWidth
-            >
-              {loading ? 'Refreshing...' : 'Refresh Team List'}
+            <Button onClick={loadTeams} variant="ghost" size="sm" disabled={loading} fullWidth>
+              {loading ? "Refreshing..." : "Refresh Team List"}
             </Button>
           </div>
         </Stack>
@@ -298,15 +292,13 @@ export function TeamBrowser({
         <Stack direction="column" gap={4}>
           {/* Team name */}
           <div>
-            <label className="block text-sm text-text-muted mb-2">
-              Team Name:
-            </label>
+            <label className="block text-sm text-text-muted mb-2">Team Name:</label>
             <input
               type="text"
               value={newTeamName}
               onChange={(e) => setNewTeamName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   createTeam();
                 }
               }}
@@ -320,9 +312,7 @@ export function TeamBrowser({
           {/* Faction selection */}
           {factions.length > 0 && (
             <div>
-              <label className="block text-sm text-text-muted mb-2">
-                Faction:
-              </label>
+              <label className="block text-sm text-text-muted mb-2">Faction:</label>
               <div className="space-y-2">
                 {factions.map((faction) => (
                   <button
@@ -330,18 +320,16 @@ export function TeamBrowser({
                     onClick={() => setSelectedFactionId(faction.id)}
                     disabled={loading}
                     className={clsx(
-                      'w-full text-left p-3 rounded border transition-colors',
+                      "w-full text-left p-3 rounded border transition-colors",
                       selectedFactionId === faction.id
-                        ? 'bg-primary-600 border-primary-500'
-                        : 'bg-background-800 border-primary-700 hover:bg-background-700',
-                      loading && 'opacity-50 cursor-not-allowed'
+                        ? "bg-primary-600 border-primary-500"
+                        : "bg-background-800 border-primary-700 hover:bg-background-700",
+                      loading && "opacity-50 cursor-not-allowed"
                     )}
                   >
                     <div className="font-medium">{faction.name}</div>
                     {faction.description && (
-                      <div className="text-xs text-text-muted mt-1">
-                        {faction.description}
-                      </div>
+                      <div className="text-xs text-text-muted mt-1">{faction.description}</div>
                     )}
                     {faction.traits && faction.traits.length > 0 && (
                       <div className="flex gap-1 mt-2">
@@ -366,12 +354,12 @@ export function TeamBrowser({
               disabled={loading || !newTeamName.trim() || !selectedFactionId}
               fullWidth
             >
-              {loading ? 'Creating...' : 'Create Team'}
+              {loading ? "Creating..." : "Create Team"}
             </Button>
             <Button
               onClick={() => {
                 setShowCreateModal(false);
-                setNewTeamName('');
+                setNewTeamName("");
               }}
               variant="secondary"
               disabled={loading}

@@ -1,17 +1,17 @@
 /**
  * Blueprint readiness and validation component
- * 
+ *
  * Displays blueprint validation status and allows players to mark themselves ready.
  * Integrates with HYPERION API blueprint ready and validate endpoints.
  */
 
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { Panel, Stack } from '../layout';
-import { Button, Badge } from '../components';
-import { AlertBanner, useAlert } from '../alerts';
-import { safeJsonParse } from './apiHelpers';
-import type { Blueprint } from './BlueprintList';
+import React, { useState, useEffect } from "react";
+import clsx from "clsx";
+import { Panel, Stack } from "../layout";
+import { Button, Badge } from "../components";
+import { AlertBanner, useAlert } from "../alerts";
+import { safeJsonParse } from "./apiHelpers";
+import type { Blueprint } from "./BlueprintList";
 
 /**
  * Validation result from API
@@ -46,7 +46,7 @@ export function BlueprintReadiness({
   currentPlayerId,
   blueprint,
   onReadinessChanged,
-  className = '',
+  className = "",
 }: BlueprintReadinessProps) {
   const [loading, setLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -55,7 +55,7 @@ export function BlueprintReadiness({
 
   useEffect(() => {
     if (blueprint && currentPlayerId) {
-      const playerCrew = blueprint.crew.find(c => c.player_id === currentPlayerId);
+      const playerCrew = blueprint.crew.find((c) => c.player_id === currentPlayerId);
       setIsReady(playerCrew?.ready || false);
       validateBlueprint();
     }
@@ -72,7 +72,7 @@ export function BlueprintReadiness({
       const result = await safeJsonParse<ValidationResult>(response);
       setValidation(result);
     } catch (error) {
-      console.error('Validation failed:', error);
+      console.error("Validation failed:", error);
       setValidation(null);
     }
   };
@@ -86,7 +86,7 @@ export function BlueprintReadiness({
         // Unmark ready
         const response = await fetch(
           `${apiUrl}/v1/blueprints/${blueprint.id}/ready/${currentPlayerId}`,
-          { method: 'DELETE' }
+          { method: "DELETE" }
         );
 
         if (!response.ok) {
@@ -94,12 +94,12 @@ export function BlueprintReadiness({
         }
 
         setIsReady(false);
-        alert.info('Not Ready', 'You have unmarked yourself as ready');
+        alert.info("Not Ready", "You have unmarked yourself as ready");
       } else {
         // Mark ready
         const response = await fetch(`${apiUrl}/v1/blueprints/${blueprint.id}/ready`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ player_id: currentPlayerId }),
         });
 
@@ -108,14 +108,14 @@ export function BlueprintReadiness({
         }
 
         setIsReady(true);
-        alert.success('Ready!', 'You are now ready for launch');
+        alert.success("Ready!", "You are now ready for launch");
       }
 
       if (onReadinessChanged) {
         onReadinessChanged();
       }
     } catch (error) {
-      alert.danger('Ready Toggle Failed', `Could not update readiness: ${error}`);
+      alert.danger("Ready Toggle Failed", `Could not update readiness: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -134,14 +134,12 @@ export function BlueprintReadiness({
   if (!currentPlayerId) {
     return (
       <Panel title="Readiness" className={className}>
-        <div className="text-center py-8 text-text-muted">
-          Select a player to mark ready
-        </div>
+        <div className="text-center py-8 text-text-muted">Select a player to mark ready</div>
       </Panel>
     );
   }
 
-  const readyCount = blueprint.crew.filter(c => c.ready).length;
+  const readyCount = blueprint.crew.filter((c) => c.ready).length;
   const totalCrew = blueprint.crew.length;
   const allReady = totalCrew > 0 && readyCount === totalCrew;
 
@@ -154,22 +152,22 @@ export function BlueprintReadiness({
             {/* Valid/Invalid status */}
             <div
               className={clsx(
-                'p-3 rounded border-2',
+                "p-3 rounded border-2",
                 validation.valid
-                  ? 'bg-success-900/20 border-success-500'
-                  : 'bg-danger-900/20 border-danger-500'
+                  ? "bg-success-900/20 border-success-500"
+                  : "bg-danger-900/20 border-danger-500"
               )}
             >
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold">{validation.valid ? '[OK]' : '[X]'}</span>
+                <span className="text-xl font-bold">{validation.valid ? "[OK]" : "[X]"}</span>
                 <div className="flex-1">
                   <div className="font-bold">
-                    {validation.valid ? 'Blueprint Valid' : 'Blueprint Invalid'}
+                    {validation.valid ? "Blueprint Valid" : "Blueprint Invalid"}
                   </div>
                   <div className="text-sm text-text-secondary">
                     {validation.valid
-                      ? 'Ready for compilation'
-                      : 'Issues must be resolved before launch'}
+                      ? "Ready for compilation"
+                      : "Issues must be resolved before launch"}
                   </div>
                 </div>
               </div>
@@ -179,12 +177,7 @@ export function BlueprintReadiness({
             {validation.issues.length > 0 && (
               <div className="space-y-2">
                 {validation.issues.map((issue, i) => (
-                  <AlertBanner
-                    key={i}
-                    severity="danger"
-                    title="Issue"
-                    message={issue}
-                  />
+                  <AlertBanner key={i} severity="danger" title="Issue" message={issue} />
                 ))}
               </div>
             )}
@@ -193,12 +186,7 @@ export function BlueprintReadiness({
             {validation.warnings.length > 0 && (
               <div className="space-y-2">
                 {validation.warnings.map((warning, i) => (
-                  <AlertBanner
-                    key={i}
-                    severity="warning"
-                    title="Warning"
-                    message={warning}
-                  />
+                  <AlertBanner key={i} severity="warning" title="Warning" message={warning} />
                 ))}
               </div>
             )}
@@ -222,8 +210,8 @@ export function BlueprintReadiness({
           <div className="h-2 bg-background-900 rounded-full overflow-hidden">
             <div
               className={clsx(
-                'h-full transition-all duration-300',
-                allReady ? 'bg-success-500' : 'bg-primary-500'
+                "h-full transition-all duration-300",
+                allReady ? "bg-success-500" : "bg-primary-500"
               )}
               style={{ width: `${totalCrew > 0 ? (readyCount / totalCrew) * 100 : 0}%` }}
             />
@@ -233,21 +221,15 @@ export function BlueprintReadiness({
         {/* Ready toggle */}
         <Button
           onClick={toggleReady}
-          variant={isReady ? 'secondary' : 'success'}
+          variant={isReady ? "secondary" : "success"}
           disabled={loading}
           fullWidth
         >
-          {loading ? 'Updating...' : isReady ? 'Unmark Ready' : 'Mark Ready'}
+          {loading ? "Updating..." : isReady ? "Unmark Ready" : "Mark Ready"}
         </Button>
 
         {/* Refresh validation */}
-        <Button
-          onClick={validateBlueprint}
-          variant="ghost"
-          size="sm"
-          disabled={loading}
-          fullWidth
-        >
+        <Button onClick={validateBlueprint} variant="ghost" size="sm" disabled={loading} fullWidth>
           Refresh Validation
         </Button>
 

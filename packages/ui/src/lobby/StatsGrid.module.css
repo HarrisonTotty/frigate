@@ -61,7 +61,12 @@
 .gaugeBar {
   flex: 1;
   height: 100%;
-  background: linear-gradient(90deg, var(--frigate-success), var(--frigate-warning), var(--frigate-danger));
+  background: linear-gradient(
+    90deg,
+    var(--frigate-success),
+    var(--frigate-warning),
+    var(--frigate-danger)
+  );
   border: 1px solid var(--frigate-primary);
   border-radius: var(--frigate-radius-none);
   transition: width 0.15s ease;

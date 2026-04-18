@@ -2,17 +2,17 @@
  * Team selection view - Phase 4.5
  */
 
-import React, { useState, useEffect } from 'react';
-import { Panel, Stack } from '../layout';
-import { Button } from '../components';
-import TeamListItem from './TeamListItem';
-import { LoadingText } from '../loading';
-import { useAlert } from '../alerts';
-import CreateTeamModal from './CreateTeamModal';
-import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
-import TeamSelectionViewHeader from './TeamSelectionViewHeader';
-import type { Player } from './PlayerSelectionView';
-import type { Team } from './TeamBrowser';
+import React, { useState, useEffect } from "react";
+import { Panel, Stack } from "../layout";
+import { Button } from "../components";
+import TeamListItem from "./TeamListItem";
+import { LoadingText } from "../loading";
+import { useAlert } from "../alerts";
+import CreateTeamModal from "./CreateTeamModal";
+import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
+import TeamSelectionViewHeader from "./TeamSelectionViewHeader";
+import type { Player } from "./PlayerSelectionView";
+import type { Team } from "./TeamBrowser";
 
 export interface Faction {
   id: string;
@@ -32,16 +32,16 @@ export function TeamSelectionView({
   player,
   onBack,
   onDisconnect,
-  className = '',
+  className = "",
 }: TeamSelectionViewProps): React.ReactElement {
   const [teams, setTeams] = useState<Team[]>([]);
   const [factions, setFactions] = useState<Faction[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newTeamName, setNewTeamName] = useState('');
-  const [selectedFactionId, setSelectedFactionId] = useState('');
+  const [newTeamName, setNewTeamName] = useState("");
+  const [selectedFactionId, setSelectedFactionId] = useState("");
   const [creating, setCreating] = useState(false);
-  
+
   const alert = useAlert();
   const { setTeam, goBack } = useLobbyWorkflowStore();
 
@@ -55,7 +55,7 @@ export function TeamSelectionView({
           if (data && data.teams) setTeams(data.teams);
         }
       } catch (error) {
-        console.error('Failed to load teams:', error);
+        console.error("Failed to load teams:", error);
       } finally {
         setLoading(false);
       }
@@ -77,7 +77,7 @@ export function TeamSelectionView({
           }
         }
       } catch (error) {
-        console.error('Failed to load factions:', error);
+        console.error("Failed to load factions:", error);
       }
     };
     loadFactions();
@@ -88,15 +88,15 @@ export function TeamSelectionView({
 
     // Validation: 3-32 characters
     if (newTeamName.length < 3 || newTeamName.length > 32) {
-      alert.danger('Invalid Name', 'Team name must be 3-32 characters');
+      alert.danger("Invalid Name", "Team name must be 3-32 characters");
       return;
     }
 
     setCreating(true);
     try {
       const response = await fetch(`${apiUrl}/v1/teams`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newTeamName,
           faction: selectedFactionId,
@@ -106,33 +106,33 @@ export function TeamSelectionView({
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Team created successfully:', data);
-        
+        console.log("Team created successfully:", data);
+
         // The API returns the team object directly, not wrapped in { team: ... }
         if (data && data.id) {
-          console.log('Setting team ID:', data.id);
-          
+          console.log("Setting team ID:", data.id);
+
           // Close modal first
           setShowCreateModal(false);
-          setNewTeamName('');
-          
+          setNewTeamName("");
+
           // Show success alert
-          alert.success('Team Created', `Successfully created team ${newTeamName}`);
-          
+          alert.success("Team Created", `Successfully created team ${newTeamName}`);
+
           // Advance to next step (this will unmount this component)
-          console.log('Calling setTeam to advance workflow...');
+          console.log("Calling setTeam to advance workflow...");
           setTeam(data.id);
-          console.log('setTeam called');
+          console.log("setTeam called");
         } else {
-          console.error('Team data missing in response:', data);
+          console.error("Team data missing in response:", data);
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
-        alert.danger('Creation Failed', errorData.error || 'Failed to create team');
+        alert.danger("Creation Failed", errorData.error || "Failed to create team");
       }
     } catch (error) {
-      console.error('Failed to create team:', error);
-      alert.danger('Network Error', 'Failed to connect to server');
+      console.error("Failed to create team:", error);
+      alert.danger("Network Error", "Failed to connect to server");
     } finally {
       setCreating(false);
     }
@@ -140,7 +140,7 @@ export function TeamSelectionView({
 
   const handleSelectTeam = (teamId: string) => {
     setTeam(teamId);
-    alert.success('Team Selected', 'Successfully joined team');
+    alert.success("Team Selected", "Successfully joined team");
   };
 
   const handleBack = () => {
@@ -155,13 +155,15 @@ export function TeamSelectionView({
       <Panel title="TEAM SELECTION" fullHeight>
         <Stack gap={4}>
           {/* Status text (optional, for consistency) */}
-          <div style={{
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}>
+          <div
+            style={{
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
+              color: "var(--frigate-text-secondary)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
             {/* Could add a status or instructions here if desired */}
           </div>
 
@@ -169,7 +171,14 @@ export function TeamSelectionView({
           {loading ? (
             <LoadingText message="LOADING TEAMS..." />
           ) : teams.length === 0 ? (
-            <div style={{ padding: 'var(--frigate-space-8)', textAlign: 'center', color: 'var(--frigate-text-muted)', fontFamily: 'var(--frigate-font-mono)' }}>
+            <div
+              style={{
+                padding: "var(--frigate-space-8)",
+                textAlign: "center",
+                color: "var(--frigate-text-muted)",
+                fontFamily: "var(--frigate-font-mono)",
+              }}
+            >
               NO TEAMS AVAILABLE
             </div>
           ) : (
@@ -181,18 +190,11 @@ export function TeamSelectionView({
           )}
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 'var(--frigate-space-3)', marginTop: 'auto' }}>
-            <Button
-              variant="primary"
-              onClick={() => setShowCreateModal(true)}
-              style={{ flex: 1 }}
-            >
+          <div style={{ display: "flex", gap: "var(--frigate-space-3)", marginTop: "auto" }}>
+            <Button variant="primary" onClick={() => setShowCreateModal(true)} style={{ flex: 1 }}>
               [CREATE NEW TEAM]
             </Button>
-            <Button
-              variant="secondary"
-              onClick={handleBack}
-            >
+            <Button variant="secondary" onClick={handleBack}>
               [BACK]
             </Button>
           </div>
@@ -211,7 +213,7 @@ export function TeamSelectionView({
           onCreate={handleCreateTeam}
           onCancel={() => {
             setShowCreateModal(false);
-            setNewTeamName('');
+            setNewTeamName("");
           }}
         />
       )}

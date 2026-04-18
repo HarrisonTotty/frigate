@@ -1,12 +1,12 @@
 /**
  * Build Constraints Panel Component - Phase 4.12.2
- * 
+ *
  * Displays ship build constraints with visual bars and gauges
  * to show weight limits, module capacity, and build point budget.
  */
 
-import React from 'react';
-import { Gauge } from '../components';
+import React from "react";
+import { Gauge } from "../components";
 
 export interface BuildConstraintsPanelProps {
   /** Maximum weight capacity in tonnes */
@@ -33,13 +33,13 @@ export interface BuildConstraintsPanelProps {
  * Format credit values with thousand separators
  */
 function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null) return '---';
+  if (value === undefined || value === null) return "---";
   return value.toLocaleString();
 }
 
 /**
  * Build Constraints Panel
- * 
+ *
  * Displays ship build constraints using visual Gauge components
  * and progress bars. Shows maximum capacity for weight, modules,
  * and build points. Optionally shows current usage if provided.
@@ -53,7 +53,7 @@ export function BuildConstraintsPanel({
   currentBuildPoints,
   shipClassCost,
   teamCredits,
-  className = '',
+  className = "",
 }: BuildConstraintsPanelProps): React.ReactElement {
   // Calculate percentages for usage bars
   const weightPercent = currentWeight !== undefined ? (currentWeight / maxWeight) * 100 : 0;
@@ -63,89 +63,85 @@ export function BuildConstraintsPanel({
 
   // Determine bar colors based on usage
   const getBarColor = (percent: number): string => {
-    if (percent >= 100) return 'var(--frigate-danger)';
-    if (percent >= 90) return 'var(--frigate-warning)';
-    return 'var(--frigate-accent)';
+    if (percent >= 100) return "var(--frigate-danger)";
+    if (percent >= 90) return "var(--frigate-warning)";
+    return "var(--frigate-accent)";
   };
 
   return (
     <div className={className}>
       <div
         style={{
-          backgroundColor: 'var(--frigate-bg-surface)',
-          border: '1px solid var(--frigate-border-base)',
-          padding: 'var(--frigate-space-3)',
+          backgroundColor: "var(--frigate-bg-surface)",
+          border: "1px solid var(--frigate-border-base)",
+          padding: "var(--frigate-space-3)",
         }}
       >
         <div
           style={{
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            marginBottom: 'var(--frigate-space-3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-secondary)",
+            marginBottom: "var(--frigate-space-3)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
         >
           BUILD CONSTRAINTS:
         </div>
 
         {/* Maximum Weight */}
-        <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
+        <div style={{ marginBottom: "var(--frigate-space-3)" }}>
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 'var(--frigate-space-1)',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "var(--frigate-space-1)",
             }}
           >
             <div
               style={{
-                fontFamily: 'var(--frigate-font-mono)',
-                fontSize: 'var(--frigate-font-small)',
-                color: 'var(--frigate-text-secondary)',
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-text-secondary)",
               }}
             >
               MAX WEIGHT:
             </div>
-            <Gauge
-              value={maxWeight}
-              label="tonnes"
-              variant="default"
-            />
+            <Gauge value={maxWeight} label="tonnes" variant="default" />
           </div>
           {currentWeight !== undefined && (
             <>
               <div
                 style={{
-                  width: '100%',
-                  height: '8px',
-                  backgroundColor: 'var(--frigate-bg-base)',
-                  border: '1px solid var(--frigate-border-base)',
-                  position: 'relative',
-                  overflow: 'hidden',
+                  width: "100%",
+                  height: "8px",
+                  backgroundColor: "var(--frigate-bg-base)",
+                  border: "1px solid var(--frigate-border-base)",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     left: 0,
-                    height: '100%',
+                    height: "100%",
                     width: `${Math.min(weightPercent, 100)}%`,
                     backgroundColor: getBarColor(weightPercent),
-                    transition: 'width 0.3s ease',
+                    transition: "width 0.3s ease",
                   }}
                 />
               </div>
               <div
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-muted)',
-                  marginTop: 'var(--frigate-space-1)',
-                  textAlign: 'right',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-muted)",
+                  marginTop: "var(--frigate-space-1)",
+                  textAlign: "right",
                 }}
               >
                 {currentWeight.toLocaleString()} / {maxWeight.toLocaleString()} tonnes (
@@ -156,61 +152,57 @@ export function BuildConstraintsPanel({
         </div>
 
         {/* Maximum Modules */}
-        <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
+        <div style={{ marginBottom: "var(--frigate-space-3)" }}>
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 'var(--frigate-space-1)',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "var(--frigate-space-1)",
             }}
           >
             <div
               style={{
-                fontFamily: 'var(--frigate-font-mono)',
-                fontSize: 'var(--frigate-font-small)',
-                color: 'var(--frigate-text-secondary)',
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-text-secondary)",
               }}
             >
               MAX MODULES:
             </div>
-            <Gauge
-              value={maxModules}
-              label="slots"
-              variant="default"
-            />
+            <Gauge value={maxModules} label="slots" variant="default" />
           </div>
           {currentModules !== undefined && (
             <>
               <div
                 style={{
-                  width: '100%',
-                  height: '8px',
-                  backgroundColor: 'var(--frigate-bg-base)',
-                  border: '1px solid var(--frigate-border-base)',
-                  position: 'relative',
-                  overflow: 'hidden',
+                  width: "100%",
+                  height: "8px",
+                  backgroundColor: "var(--frigate-bg-base)",
+                  border: "1px solid var(--frigate-border-base)",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     left: 0,
-                    height: '100%',
+                    height: "100%",
                     width: `${Math.min(modulesPercent, 100)}%`,
                     backgroundColor: getBarColor(modulesPercent),
-                    transition: 'width 0.3s ease',
+                    transition: "width 0.3s ease",
                   }}
                 />
               </div>
               <div
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-muted)',
-                  marginTop: 'var(--frigate-space-1)',
-                  textAlign: 'right',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-muted)",
+                  marginTop: "var(--frigate-space-1)",
+                  textAlign: "right",
                 }}
               >
                 {currentModules} / {maxModules} slots ({modulesPercent.toFixed(1)}%)
@@ -223,58 +215,54 @@ export function BuildConstraintsPanel({
         <div>
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 'var(--frigate-space-1)',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "var(--frigate-space-1)",
             }}
           >
             <div
               style={{
-                fontFamily: 'var(--frigate-font-mono)',
-                fontSize: 'var(--frigate-font-small)',
-                color: 'var(--frigate-text-secondary)',
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-text-secondary)",
               }}
             >
               BUILD POINTS:
             </div>
-            <Gauge
-              value={buildPoints}
-              label="BP"
-              variant="default"
-            />
+            <Gauge value={buildPoints} label="BP" variant="default" />
           </div>
           {currentBuildPoints !== undefined && (
             <>
               <div
                 style={{
-                  width: '100%',
-                  height: '8px',
-                  backgroundColor: 'var(--frigate-bg-base)',
-                  border: '1px solid var(--frigate-border-base)',
-                  position: 'relative',
-                  overflow: 'hidden',
+                  width: "100%",
+                  height: "8px",
+                  backgroundColor: "var(--frigate-bg-base)",
+                  border: "1px solid var(--frigate-border-base)",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     left: 0,
-                    height: '100%',
+                    height: "100%",
                     width: `${Math.min(buildPointsPercent, 100)}%`,
                     backgroundColor: getBarColor(buildPointsPercent),
-                    transition: 'width 0.3s ease',
+                    transition: "width 0.3s ease",
                   }}
                 />
               </div>
               <div
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-muted)',
-                  marginTop: 'var(--frigate-space-1)',
-                  textAlign: 'right',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-muted)",
+                  marginTop: "var(--frigate-space-1)",
+                  textAlign: "right",
                 }}
               >
                 {currentBuildPoints} / {buildPoints} BP ({buildPointsPercent.toFixed(1)}%)
@@ -285,29 +273,35 @@ export function BuildConstraintsPanel({
 
         {/* Credits (shown when shipClassCost or teamCredits is provided) */}
         {(shipClassCost !== undefined || teamCredits !== undefined) && (
-          <div style={{ marginTop: 'var(--frigate-space-3)', paddingTop: 'var(--frigate-space-3)', borderTop: '1px solid var(--frigate-border-base)' }}>
+          <div
+            style={{
+              marginTop: "var(--frigate-space-3)",
+              paddingTop: "var(--frigate-space-3)",
+              borderTop: "1px solid var(--frigate-border-base)",
+            }}
+          >
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 'var(--frigate-space-2)',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "var(--frigate-space-2)",
               }}
             >
               <div
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-small)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-small)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 SHIP COST:
               </div>
               <div
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-small)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-small)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
@@ -317,27 +311,28 @@ export function BuildConstraintsPanel({
             {teamCredits !== undefined && (
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
                 <div
                   style={{
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-small)',
-                    color: 'var(--frigate-text-secondary)',
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-small)",
+                    color: "var(--frigate-text-secondary)",
                   }}
                 >
                   TEAM BALANCE:
                 </div>
                 <div
                   style={{
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-small)',
-                    color: shipClassCost !== undefined && teamCredits < shipClassCost
-                      ? 'var(--frigate-danger)'
-                      : 'var(--frigate-success)',
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-small)",
+                    color:
+                      shipClassCost !== undefined && teamCredits < shipClassCost
+                        ? "var(--frigate-danger)"
+                        : "var(--frigate-success)",
                     fontWeight: 600,
                   }}
                 >

@@ -1,12 +1,12 @@
 /**
  * Ship Stats Panel Component
- * 
+ *
  * Displays aggregate ship statistics calculated from all installed modules.
  * Shows power generation/consumption, propulsion, weapons counts, and other
  * performance metrics.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
 /**
  * Module variant with stats
@@ -16,7 +16,7 @@ export interface ModuleVariant {
   name: string;
   description: string;
   cost: number;
-  stats: Record<string, any>;
+  stats: Record<string, unknown>;
 }
 
 /**
@@ -46,20 +46,20 @@ export interface AggregateStats {
   powerGeneration: number;
   powerConsumption: number;
   powerCapacity: number;
-  
+
   // Propulsion
   totalThrust: number;
-  
+
   // Weapons
   energyWeaponCount: number;
   kineticWeaponCount: number;
   missileWeaponCount: number;
-  
+
   // Defense
   totalArmor: number;
   totalShields: number;
   countermeasureCount: number;
-  
+
   // Other
   totalWeight: number;
   coolingCapacity: number;
@@ -107,7 +107,7 @@ function calculateAggregateStats(
     // Get the variant data
     const variantKey = module.kind ? `${module.module_id}:${module.kind}` : module.module_id;
     const variant = moduleVariants.get(variantKey);
-    
+
     if (!variant) return;
 
     const variantStats = variant.stats || {};
@@ -155,13 +155,13 @@ function calculateAggregateStats(
 
     // Count weapons by module type
     const moduleId = module.module_id;
-    if (moduleId === 'directed_energy_weapon_port') {
+    if (moduleId === "directed_energy_weapon_port") {
       stats.energyWeaponCount++;
-    } else if (moduleId === 'kinetic_weapon_port') {
+    } else if (moduleId === "kinetic_weapon_port") {
       stats.kineticWeaponCount++;
-    } else if (moduleId === 'missile_weapon_port') {
+    } else if (moduleId === "missile_weapon_port") {
       stats.missileWeaponCount++;
-    } else if (moduleId === 'anti_missile_system') {
+    } else if (moduleId === "anti_missile_system") {
       stats.countermeasureCount++;
     }
   });
@@ -171,7 +171,7 @@ function calculateAggregateStats(
 
 /**
  * ShipStatsPanel Component
- * 
+ *
  * Displays aggregate ship performance statistics based on installed modules.
  * Shows power balance, propulsion, weapons, and other key metrics.
  */
@@ -179,7 +179,7 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
   installedModules,
   moduleVariants,
   shipClass,
-  className = '',
+  className = "",
 }) => {
   // Calculate aggregate stats
   const stats = useMemo(
@@ -196,26 +196,26 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
     <div
       className={className}
       style={{
-        backgroundColor: 'var(--frigate-bg-surface)',
-        border: '1px solid var(--frigate-border-base)',
-        padding: 'var(--frigate-space-3)',
+        backgroundColor: "var(--frigate-bg-surface)",
+        border: "1px solid var(--frigate-border-base)",
+        padding: "var(--frigate-space-3)",
       }}
     >
       {/* Header */}
       <div
         style={{
-          marginBottom: 'var(--frigate-space-3)',
-          paddingBottom: 'var(--frigate-space-2)',
-          borderBottom: '1px solid var(--frigate-border-base)',
+          marginBottom: "var(--frigate-space-3)",
+          paddingBottom: "var(--frigate-space-2)",
+          borderBottom: "1px solid var(--frigate-border-base)",
         }}
       >
         <h4
           style={{
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-primary)',
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-primary)",
             fontWeight: 700,
-            textTransform: 'uppercase',
+            textTransform: "uppercase",
             margin: 0,
           }}
         >
@@ -224,83 +224,84 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
       </div>
 
       {/* Stats Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-3)' }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-3)" }}>
         {/* Power Section */}
         <div>
           <div
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-tiny)',
-              color: 'var(--frigate-text-secondary)',
-              marginBottom: 'var(--frigate-space-2)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-secondary)",
+              marginBottom: "var(--frigate-space-2)",
+              textTransform: "uppercase",
               fontWeight: 700,
             }}
           >
             Power & Cooling
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-1)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Generation:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
                 {stats.powerGeneration.toFixed(1)} MW
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Consumption:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: powerDeficit ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: powerDeficit ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
                 {stats.powerConsumption.toFixed(1)} MW
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Balance:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: powerDeficit ? 'var(--frigate-danger)' : 'var(--frigate-success)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: powerDeficit ? "var(--frigate-danger)" : "var(--frigate-success)",
                   fontWeight: 700,
                 }}
               >
-                {powerDeficit ? '⚠ DEFICIT' : '✓ OK'} ({(stats.powerGeneration - stats.powerConsumption).toFixed(1)} MW)
+                {powerDeficit ? "⚠ DEFICIT" : "✓ OK"} (
+                {(stats.powerGeneration - stats.powerConsumption).toFixed(1)} MW)
               </span>
             </div>
           </div>
@@ -310,53 +311,53 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
         <div>
           <div
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-tiny)',
-              color: 'var(--frigate-text-secondary)',
-              marginBottom: 'var(--frigate-space-2)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-secondary)",
+              marginBottom: "var(--frigate-space-2)",
+              textTransform: "uppercase",
               fontWeight: 700,
             }}
           >
             Propulsion & Movement
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-1)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Total Thrust:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
                 {stats.totalThrust.toFixed(0)} kN
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Total Weight:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: overWeight ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: overWeight ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
@@ -370,74 +371,74 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
         <div>
           <div
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-tiny)',
-              color: 'var(--frigate-text-secondary)',
-              marginBottom: 'var(--frigate-space-2)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-secondary)",
+              marginBottom: "var(--frigate-space-2)",
+              textTransform: "uppercase",
               fontWeight: 700,
             }}
           >
             Weapons & Ammunition
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-1)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Directed-Energy Weapon Ports:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
                 {stats.energyWeaponCount}
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Kinetic Weapon Ports:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
                 {stats.kineticWeaponCount}
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Missile Tubes:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
@@ -451,74 +452,74 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
         <div>
           <div
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-tiny)',
-              color: 'var(--frigate-text-secondary)',
-              marginBottom: 'var(--frigate-space-2)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-secondary)",
+              marginBottom: "var(--frigate-space-2)",
+              textTransform: "uppercase",
               fontWeight: 700,
             }}
           >
             Defense & Survivability
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-1)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Hull & Armor:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
                 {shipClass.base_hp} HP
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Shield Characteristics:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
-                {stats.totalShields > 0 ? `${stats.totalShields} HP` : 'None'}
+                {stats.totalShields > 0 ? `${stats.totalShields} HP` : "None"}
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
                 }}
               >
                 Countermeasures:
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-primary)',
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-primary)",
                   fontWeight: 600,
                 }}
               >
@@ -532,29 +533,31 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
         {(powerDeficit || overWeight || heatOverload) && (
           <div
             style={{
-              padding: 'var(--frigate-space-2)',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-              border: '1px solid var(--frigate-danger)',
+              padding: "var(--frigate-space-2)",
+              backgroundColor: "rgba(255, 0, 0, 0.1)",
+              border: "1px solid var(--frigate-danger)",
             }}
           >
             <div
               style={{
-                fontFamily: 'var(--frigate-font-mono)',
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-danger)',
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-danger)",
                 fontWeight: 700,
-                marginBottom: 'var(--frigate-space-1)',
+                marginBottom: "var(--frigate-space-1)",
               }}
             >
               ! WARNINGS
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--frigate-space-1)' }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "var(--frigate-space-1)" }}
+            >
               {powerDeficit && (
                 <div
                   style={{
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-tiny)',
-                    color: 'var(--frigate-text-primary)',
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-text-primary)",
                   }}
                 >
                   • Power consumption exceeds generation
@@ -563,9 +566,9 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
               {overWeight && (
                 <div
                   style={{
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-tiny)',
-                    color: 'var(--frigate-text-primary)',
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-text-primary)",
                   }}
                 >
                   • Ship exceeds maximum weight capacity
@@ -574,9 +577,9 @@ export const ShipStatsPanel: React.FC<ShipStatsPanelProps> = ({
               {heatOverload && (
                 <div
                   style={{
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-tiny)',
-                    color: 'var(--frigate-text-primary)',
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-text-primary)",
                   }}
                 >
                   • Heat generation exceeds cooling capacity

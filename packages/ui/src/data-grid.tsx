@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import { BOX_DRAWING, SYSTEM_ABBR } from './constants';
+import React from "react";
+import clsx from "clsx";
+import { BOX_DRAWING } from "./constants";
 
 /**
  * DataGrid Component
- * 
+ *
  * Terminal-style table with monospace alignment and ASCII separators.
  * Designed for dense technical data display with perfect column alignment.
  */
@@ -16,7 +16,7 @@ export interface DataGridColumn<T> {
   /** Width in characters (monospace units) or CSS value */
   width?: string | number;
   /** Alignment */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   /** Custom cell renderer */
   render?: (row: T) => React.ReactNode;
   /** Accessor function for sorting */
@@ -63,16 +63,16 @@ export function DataGrid<T>({
   bordered = true,
 }: DataGridProps<T>) {
   const [sortColumn, setSortColumn] = React.useState<string | null>(null);
-  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("asc");
 
   const handleSort = (column: DataGridColumn<T>) => {
     if (!column.sortable || !column.accessor) return;
 
     if (sortColumn === column.id) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortColumn(column.id);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -86,8 +86,8 @@ export function DataGrid<T>({
       const aVal = column.accessor!(a);
       const bVal = column.accessor!(b);
 
-      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
   }, [data, sortColumn, sortDirection, columns]);
@@ -117,82 +117,89 @@ export function DataGrid<T>({
   // Abbreviate header labels for technical density
   const abbreviateHeader = (label: string): string => {
     const upper = label.toUpperCase();
-    
+
     // Check SYSTEM_ABBR mappings
     const abbrevMap: Record<string, string> = {
-      'STATUS': 'STS',
-      'POWER': 'PWR',
-      'TARGET': 'TGT',
-      'RANGE': 'RNG',
-      'BEARING': 'BRG',
-      'VELOCITY': 'VEL',
-      'HEADING': 'HDG',
-      'ALTITUDE': 'ALT',
-      'DISTANCE': 'DIST',
-      'TEMPERATURE': 'TEMP',
-      'COOLING': 'COOL',
-      'SHIELDS': 'SHLD',
-      'HULL': 'HULL',
-      'ARMOR': 'ARMR',
-      'AMMUNITION': 'AMMO',
-      'FUEL': 'FUEL',
-      'CHARGE': 'CHRG',
-      'ENGINES': 'ENG',
-      'MISSILES': 'MSLR',
-      'BEAM': 'BEAM',
-      'TYPE': 'TYPE',
-      'NAME': 'NAME',
-      'ID': 'ID',
-      'PRIORITY': 'PRIO',
-      'THREAT': 'THRT',
-      'CONTACT': 'CONT',
+      STATUS: "STS",
+      POWER: "PWR",
+      TARGET: "TGT",
+      RANGE: "RNG",
+      BEARING: "BRG",
+      VELOCITY: "VEL",
+      HEADING: "HDG",
+      ALTITUDE: "ALT",
+      DISTANCE: "DIST",
+      TEMPERATURE: "TEMP",
+      COOLING: "COOL",
+      SHIELDS: "SHLD",
+      HULL: "HULL",
+      ARMOR: "ARMR",
+      AMMUNITION: "AMMO",
+      FUEL: "FUEL",
+      CHARGE: "CHRG",
+      ENGINES: "ENG",
+      MISSILES: "MSLR",
+      BEAM: "BEAM",
+      TYPE: "TYPE",
+      NAME: "NAME",
+      ID: "ID",
+      PRIORITY: "PRIO",
+      THREAT: "THRT",
+      CONTACT: "CONT",
     };
 
     return abbrevMap[upper] || upper;
   };
 
-  const cellPadding = compact ? '4px 8px' : 'var(--frigate-space-3)';
+  const cellPadding = compact ? "4px 8px" : "var(--frigate-space-3)";
 
   return (
-    <div className={clsx('frigate-data-grid', className)} style={{ 
-      overflowX: 'auto',
-      fontFamily: 'var(--frigate-font-mono)',
-    }}>
+    <div
+      className={clsx("frigate-data-grid", className)}
+      style={{
+        overflowX: "auto",
+        fontFamily: "var(--frigate-font-mono)",
+      }}
+    >
       {bordered && (
-        <div style={{
-          color: 'var(--frigate-border-base)',
-          fontSize: 'var(--frigate-font-small)',
-          lineHeight: 1,
-          marginBottom: '2px',
-        }}>
-          {BOX_DRAWING.TOP_LEFT}{BOX_DRAWING.HORIZONTAL.repeat(60)}{BOX_DRAWING.TOP_RIGHT}
+        <div
+          style={{
+            color: "var(--frigate-border-base)",
+            fontSize: "var(--frigate-font-small)",
+            lineHeight: 1,
+            marginBottom: "2px",
+          }}
+        >
+          {BOX_DRAWING.TOP_LEFT}
+          {BOX_DRAWING.HORIZONTAL.repeat(60)}
+          {BOX_DRAWING.TOP_RIGHT}
         </div>
       )}
       <table
         style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
-          border: bordered ? `1px solid var(--frigate-border-base)` : 'none',
-          borderTop: 'none',
-          borderBottom: 'none',
+          width: "100%",
+          borderCollapse: "collapse",
+          fontFamily: "var(--frigate-font-mono)",
+          fontSize: "var(--frigate-font-small)",
+          border: bordered ? `1px solid var(--frigate-border-base)` : "none",
+          borderTop: "none",
+          borderBottom: "none",
         }}
       >
         <thead>
           <tr
             style={{
               borderBottom: `1px solid var(--frigate-border-base)`,
-              backgroundColor: 'var(--frigate-bg-base)',
+              backgroundColor: "var(--frigate-bg-base)",
             }}
           >
             {selectable && (
               <th
                 style={{
                   padding: cellPadding,
-                  textAlign: 'center',
-                  width: '30px',
-                  borderRight: bordered ? `1px solid var(--frigate-border-muted)` : 'none',
+                  textAlign: "center",
+                  width: "30px",
+                  borderRight: bordered ? `1px solid var(--frigate-border-muted)` : "none",
                 }}
               >
                 <input
@@ -200,7 +207,7 @@ export function DataGrid<T>({
                   checked={selectedRows.size === data.length && data.length > 0}
                   onChange={handleSelectAll}
                   aria-label="Select all rows"
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 />
               </th>
             )}
@@ -210,23 +217,28 @@ export function DataGrid<T>({
                 onClick={() => handleSort(column)}
                 style={{
                   padding: cellPadding,
-                  textAlign: column.align || 'left',
+                  textAlign: column.align || "left",
                   width: column.width,
-                  cursor: column.sortable ? 'pointer' : 'default',
-                  color: 'var(--frigate-text-secondary)',
+                  cursor: column.sortable ? "pointer" : "default",
+                  color: "var(--frigate-text-secondary)",
                   fontWeight: 700,
-                  textTransform: 'uppercase',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  letterSpacing: '0.1em',
-                  userSelect: 'none',
-                  borderRight: bordered && idx < columns.length - 1 ? `1px solid var(--frigate-border-muted)` : 'none',
-                  whiteSpace: 'nowrap',
+                  textTransform: "uppercase",
+                  fontSize: "var(--frigate-font-tiny)",
+                  letterSpacing: "0.1em",
+                  userSelect: "none",
+                  borderRight:
+                    bordered && idx < columns.length - 1
+                      ? `1px solid var(--frigate-border-muted)`
+                      : "none",
+                  whiteSpace: "nowrap",
                 }}
               >
-                {column.abbreviated !== false ? abbreviateHeader(column.label) : column.label.toUpperCase()}
+                {column.abbreviated !== false
+                  ? abbreviateHeader(column.label)
+                  : column.label.toUpperCase()}
                 {column.sortable && sortColumn === column.id && (
-                  <span style={{ marginLeft: '4px', opacity: 0.7 }}>
-                    {sortDirection === 'asc' ? '▲' : '▼'}
+                  <span style={{ marginLeft: "4px", opacity: 0.7 }}>
+                    {sortDirection === "asc" ? "▲" : "▼"}
                   </span>
                 )}
               </th>
@@ -243,19 +255,22 @@ export function DataGrid<T>({
                 key={key}
                 onClick={() => onRowClick?.(row)}
                 style={{
-                  borderBottom: rowIdx < sortedData.length - 1 ? `1px solid var(--frigate-border-muted)` : 'none',
-                  backgroundColor: isSelected ? 'var(--frigate-primary-muted)' : 'transparent',
-                  cursor: onRowClick ? 'pointer' : 'default',
-                  transition: 'background-color 50ms ease',
+                  borderBottom:
+                    rowIdx < sortedData.length - 1
+                      ? `1px solid var(--frigate-border-muted)`
+                      : "none",
+                  backgroundColor: isSelected ? "var(--frigate-primary-muted)" : "transparent",
+                  cursor: onRowClick ? "pointer" : "default",
+                  transition: "background-color 50ms ease",
                 }}
                 onMouseEnter={(e) => {
                   if (onRowClick && !isSelected) {
-                    e.currentTarget.style.backgroundColor = 'var(--frigate-bg-raised)';
+                    e.currentTarget.style.backgroundColor = "var(--frigate-bg-raised)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (onRowClick && !isSelected) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.backgroundColor = "transparent";
                   }
                 }}
               >
@@ -263,8 +278,8 @@ export function DataGrid<T>({
                   <td
                     style={{
                       padding: cellPadding,
-                      textAlign: 'center',
-                      borderRight: bordered ? `1px solid var(--frigate-border-muted)` : 'none',
+                      textAlign: "center",
+                      borderRight: bordered ? `1px solid var(--frigate-border-muted)` : "none",
                     }}
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -273,7 +288,7 @@ export function DataGrid<T>({
                       checked={isSelected}
                       onChange={() => handleRowSelect(key)}
                       aria-label={`Select row ${key}`}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     />
                   </td>
                 )}
@@ -282,15 +297,20 @@ export function DataGrid<T>({
                     key={column.id}
                     style={{
                       padding: cellPadding,
-                      textAlign: column.align || 'left',
-                      color: 'var(--frigate-text-primary)',
-                      borderRight: bordered && idx < columns.length - 1 ? `1px solid var(--frigate-border-muted)` : 'none',
-                      fontFamily: 'var(--frigate-font-mono)',
-                      fontSize: 'var(--frigate-font-small)',
-                      whiteSpace: 'nowrap',
+                      textAlign: column.align || "left",
+                      color: "var(--frigate-text-primary)",
+                      borderRight:
+                        bordered && idx < columns.length - 1
+                          ? `1px solid var(--frigate-border-muted)`
+                          : "none",
+                      fontFamily: "var(--frigate-font-mono)",
+                      fontSize: "var(--frigate-font-small)",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    {column.render ? column.render(row) : String((row as any)[column.id] ?? '')}
+                    {column.render
+                      ? column.render(row)
+                      : String((row as Record<string, unknown>)[column.id] ?? "")}
                   </td>
                 ))}
               </tr>
@@ -299,25 +319,29 @@ export function DataGrid<T>({
         </tbody>
       </table>
       {bordered && (
-        <div style={{
-          color: 'var(--frigate-border-base)',
-          fontSize: 'var(--frigate-font-small)',
-          lineHeight: 1,
-          marginTop: '2px',
-        }}>
-          {BOX_DRAWING.BOTTOM_LEFT}{BOX_DRAWING.HORIZONTAL.repeat(60)}{BOX_DRAWING.BOTTOM_RIGHT}
+        <div
+          style={{
+            color: "var(--frigate-border-base)",
+            fontSize: "var(--frigate-font-small)",
+            lineHeight: 1,
+            marginTop: "2px",
+          }}
+        >
+          {BOX_DRAWING.BOTTOM_LEFT}
+          {BOX_DRAWING.HORIZONTAL.repeat(60)}
+          {BOX_DRAWING.BOTTOM_RIGHT}
         </div>
       )}
       {data.length === 0 && (
         <div
           style={{
-            padding: 'var(--frigate-space-8)',
-            textAlign: 'center',
-            color: 'var(--frigate-text-tertiary)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
+            padding: "var(--frigate-space-8)",
+            textAlign: "center",
+            color: "var(--frigate-text-tertiary)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
           }}
         >
           [NO DATA]

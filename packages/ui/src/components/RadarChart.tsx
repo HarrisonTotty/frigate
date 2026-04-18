@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Represents a single axis on the radar chart
@@ -66,7 +66,7 @@ function generatePolygonPoints(
       const pos = getVertexPosition(index, numVertices, radius, center);
       return `${pos.x},${pos.y}`;
     })
-    .join(' ');
+    .join(" ");
 }
 
 /**
@@ -78,10 +78,10 @@ function generatePolygonPoints(
 export function RadarChart({
   axes,
   size = 200,
-  fillColor = 'var(--frigate-primary)',
-  strokeColor = 'var(--frigate-primary)',
-  gridColor = 'var(--frigate-border-base)',
-  labelColor = 'var(--frigate-text-secondary)',
+  fillColor = "var(--frigate-primary)",
+  strokeColor = "var(--frigate-primary)",
+  gridColor = "var(--frigate-border-base)",
+  labelColor = "var(--frigate-text-secondary)",
   gridLevels = 5,
   className,
 }: RadarChartProps) {
@@ -95,7 +95,7 @@ export function RadarChart({
     const points = Array.from({ length: numVertices }, (_, i) => {
       const pos = getVertexPosition(i, numVertices, levelRadius, center);
       return `${pos.x},${pos.y}`;
-    }).join(' ');
+    }).join(" ");
     return points;
   });
 
@@ -124,10 +124,10 @@ export function RadarChart({
     <div
       className={className}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        fontFamily: 'var(--frigate-font-mono)',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        fontFamily: "var(--frigate-font-mono)",
       }}
     >
       <svg
@@ -176,15 +176,7 @@ export function RadarChart({
         {axes.map((axis, index) => {
           const radius = maxRadius * Math.max(0, Math.min(1, axis.value));
           const pos = getVertexPosition(index, numVertices, radius, center);
-          return (
-            <circle
-              key={`point-${index}`}
-              cx={pos.x}
-              cy={pos.y}
-              r={3}
-              fill={strokeColor}
-            />
-          );
+          return <circle key={`point-${index}`} cx={pos.x} cy={pos.y} r={3} fill={strokeColor} />;
         })}
 
         {/* Axis labels */}

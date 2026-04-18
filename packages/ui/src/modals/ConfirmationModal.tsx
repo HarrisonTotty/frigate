@@ -1,6 +1,6 @@
-import React from 'react';
-import { CenteredModal } from './CenteredModal';
-import { Button } from '../components';
+import React from "react";
+import { CenteredModal } from "./CenteredModal";
+import { Button } from "../components";
 
 export interface ConfirmationModalProps {
   title: string;
@@ -19,8 +19,8 @@ export function ConfirmationModal({
   isOpen,
   onConfirm,
   onCancel,
-  confirmLabel = 'CONFIRM',
-  cancelLabel = 'CANCEL',
+  confirmLabel = "CONFIRM",
+  cancelLabel = "CANCEL",
   isDanger = false,
 }: ConfirmationModalProps) {
   return (
@@ -35,7 +35,7 @@ export function ConfirmationModal({
             {cancelLabel}
           </Button>
           <Button
-            variant={isDanger ? 'danger' : 'primary'}
+            variant={isDanger ? "danger" : "primary"}
             onClick={() => {
               onConfirm();
               onCancel();
@@ -49,9 +49,9 @@ export function ConfirmationModal({
       <p
         style={{
           margin: 0,
-          fontSize: 'var(--frigate-font-body)',
+          fontSize: "var(--frigate-font-body)",
           lineHeight: 1.6,
-          color: isDanger ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
+          color: isDanger ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
         }}
       >
         {message}

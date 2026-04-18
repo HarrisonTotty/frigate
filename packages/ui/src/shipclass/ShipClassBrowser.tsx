@@ -1,21 +1,17 @@
 /**
  * Ship Class Browser Component - Phase 4.12.5
- * 
+ *
  * Standalone browser for exploring all available ship classes.
  * Features grid view, filtering, sorting, and detailed inspection.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Badge } from '../components';
-import { Stack } from '../layout';
-import { LoadingText } from '../loading';
-import { ShipClassCard } from '../shipclass';
-import { ShipClassBrowserHeader } from './ShipClassBrowserHeader';
-import { ShipClassFilters } from './ShipClassFilters';
-import { ShipClassGrid } from './ShipClassGrid';
-import { ShipClassDetails } from './ShipClassDetails';
-import { useShipClassStore } from '../stores/shipClassStore';
-import type { ShipClassSummary, ShipSize, ShipRole, ShipClassSortBy, SortOrder } from '../types/shipClass';
+import React, { useState, useEffect } from "react";
+import { ShipClassBrowserHeader } from "./ShipClassBrowserHeader";
+import { ShipClassFilters } from "./ShipClassFilters";
+import { ShipClassGrid } from "./ShipClassGrid";
+import { ShipClassDetails } from "./ShipClassDetails";
+import { useShipClassStore } from "../stores/shipClassStore";
+import type { ShipSize, ShipRole, ShipClassSortBy, SortOrder } from "../types/shipClass";
 
 export interface ShipClassBrowserProps {
   /** Optional faction filter */
@@ -32,7 +28,7 @@ export interface ShipClassBrowserProps {
 
 /**
  * Ship Class Browser
- * 
+ *
  * Comprehensive browser for exploring ship classes:
  * - Grid view of all available classes
  * - Filter by size, role, faction
@@ -45,13 +41,13 @@ export function ShipClassBrowser({
   isOpen,
   onClose,
   onSelect,
-  className = '',
+  className = "",
 }: ShipClassBrowserProps): React.ReactElement | null {
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-  const [filterSize, setFilterSize] = useState<ShipSize | 'all'>('all');
-  const [filterRole, setFilterRole] = useState<ShipRole | 'all'>('all');
-  const [sortBy, setSortBy] = useState<ShipClassSortBy>('name');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [filterSize, setFilterSize] = useState<ShipSize | "all">("all");
+  const [filterRole, setFilterRole] = useState<ShipRole | "all">("all");
+  const [sortBy, setSortBy] = useState<ShipClassSortBy>("name");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [detailsLoading, setDetailsLoading] = useState(false);
 
   const shipClassStore = useShipClassStore();
@@ -75,16 +71,12 @@ export function ShipClassBrowser({
 
   // Apply filters
   const filteredClasses = shipClassStore.filterShipClasses({
-    size: filterSize !== 'all' ? filterSize : undefined,
-    role: filterRole !== 'all' ? filterRole : undefined,
+    size: filterSize !== "all" ? filterSize : undefined,
+    role: filterRole !== "all" ? filterRole : undefined,
   });
 
   // Apply sorting
-  const sortedClasses = shipClassStore.sortShipClasses(
-    filteredClasses,
-    sortBy,
-    sortOrder
-  );
+  const sortedClasses = shipClassStore.sortShipClasses(filteredClasses, sortBy, sortOrder);
 
   // Get selected class details
   const selectedClassDetails = selectedClassId
@@ -103,15 +95,15 @@ export function ShipClassBrowser({
   };
 
   const handleClearFilters = () => {
-    setFilterSize('all');
-    setFilterRole('all');
-    setSortBy('name');
-    setSortOrder('asc');
+    setFilterSize("all");
+    setFilterRole("all");
+    setSortBy("name");
+    setSortOrder("asc");
   };
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       onClose();
     }
   };
@@ -125,17 +117,17 @@ export function ShipClassBrowser({
       aria-labelledby="ship-class-browser-title"
       onKeyDown={handleKeyDown}
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.85)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1000,
-        padding: 'var(--frigate-space-4)',
+        padding: "var(--frigate-space-4)",
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
@@ -146,17 +138,21 @@ export function ShipClassBrowser({
       <div
         className={className}
         style={{
-          width: '100%',
-          maxWidth: '1600px',
-          height: '90vh',
-          maxHeight: '1000px',
-          border: '2px solid var(--frigate-primary)',
-          backgroundColor: 'var(--frigate-bg-base)',
-          display: 'flex',
-          flexDirection: 'column',
+          width: "100%",
+          maxWidth: "1600px",
+          height: "90vh",
+          maxHeight: "1000px",
+          border: "2px solid var(--frigate-primary)",
+          backgroundColor: "var(--frigate-bg-base)",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        <ShipClassBrowserHeader selectedClassId={selectedClassId} onSelect={onSelect ? handleSelect : undefined} onClose={onClose} />
+        <ShipClassBrowserHeader
+          selectedClassId={selectedClassId}
+          onSelect={onSelect ? handleSelect : undefined}
+          onClose={onClose}
+        />
 
         <ShipClassFilters
           filterSize={filterSize}
@@ -175,20 +171,25 @@ export function ShipClassBrowser({
         <div
           style={{
             flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            gap: 'var(--frigate-space-4)',
-            padding: 'var(--frigate-space-4)',
+            overflow: "hidden",
+            display: "flex",
+            gap: "var(--frigate-space-4)",
+            padding: "var(--frigate-space-4)",
           }}
         >
           <div
             style={{
-              width: selectedClassId ? '400px' : '100%',
-              overflow: 'auto',
-              transition: 'width 0.3s ease',
+              width: selectedClassId ? "400px" : "100%",
+              overflow: "auto",
+              transition: "width 0.3s ease",
             }}
           >
-            <ShipClassGrid classes={sortedClasses} isLoading={shipClassStore.isLoading} selectedClassId={selectedClassId} onCardClick={handleCardClick} />
+            <ShipClassGrid
+              classes={sortedClasses}
+              isLoading={shipClassStore.isLoading}
+              selectedClassId={selectedClassId}
+              onCardClick={handleCardClick}
+            />
           </div>
 
           {/* Right: Details Panel */}
@@ -196,12 +197,16 @@ export function ShipClassBrowser({
             <div
               style={{
                 flex: 1,
-                overflow: 'auto',
-                backgroundColor: 'var(--frigate-bg-base)',
-                border: '1px solid var(--frigate-border-base)',
+                overflow: "auto",
+                backgroundColor: "var(--frigate-bg-base)",
+                border: "1px solid var(--frigate-border-base)",
               }}
             >
-              <ShipClassDetails details={selectedClassDetails} loading={detailsLoading} factionId={factionId || undefined} />
+              <ShipClassDetails
+                details={selectedClassDetails}
+                loading={detailsLoading}
+                factionId={factionId || undefined}
+              />
             </div>
           )}
         </div>

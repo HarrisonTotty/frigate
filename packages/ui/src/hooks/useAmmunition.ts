@@ -14,14 +14,13 @@
  * return <AmmunitionBrowser ammunition={ammunition} />;
  * ```
  */
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { Ammunition, AmmoCategory } from '@frigate/api-client';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import type { Ammunition, AmmoCategory } from "@frigate/api-client";
 
 // API endpoint paths
-const AMMO_CATEGORIES_ENDPOINT = '/v1/catalog/ammo';
+const AMMO_CATEGORIES_ENDPOINT = "/v1/catalog/ammo";
 const AMMO_CATEGORY_LIST = (category: string) => `/v1/catalog/ammo/${category}`;
-const AMMO_DETAIL = (category: string, ammoId: string) =>
-  `/v1/catalog/ammo/${category}/${ammoId}`;
+const AMMO_DETAIL = (category: string, ammoId: string) => `/v1/catalog/ammo/${category}/${ammoId}`;
 
 // API response types
 interface AmmoCategoryListResponse {
@@ -102,7 +101,7 @@ export function useAmmunition(apiUrl: string): UseAmmunitionResult {
         const categoryAmmo = await Promise.all(
           ammoIds.map(async (ammoId) => {
             const detailUrl = `${apiUrl}${AMMO_DETAIL(category, ammoId)}`;
-            const data = await fetchJson<Omit<Ammunition, 'category'>>(detailUrl);
+            const data = await fetchJson<Omit<Ammunition, "category">>(detailUrl);
             // Add category to the response
             return {
               ...data,
@@ -116,9 +115,9 @@ export function useAmmunition(apiUrl: string): UseAmmunitionResult {
 
       setAmmunition(allAmmo);
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to load ammunition';
+      const message = e instanceof Error ? e.message : "Failed to load ammunition";
       setError(message);
-      console.error('[useAmmunition] Error fetching ammunition:', e);
+      console.error("[useAmmunition] Error fetching ammunition:", e);
     } finally {
       setLoading(false);
     }

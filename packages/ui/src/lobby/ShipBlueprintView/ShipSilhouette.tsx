@@ -1,5 +1,5 @@
-import React from 'react';
-import type { ShipSilhouetteData } from './types';
+import React from "react";
+import type { ShipSilhouetteData } from "./types";
 
 interface ShipSilhouetteProps {
   silhouette: ShipSilhouetteData;
@@ -11,10 +11,10 @@ interface ShipSilhouetteProps {
  * to ensure markers and connection lines align with the ship
  */
 export const SILHOUETTE_LAYOUT = {
-  top: 15,      // percentage from top
-  left: 20,     // percentage from left
-  width: 60,    // percentage of container width
-  height: 70,   // percentage of container height
+  top: 15, // percentage from top
+  left: 20, // percentage from left
+  width: 60, // percentage of container width
+  height: 70, // percentage of container height
 } as const;
 
 /**
@@ -29,12 +29,12 @@ export function ShipSilhouette({ silhouette, className }: ShipSilhouetteProps) {
       preserveAspectRatio="xMidYMid meet"
       className={className}
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: `${SILHOUETTE_LAYOUT.top}%`,
         left: `${SILHOUETTE_LAYOUT.left}%`,
         width: `${SILHOUETTE_LAYOUT.width}%`,
         height: `${SILHOUETTE_LAYOUT.height}%`,
-        pointerEvents: 'none',
+        pointerEvents: "none",
       }}
       aria-hidden="true"
     >

@@ -1,11 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createFrigateStore } from "./index";
-import type {
-  DockingStatus,
-  RestClient,
-  Ship
-} from "@frigate/api-client";
+import type { DockingStatus, RestClient, Ship } from "@frigate/api-client";
 
 const baseVector = { x: 0, y: 0, z: 0 } as const;
 const baseRotation = { w: 1, x: 0, y: 0, z: 0 } as const;
@@ -25,7 +21,7 @@ const baseShip: Ship = {
   maxShields: 100,
   power: 100,
   maxPower: 100,
-  modules: []
+  modules: [],
 };
 
 const helmKey = (shipId: string) => `helm.thrust:${shipId}`;
@@ -44,19 +40,22 @@ describe("Frigate state store", () => {
       teamId: "team-1",
       shipId: "ship-1",
       assignedRoles: ["helm"],
-      permissions: ["helm:control"]
+      permissions: ["helm:control"],
     });
 
     const saved = localStorage.getItem("frigate.session");
     expect(saved).not.toBeNull();
-    expect(JSON.parse(saved as string)).toMatchObject({ playerId: "player-1", assignedRoles: ["helm"] });
+    expect(JSON.parse(saved as string)).toMatchObject({
+      playerId: "player-1",
+      assignedRoles: ["helm"],
+    });
 
     store.getState().setSession({
       playerId: null,
       teamId: null,
       shipId: null,
       assignedRoles: [],
-      permissions: {}
+      permissions: {},
     });
 
     expect(localStorage.getItem("frigate.session")).toBeNull();
@@ -66,7 +65,7 @@ describe("Frigate state store", () => {
     const store = createFrigateStore();
     store.setState((state) => ({
       ...state,
-      ships: { ...state.ships, [baseShip.id]: baseShip }
+      ships: { ...state.ships, [baseShip.id]: baseShip },
     }));
 
     store.getState().applyEvent({
@@ -75,8 +74,8 @@ describe("Frigate state store", () => {
         shipId: baseShip.id,
         position: { x: 10, y: 5, z: -3 },
         velocity: { x: 1, y: 0, z: 0 },
-        rotation: { w: 0.9, x: 0, y: 0.1, z: 0 }
-      }
+        rotation: { w: 0.9, x: 0, y: 0.1, z: 0 },
+      },
     });
 
     const updated = store.getState().ships[baseShip.id];
@@ -92,26 +91,26 @@ describe("Frigate state store", () => {
       rotationRate: { x: 0, y: 0, z: 0 },
       warpActive: false,
       dockingMode: false,
-      effectiveWeight: 1
+      effectiveWeight: 1,
     } as const;
     const finalStatus = {
       thrust: 55,
       rotationRate: { x: 0, y: 0.5, z: 0 },
       warpActive: false,
       dockingMode: false,
-      effectiveWeight: 0.8
+      effectiveWeight: 0.8,
     } as const;
 
     store.setState((state) => ({
       ...state,
-      helmStatuses: { ...state.helmStatuses, [shipId]: initialStatus }
+      helmStatuses: { ...state.helmStatuses, [shipId]: initialStatus },
     }));
 
     const restClient = {
       helm: {
         setThrust: vi.fn(() => Promise.resolve()),
-        status: vi.fn(() => Promise.resolve(finalStatus))
-      }
+        status: vi.fn(() => Promise.resolve(finalStatus)),
+      },
     } as unknown as RestClient;
 
     await store.getState().setHelmThrust(restClient, shipId, finalStatus.thrust);
@@ -130,20 +129,20 @@ describe("Frigate state store", () => {
       rotationRate: { x: 0, y: 0, z: 0 },
       warpActive: false,
       dockingMode: false,
-      effectiveWeight: 1
+      effectiveWeight: 1,
     } as const;
 
     store.setState((state) => ({
       ...state,
-      helmStatuses: { ...state.helmStatuses, [shipId]: initialStatus }
+      helmStatuses: { ...state.helmStatuses, [shipId]: initialStatus },
     }));
 
     const error = new Error("network");
     const restClient = {
       helm: {
         setThrust: vi.fn(() => Promise.reject(error)),
-        status: vi.fn()
-      }
+        status: vi.fn(),
+      },
     } as unknown as RestClient;
 
     await expect(store.getState().setHelmThrust(restClient, shipId, 75)).rejects.toBe(error);
@@ -165,8 +164,8 @@ describe("Frigate state store", () => {
 
     const restClient = {
       communications: {
-        requestDocking: vi.fn(() => dockingPromise)
-      }
+        requestDocking: vi.fn(() => dockingPromise),
+      },
     } as unknown as RestClient;
 
     const mutation = store.getState().requestDocking(restClient, shipId, stationId);
@@ -190,17 +189,19 @@ describe("Frigate state store", () => {
 
     store.setState((state) => ({
       ...state,
-      dockingStatuses: { ...state.dockingStatuses, [key]: previousStatus }
+      dockingStatuses: { ...state.dockingStatuses, [key]: previousStatus },
     }));
 
     const error = new Error("denied");
     const restClient = {
       communications: {
-        requestDocking: vi.fn(() => Promise.reject(error))
-      }
+        requestDocking: vi.fn(() => Promise.reject(error)),
+      },
     } as unknown as RestClient;
 
-    await expect(store.getState().requestDocking(restClient, shipId, stationId)).rejects.toBe(error);
+    await expect(store.getState().requestDocking(restClient, shipId, stationId)).rejects.toBe(
+      error
+    );
 
     expect(store.getState().dockingStatuses[key]).toEqual(previousStatus);
     expect(store.getState().isMutationPending(`dock.request:${key}`)).toBe(false);

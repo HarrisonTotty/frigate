@@ -5,9 +5,9 @@
  * Displays complete stats, description, and allows adding to inventory.
  * Follows the hard sci-fi design philosophy with technical aesthetic.
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { Ammunition } from '@frigate/api-client';
-import { Button } from '../components';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import type { Ammunition } from "@frigate/api-client";
+import { Button } from "../components";
 
 /**
  * AmmunitionDetailModal Props
@@ -48,7 +48,7 @@ function formatNumber(value: number): string {
 function StatCell({
   label,
   value,
-  unit = '',
+  unit = "",
   span = 1,
 }: {
   label: string;
@@ -59,36 +59,36 @@ function StatCell({
   return (
     <div
       style={{
-        padding: 'var(--frigate-space-2)',
-        border: '1px solid var(--frigate-border-base)',
+        padding: "var(--frigate-space-2)",
+        border: "1px solid var(--frigate-border-base)",
         gridColumn: `span ${span}`,
       }}
     >
       <div
         style={{
-          fontSize: 'var(--frigate-font-tiny)',
-          color: 'var(--frigate-text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginBottom: '4px',
+          fontSize: "var(--frigate-font-tiny)",
+          color: "var(--frigate-text-muted)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginBottom: "4px",
         }}
       >
         {label}
       </div>
       <div
         style={{
-          fontSize: 'var(--frigate-font-body)',
+          fontSize: "var(--frigate-font-body)",
           fontWeight: 700,
-          color: 'var(--frigate-text-primary)',
+          color: "var(--frigate-text-primary)",
         }}
       >
         {value}
         {unit && (
           <span
             style={{
-              color: 'var(--frigate-text-muted)',
+              color: "var(--frigate-text-muted)",
               fontWeight: 400,
-              marginLeft: '4px',
+              marginLeft: "4px",
             }}
           >
             {unit}
@@ -122,7 +122,7 @@ export function AmmunitionDetailModal({
   isCompatible = true,
   incompatibilityReason,
   compatibleWeapons = [],
-  className = '',
+  className = "",
 }: AmmunitionDetailModalProps): React.ReactElement | null {
   const [quantity, setQuantity] = useState(10);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -138,14 +138,14 @@ export function AmmunitionDetailModal({
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   // Focus management
@@ -204,7 +204,7 @@ export function AmmunitionDetailModal({
     ammo.ammo_type?.toUpperCase(),
   ]
     .filter(Boolean)
-    .join(' / ');
+    .join(" / ");
 
   // Check if can add the current quantity
   const canAddCurrentQty = canAddQuantity
@@ -214,15 +214,15 @@ export function AmmunitionDetailModal({
   return (
     <div
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.85)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1000,
       }}
       onClick={handleOverlayClick}
@@ -236,39 +236,39 @@ export function AmmunitionDetailModal({
         tabIndex={-1}
         className={className}
         style={{
-          backgroundColor: 'var(--frigate-bg-base)',
-          border: '2px solid var(--frigate-primary)',
+          backgroundColor: "var(--frigate-bg-base)",
+          border: "2px solid var(--frigate-primary)",
           borderRadius: 0,
-          width: '600px',
-          maxWidth: '90vw',
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column',
-          fontFamily: 'var(--frigate-font-mono)',
-          boxShadow: 'none',
-          outline: 'none',
-          overflow: 'hidden',
+          width: "600px",
+          maxWidth: "90vw",
+          maxHeight: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily: "var(--frigate-font-mono)",
+          boxShadow: "none",
+          outline: "none",
+          overflow: "hidden",
         }}
       >
         {/* Header */}
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: 'var(--frigate-space-3)',
-            borderBottom: '1px solid var(--frigate-border-base)',
-            backgroundColor: 'var(--frigate-bg-surface)',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "var(--frigate-space-3)",
+            borderBottom: "1px solid var(--frigate-border-base)",
+            backgroundColor: "var(--frigate-bg-surface)",
           }}
         >
           <div>
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: '4px',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: "4px",
               }}
             >
               AMMUNITION DETAILS
@@ -277,11 +277,11 @@ export function AmmunitionDetailModal({
               id="ammo-detail-title"
               style={{
                 margin: 0,
-                fontSize: 'var(--frigate-font-heading)',
+                fontSize: "var(--frigate-font-heading)",
                 fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                color: 'var(--frigate-text-primary)',
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                color: "var(--frigate-text-primary)",
               }}
             >
               {ammo.name}
@@ -291,20 +291,20 @@ export function AmmunitionDetailModal({
             onClick={onClose}
             aria-label="Close modal"
             style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--frigate-text-secondary)',
-              fontSize: 'var(--frigate-font-heading)',
-              cursor: 'pointer',
-              padding: 'var(--frigate-space-2)',
-              fontFamily: 'var(--frigate-font-mono)',
+              background: "transparent",
+              border: "none",
+              color: "var(--frigate-text-secondary)",
+              fontSize: "var(--frigate-font-heading)",
+              cursor: "pointer",
+              padding: "var(--frigate-space-2)",
+              fontFamily: "var(--frigate-font-mono)",
               fontWeight: 700,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--frigate-danger)';
+              e.currentTarget.style.color = "var(--frigate-danger)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--frigate-text-secondary)';
+              e.currentTarget.style.color = "var(--frigate-text-secondary)";
             }}
           >
             [CLOSE]
@@ -315,20 +315,20 @@ export function AmmunitionDetailModal({
         <div
           style={{
             flex: 1,
-            overflow: 'auto',
-            padding: 'var(--frigate-space-3)',
+            overflow: "auto",
+            padding: "var(--frigate-space-3)",
           }}
         >
           {/* Type designation */}
           <div
             style={{
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: 'var(--frigate-space-3)',
-              paddingBottom: 'var(--frigate-space-2)',
-              borderBottom: '1px solid var(--frigate-border-base)',
+              fontSize: "var(--frigate-font-small)",
+              color: "var(--frigate-text-secondary)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              marginBottom: "var(--frigate-space-3)",
+              paddingBottom: "var(--frigate-space-2)",
+              borderBottom: "1px solid var(--frigate-border-base)",
             }}
           >
             {typeString}
@@ -337,10 +337,10 @@ export function AmmunitionDetailModal({
           {/* Description */}
           <div
             style={{
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
+              fontSize: "var(--frigate-font-small)",
+              color: "var(--frigate-text-secondary)",
               lineHeight: 1.6,
-              marginBottom: 'var(--frigate-space-3)',
+              marginBottom: "var(--frigate-space-3)",
             }}
           >
             {ammo.description}
@@ -349,16 +349,16 @@ export function AmmunitionDetailModal({
           {/* Specifications Grid */}
           <div
             style={{
-              marginBottom: 'var(--frigate-space-3)',
+              marginBottom: "var(--frigate-space-3)",
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: 'var(--frigate-space-2)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: "var(--frigate-space-2)",
                 fontWeight: 700,
               }}
             >
@@ -366,10 +366,10 @@ export function AmmunitionDetailModal({
             </div>
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
                 gap: 0,
-                border: '1px solid var(--frigate-border-base)',
+                border: "1px solid var(--frigate-border-base)",
               }}
             >
               <StatCell label="COST" value={formatNumber(ammo.cost)} unit="CR" />
@@ -387,21 +387,19 @@ export function AmmunitionDetailModal({
           {/* Compatibility Section */}
           <div
             style={{
-              marginBottom: 'var(--frigate-space-3)',
-              padding: 'var(--frigate-space-2)',
-              backgroundColor: isCompatible
-                ? 'rgba(34, 197, 94, 0.1)'
-                : 'rgba(245, 158, 11, 0.1)',
-              border: `1px solid ${isCompatible ? 'var(--frigate-success)' : 'var(--frigate-warning)'}`,
+              marginBottom: "var(--frigate-space-3)",
+              padding: "var(--frigate-space-2)",
+              backgroundColor: isCompatible ? "rgba(34, 197, 94, 0.1)" : "rgba(245, 158, 11, 0.1)",
+              border: `1px solid ${isCompatible ? "var(--frigate-success)" : "var(--frigate-warning)"}`,
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: 'var(--frigate-space-1)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: "var(--frigate-space-1)",
                 fontWeight: 700,
               }}
             >
@@ -412,8 +410,8 @@ export function AmmunitionDetailModal({
                 <div
                   style={{
                     fontWeight: 700,
-                    color: 'var(--frigate-success)',
-                    fontSize: 'var(--frigate-font-small)',
+                    color: "var(--frigate-success)",
+                    fontSize: "var(--frigate-font-small)",
                   }}
                 >
                   [COMPATIBLE]
@@ -421,9 +419,9 @@ export function AmmunitionDetailModal({
                 {compatibleWeapons.length > 0 && (
                   <div
                     style={{
-                      marginTop: 'var(--frigate-space-1)',
-                      color: 'var(--frigate-text-secondary)',
-                      fontSize: 'var(--frigate-font-tiny)',
+                      marginTop: "var(--frigate-space-1)",
+                      color: "var(--frigate-text-secondary)",
+                      fontSize: "var(--frigate-font-tiny)",
                     }}
                   >
                     {compatibleWeapons.map((weapon, idx) => (
@@ -437,8 +435,8 @@ export function AmmunitionDetailModal({
                 <div
                   style={{
                     fontWeight: 700,
-                    color: 'var(--frigate-warning)',
-                    fontSize: 'var(--frigate-font-small)',
+                    color: "var(--frigate-warning)",
+                    fontSize: "var(--frigate-font-small)",
                   }}
                 >
                   [INCOMPATIBLE]
@@ -446,9 +444,9 @@ export function AmmunitionDetailModal({
                 {incompatibilityReason && (
                   <div
                     style={{
-                      marginTop: 'var(--frigate-space-1)',
-                      color: 'var(--frigate-text-secondary)',
-                      fontSize: 'var(--frigate-font-tiny)',
+                      marginTop: "var(--frigate-space-1)",
+                      color: "var(--frigate-text-secondary)",
+                      fontSize: "var(--frigate-font-tiny)",
                     }}
                   >
                     {incompatibilityReason}
@@ -461,18 +459,18 @@ export function AmmunitionDetailModal({
           {/* Add to Inventory Section */}
           <div
             style={{
-              padding: 'var(--frigate-space-2)',
-              backgroundColor: 'var(--frigate-bg-surface)',
-              border: '1px solid var(--frigate-border-base)',
+              padding: "var(--frigate-space-2)",
+              backgroundColor: "var(--frigate-bg-surface)",
+              border: "1px solid var(--frigate-border-base)",
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: 'var(--frigate-space-2)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: "var(--frigate-space-2)",
                 fontWeight: 700,
               }}
             >
@@ -482,17 +480,17 @@ export function AmmunitionDetailModal({
             {/* Quantity Input Row */}
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--frigate-space-2)',
-                marginBottom: 'var(--frigate-space-2)',
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--frigate-space-2)",
+                marginBottom: "var(--frigate-space-2)",
               }}
             >
               <span
                 style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
-                  textTransform: 'uppercase',
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-secondary)",
+                  textTransform: "uppercase",
                 }}
               >
                 QUANTITY:
@@ -503,30 +501,30 @@ export function AmmunitionDetailModal({
                 onChange={handleQuantityChange}
                 min={0}
                 style={{
-                  width: '100px',
-                  padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-                  backgroundColor: 'var(--frigate-bg-base)',
-                  border: '1px solid var(--frigate-border-light)',
+                  width: "100px",
+                  padding: "var(--frigate-space-1) var(--frigate-space-2)",
+                  backgroundColor: "var(--frigate-bg-base)",
+                  border: "1px solid var(--frigate-border-light)",
                   borderRadius: 0,
-                  color: 'var(--frigate-text-primary)',
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-small)',
+                  color: "var(--frigate-text-primary)",
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-small)",
                   fontWeight: 700,
-                  textAlign: 'right',
+                  textAlign: "right",
                 }}
                 aria-label="Quantity to add"
               />
               <button
                 onClick={() => handleQuickAdd(10)}
                 style={{
-                  padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-                  backgroundColor: 'var(--frigate-bg-base)',
-                  border: '1px solid var(--frigate-border-base)',
+                  padding: "var(--frigate-space-1) var(--frigate-space-2)",
+                  backgroundColor: "var(--frigate-bg-base)",
+                  border: "1px solid var(--frigate-border-base)",
                   borderRadius: 0,
-                  color: 'var(--frigate-text-secondary)',
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  cursor: 'pointer',
+                  color: "var(--frigate-text-secondary)",
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  cursor: "pointer",
                 }}
                 aria-label="Add 10"
               >
@@ -535,14 +533,14 @@ export function AmmunitionDetailModal({
               <button
                 onClick={() => handleQuickAdd(100)}
                 style={{
-                  padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-                  backgroundColor: 'var(--frigate-bg-base)',
-                  border: '1px solid var(--frigate-border-base)',
+                  padding: "var(--frigate-space-1) var(--frigate-space-2)",
+                  backgroundColor: "var(--frigate-bg-base)",
+                  border: "1px solid var(--frigate-border-base)",
                   borderRadius: 0,
-                  color: 'var(--frigate-text-secondary)',
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-tiny)',
-                  cursor: 'pointer',
+                  color: "var(--frigate-text-secondary)",
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  cursor: "pointer",
                 }}
                 aria-label="Add 100"
               >
@@ -553,16 +551,16 @@ export function AmmunitionDetailModal({
             {/* Subtotal */}
             <div
               style={{
-                fontSize: 'var(--frigate-font-small)',
-                color: 'var(--frigate-text-secondary)',
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-text-secondary)",
               }}
             >
-              SUBTOTAL:{' '}
-              <span style={{ color: 'var(--frigate-text-primary)', fontWeight: 600 }}>
+              SUBTOTAL:{" "}
+              <span style={{ color: "var(--frigate-text-primary)", fontWeight: 600 }}>
                 {formatNumber(subtotalCost)} CR
               </span>
-              {' | '}
-              <span style={{ color: 'var(--frigate-text-primary)', fontWeight: 600 }}>
+              {" | "}
+              <span style={{ color: "var(--frigate-text-primary)", fontWeight: 600 }}>
                 {subtotalWeight.toFixed(1)} t
               </span>
             </div>
@@ -572,27 +570,23 @@ export function AmmunitionDetailModal({
         {/* Footer */}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 'var(--frigate-space-3)',
-            borderTop: '1px solid var(--frigate-border-base)',
-            backgroundColor: 'var(--frigate-bg-surface)',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "var(--frigate-space-3)",
+            borderTop: "1px solid var(--frigate-border-base)",
+            backgroundColor: "var(--frigate-bg-surface)",
           }}
         >
           <span
             style={{
-              fontSize: 'var(--frigate-font-tiny)',
-              color: 'var(--frigate-text-muted)',
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-muted)",
             }}
           >
             [ESC] CLOSE
           </span>
-          <Button
-            variant="primary"
-            onClick={handleAdd}
-            disabled={!canAddCurrentQty}
-          >
+          <Button variant="primary" onClick={handleAdd} disabled={!canAddCurrentQty}>
             ADD TO INVENTORY
           </Button>
         </div>

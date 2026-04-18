@@ -31,7 +31,7 @@ export function SessionProvider({ children }: SessionProviderProps): JSX.Element
       assignedRoles: session.assignedRoles,
       permissions: session.permissions,
       setSession,
-      hasPermission
+      hasPermission,
     }),
     [session, setSession, hasPermission]
   );

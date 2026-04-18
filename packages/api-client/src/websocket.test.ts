@@ -4,7 +4,7 @@ import { WebSocketManager } from "./websocket";
 import type { HyperionEvent } from "./types";
 
 vi.mock("./events", () => ({
-  parseHyperionEvent: vi.fn((payload: unknown) => payload as HyperionEvent)
+  parseHyperionEvent: vi.fn((payload: unknown) => payload as HyperionEvent),
 }));
 
 class MockWebSocket extends EventTarget {
@@ -67,7 +67,7 @@ describe("WebSocketManager", () => {
       url: "wss://example.com/ws",
       tokenProvider: async () => "secret-token",
       factory,
-      logger: () => undefined
+      logger: () => undefined,
     });
 
     await manager.connect();
@@ -88,7 +88,7 @@ describe("WebSocketManager", () => {
     const manager = new WebSocketManager({
       url: "wss://example.com/ws",
       factory,
-      logger: () => undefined
+      logger: () => undefined,
     });
 
     await manager.connect();
@@ -100,11 +100,11 @@ describe("WebSocketManager", () => {
 
     socket.emitMessage({
       type: "ship_status",
-      data: { shipId: "ship-1", hull: 85, shields: 60, power: 95, statusEffects: [] }
+      data: { shipId: "ship-1", hull: 85, shields: 60, power: 95, statusEffects: [] },
     });
     socket.emitMessage({
       type: "communication",
-      data: { fromShip: "ship-1", toShip: "ship-2", message: "Ping", tone: "neutral" }
+      data: { fromShip: "ship-1", toShip: "ship-2", message: "Ping", tone: "neutral" },
     });
 
     await Promise.resolve();
@@ -124,7 +124,7 @@ describe("WebSocketManager", () => {
     const manager = new WebSocketManager({
       url: "wss://example.com/ws",
       factory,
-      logger: () => undefined
+      logger: () => undefined,
     });
 
     await manager.connect();
@@ -136,11 +136,11 @@ describe("WebSocketManager", () => {
 
     socket.emitMessage({
       type: "ship_status",
-      data: { shipId: "ship-7", hull: 10, shields: 5, power: 20, statusEffects: [] }
+      data: { shipId: "ship-7", hull: 10, shields: 5, power: 20, statusEffects: [] },
     });
     socket.emitMessage({
       type: "ship_status",
-      data: { shipId: "ship-42", hull: 100, shields: 90, power: 80, statusEffects: [] }
+      data: { shipId: "ship-42", hull: 100, shields: 90, power: 80, statusEffects: [] },
     });
 
     await Promise.resolve();

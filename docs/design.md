@@ -5,7 +5,7 @@ Frigate follows a strict design system philosophy to ensure consistency and main
 ## 1. Hard Sci-Fi Realism
 
 - **Flat, minimalistic design** - Focus on realism and functionality over decoration
-- **No flashy or fantastical elements** - Think *The Expanse*, not *Star Wars*
+- **No flashy or fantastical elements** - Think _The Expanse_, not _Star Wars_
 - **Grounded in reality** - Leverage actual spaceflight and nautical terminology
 - **Intimidating complexity** - Dense data visualizations and technical jargon convey depth
 - **Professional interface** - Should feel like operating real equipment

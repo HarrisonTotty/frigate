@@ -5,7 +5,7 @@
  * Used by the Inventory Workspace to filter and display ammunition based on
  * what weapons the ship has installed.
  */
-import type { ModuleInstance, ModuleVariant, Ammunition } from '@frigate/api-client';
+import type { ModuleInstance, ModuleVariant, Ammunition } from "@frigate/api-client";
 
 /**
  * Weapon compatibility information extracted from installed modules
@@ -78,13 +78,13 @@ export function extractWeaponCompatibility(
 
     // Check for missile launchers (slot type or variant name pattern)
     const slotId = module.module_slot_id.toLowerCase();
-    const variantName = ((variant.name as string) || '').toLowerCase();
-    if (slotId.includes('missile') || variantName.includes('missile')) {
+    const variantName = ((variant.name as string) || "").toLowerCase();
+    if (slotId.includes("missile") || variantName.includes("missile")) {
       compatibility.hasMissileLaunchers = true;
     }
 
     // Check for torpedo tubes
-    if (slotId.includes('torpedo') || variantName.includes('torpedo')) {
+    if (slotId.includes("torpedo") || variantName.includes("torpedo")) {
       compatibility.hasTorpedoTubes = true;
     }
   }
@@ -106,7 +106,7 @@ export function checkAmmoCompatibility(
   ammo: Ammunition,
   compatibility: WeaponCompatibility
 ): CompatibilityResult {
-  if (ammo.category === 'kinetic') {
+  if (ammo.category === "kinetic") {
     const key = `${ammo.ammo_type}:${ammo.ammo_size}`;
     const weapons = compatibility.weaponsByAmmoType.get(key);
     if (weapons && weapons.length > 0) {
@@ -118,18 +118,18 @@ export function checkAmmoCompatibility(
     };
   }
 
-  if (ammo.category === 'missiles') {
+  if (ammo.category === "missiles") {
     if (compatibility.hasMissileLaunchers) {
       return { compatible: true };
     }
-    return { compatible: false, reason: 'No missile launchers installed' };
+    return { compatible: false, reason: "No missile launchers installed" };
   }
 
-  if (ammo.category === 'torpedos') {
+  if (ammo.category === "torpedos") {
     if (compatibility.hasTorpedoTubes) {
       return { compatible: true };
     }
-    return { compatible: false, reason: 'No torpedo tubes installed' };
+    return { compatible: false, reason: "No torpedo tubes installed" };
   }
 
   // Unknown category - assume compatible
@@ -168,7 +168,7 @@ export function getCompatibleWeapons(
   ammo: Ammunition,
   compatibility: WeaponCompatibility
 ): string[] {
-  if (ammo.category === 'kinetic') {
+  if (ammo.category === "kinetic") {
     const key = `${ammo.ammo_type}:${ammo.ammo_size}`;
     return compatibility.weaponsByAmmoType.get(key) || [];
   }

@@ -1,16 +1,15 @@
 /**
  * Crew role assignment component
- * 
+ *
  * Allows players to join blueprints and select their bridge roles.
  * Integrates with HYPERION API blueprint crew endpoints.
  */
 
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { Panel, Stack } from '../layout';
-import { Button, Badge } from '../components';
-import { useAlert } from '../alerts';
-import type { Blueprint, BridgeRole, CrewAssignment } from './BlueprintList';
+import React, { useState, useEffect } from "react";
+import { Panel, Stack } from "../layout";
+import { Button, Badge } from "../components";
+import { useAlert } from "../alerts";
+import type { Blueprint, BridgeRole, CrewAssignment } from "./BlueprintList";
 
 /**
  * Role assignment props
@@ -33,49 +32,49 @@ export interface RoleAssignmentProps {
  */
 const ROLE_INFO: Record<BridgeRole, { name: string; abbr: string; description: string }> = {
   captain: {
-    name: 'Captain',
-    abbr: 'CAPT',
-    description: 'Overall command and strategic decisions',
+    name: "Captain",
+    abbr: "CAPT",
+    description: "Overall command and strategic decisions",
   },
   helm: {
-    name: 'Helmsman',
-    abbr: 'HELM',
-    description: 'Navigation and movement control',
+    name: "Helmsman",
+    abbr: "HELM",
+    description: "Navigation and movement control",
   },
   engineering: {
-    name: 'Lead Engineer',
-    abbr: 'ENGR',
-    description: 'Power management and repairs',
+    name: "Lead Engineer",
+    abbr: "ENGR",
+    description: "Power management and repairs",
   },
   comms: {
-    name: 'Communications Officer',
-    abbr: 'COMM',
-    description: 'Hailing and message handling',
+    name: "Communications Officer",
+    abbr: "COMM",
+    description: "Hailing and message handling",
   },
   science: {
-    name: 'Science Officer',
-    abbr: 'SCNC',
-    description: 'Sensors and analysis',
+    name: "Science Officer",
+    abbr: "SCNC",
+    description: "Sensors and analysis",
   },
   energy_weapons: {
-    name: 'Directed Energy Weapons Officer',
-    abbr: 'DEWO',
-    description: 'Phaser and beam weapon systems',
+    name: "Directed Energy Weapons Officer",
+    abbr: "DEWO",
+    description: "Phaser and beam weapon systems",
   },
   kinetic_weapons: {
-    name: 'Kinetic Weapons Officer',
-    abbr: 'KNTC',
-    description: 'Railgun and ballistic systems',
+    name: "Kinetic Weapons Officer",
+    abbr: "KNTC",
+    description: "Railgun and ballistic systems",
   },
   missile_weapons: {
-    name: 'Missile Weapons Officer',
-    abbr: 'MSSL',
-    description: 'Torpedo and missile systems',
+    name: "Missile Weapons Officer",
+    abbr: "MSSL",
+    description: "Torpedo and missile systems",
   },
   countermeasures: {
-    name: 'Countermeasures Officer',
-    abbr: 'CNTW',
-    description: 'Shields and defensive systems',
+    name: "Countermeasures Officer",
+    abbr: "CNTW",
+    description: "Shields and defensive systems",
   },
 };
 
@@ -87,7 +86,7 @@ export function RoleAssignment({
   currentPlayerId,
   blueprint,
   onRolesChanged,
-  className = '',
+  className = "",
 }: RoleAssignmentProps) {
   const [loading, setLoading] = useState(false);
   const [crewAssignments, setCrewAssignments] = useState<CrewAssignment[]>([]);
@@ -105,8 +104,8 @@ export function RoleAssignment({
     setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/v1/blueprints/${blueprint.id}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ player_id: currentPlayerId }),
       });
 
@@ -114,13 +113,13 @@ export function RoleAssignment({
         throw new Error(`Failed to join blueprint: ${response.statusText}`);
       }
 
-      alert.success('Joined Blueprint', `You have joined ${blueprint.name}!`);
-      
+      alert.success("Joined Blueprint", `You have joined ${blueprint.name}!`);
+
       if (onRolesChanged) {
         onRolesChanged();
       }
     } catch (error) {
-      alert.danger('Join Failed', `Could not join blueprint: ${error}`);
+      alert.danger("Join Failed", `Could not join blueprint: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -132,8 +131,8 @@ export function RoleAssignment({
     setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/v1/blueprints/${blueprint.id}/roles`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           assignments: {
             [currentPlayerId]: role,
@@ -145,13 +144,13 @@ export function RoleAssignment({
         throw new Error(`Failed to assign role: ${response.statusText}`);
       }
 
-      alert.success('Role Assigned', `You are now ${ROLE_INFO[role].name}!`);
-      
+      alert.success("Role Assigned", `You are now ${ROLE_INFO[role].name}!`);
+
       if (onRolesChanged) {
         onRolesChanged();
       }
     } catch (error) {
-      alert.danger('Assignment Failed', `Could not assign role: ${error}`);
+      alert.danger("Assignment Failed", `Could not assign role: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -159,28 +158,31 @@ export function RoleAssignment({
 
   const getCurrentPlayerRole = (): BridgeRole | undefined => {
     if (!currentPlayerId) return undefined;
-    return crewAssignments.find(c => c.player_id === currentPlayerId)?.role;
+    return crewAssignments.find((c) => c.player_id === currentPlayerId)?.role;
   };
 
   const isRoleTaken = (role: BridgeRole): boolean => {
-    return crewAssignments.some(c => c.role === role);
+    return crewAssignments.some((c) => c.role === role);
   };
 
-  const isPlayerInCrew = currentPlayerId && crewAssignments.some(c => c.player_id === currentPlayerId);
+  const isPlayerInCrew =
+    currentPlayerId && crewAssignments.some((c) => c.player_id === currentPlayerId);
   const currentRole = getCurrentPlayerRole();
 
   if (!blueprint) {
     return (
       <Panel title="CREW ROSTER" className={className}>
-        <div style={{
-          textAlign: 'center',
-          padding: '32px 16px',
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-        }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "32px 16px",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}
+        >
           [NO BLUEPRINT SELECTED]
         </div>
       </Panel>
@@ -190,15 +192,17 @@ export function RoleAssignment({
   if (!currentPlayerId) {
     return (
       <Panel title="CREW ROSTER" className={className}>
-        <div style={{
-          textAlign: 'center',
-          padding: '32px 16px',
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-        }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "32px 16px",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}
+        >
           [NO PLAYER SELECTED]
         </div>
       </Panel>
@@ -209,38 +213,46 @@ export function RoleAssignment({
     <Panel title="CREW ROSTER" className={className}>
       <Stack direction="column" gap={4}>
         {/* Blueprint info with technical details */}
-        <div style={{
-          padding: '12px',
-          backgroundColor: 'var(--frigate-bg-raised)',
-          border: '1px solid var(--frigate-border-base)',
-          fontFamily: 'var(--frigate-font-mono)',
-        }}>
-          <div style={{
-            fontSize: 'var(--frigate-font-tiny)',
-            color: 'var(--frigate-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            marginBottom: '4px',
-          }}>
+        <div
+          style={{
+            padding: "12px",
+            backgroundColor: "var(--frigate-bg-raised)",
+            border: "1px solid var(--frigate-border-base)",
+            fontFamily: "var(--frigate-font-mono)",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              marginBottom: "4px",
+            }}
+          >
             BLUEPRINT
           </div>
-          <div style={{
-            fontSize: 'var(--frigate-font-body)',
-            fontWeight: 600,
-            color: 'var(--frigate-text-primary)',
-            textTransform: 'uppercase',
-          }}>
+          <div
+            style={{
+              fontSize: "var(--frigate-font-body)",
+              fontWeight: 600,
+              color: "var(--frigate-text-primary)",
+              textTransform: "uppercase",
+            }}
+          >
             {blueprint.name}
           </div>
-          <div style={{
-            marginTop: '8px',
-            fontSize: 'var(--frigate-font-tiny)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
-          }}>
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "var(--frigate-font-tiny)",
+              color: "var(--frigate-text-secondary)",
+              textTransform: "uppercase",
+            }}
+          >
             CREW: {crewAssignments.length} ASSIGNED
             {isPlayerInCrew && currentRole && (
-              <span style={{ marginLeft: '12px', color: 'var(--frigate-primary)' }}>
+              <span style={{ marginLeft: "12px", color: "var(--frigate-primary)" }}>
                 YOUR ROLE: {ROLE_INFO[currentRole].abbr}
               </span>
             )}
@@ -249,46 +261,49 @@ export function RoleAssignment({
 
         {/* Join button or role selection */}
         {!isPlayerInCrew ? (
-          <Button
-            onClick={joinBlueprint}
-            variant="success"
-            disabled={loading}
-            fullWidth
-          >
-            {loading ? '[JOINING...]' : '[JOIN CREW]'}
+          <Button onClick={joinBlueprint} variant="success" disabled={loading} fullWidth>
+            {loading ? "[JOINING...]" : "[JOIN CREW]"}
           </Button>
         ) : (
           <>
             {/* Current role display */}
             {currentRole && (
-              <div style={{
-                padding: '12px',
-                backgroundColor: 'var(--frigate-bg-surface)',
-                border: '1px solid var(--frigate-primary)',
-                fontFamily: 'var(--frigate-font-mono)',
-              }}>
-                <div style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  marginBottom: '4px',
-                }}>
+              <div
+                style={{
+                  padding: "12px",
+                  backgroundColor: "var(--frigate-bg-surface)",
+                  border: "1px solid var(--frigate-primary)",
+                  fontFamily: "var(--frigate-font-mono)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-text-muted)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    marginBottom: "4px",
+                  }}
+                >
                   YOUR ROLE
                 </div>
-                <div style={{
-                  fontSize: 'var(--frigate-font-body)',
-                  fontWeight: 600,
-                  color: 'var(--frigate-primary)',
-                  textTransform: 'uppercase',
-                }}>
+                <div
+                  style={{
+                    fontSize: "var(--frigate-font-body)",
+                    fontWeight: 600,
+                    color: "var(--frigate-primary)",
+                    textTransform: "uppercase",
+                  }}
+                >
                   {ROLE_INFO[currentRole].abbr} - {ROLE_INFO[currentRole].name}
                 </div>
-                <div style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-text-secondary)',
-                  marginTop: '4px',
-                }}>
+                <div
+                  style={{
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-text-secondary)",
+                    marginTop: "4px",
+                  }}
+                >
                   {ROLE_INFO[currentRole].description}
                 </div>
               </div>
@@ -296,23 +311,27 @@ export function RoleAssignment({
 
             {/* Available roles */}
             <div>
-              <div style={{
-                fontFamily: 'var(--frigate-font-mono)',
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: '8px',
-              }}>
-                {currentRole ? 'REASSIGN ROLE:' : 'SELECT ROLE:'}
+              <div
+                style={{
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-text-muted)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  marginBottom: "8px",
+                }}
+              >
+                {currentRole ? "REASSIGN ROLE:" : "SELECT ROLE:"}
               </div>
-              <div style={{ 
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                maxHeight: '400px',
-                overflowY: 'auto',
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                }}
+              >
                 {(Object.keys(ROLE_INFO) as BridgeRole[]).map((role) => {
                   const taken = isRoleTaken(role);
                   const isCurrent = role === currentRole;
@@ -324,59 +343,62 @@ export function RoleAssignment({
                       onClick={() => !taken && assignRole(role)}
                       disabled={loading || taken}
                       style={{
-                        textAlign: 'left',
-                        padding: '10px 12px',
-                        fontFamily: 'var(--frigate-font-mono)',
-                        backgroundColor: isCurrent ? 'var(--frigate-primary-muted)' :
-                                       taken ? 'var(--frigate-bg-base)' :
-                                       'var(--frigate-bg-surface)',
-                        border: isCurrent ? '1px solid var(--frigate-primary)' :
-                               '1px solid var(--frigate-border-base)',
-                        color: 'var(--frigate-text-primary)',
-                        cursor: taken ? 'not-allowed' : 'pointer',
+                        textAlign: "left",
+                        padding: "10px 12px",
+                        fontFamily: "var(--frigate-font-mono)",
+                        backgroundColor: isCurrent
+                          ? "var(--frigate-primary-muted)"
+                          : taken
+                            ? "var(--frigate-bg-base)"
+                            : "var(--frigate-bg-surface)",
+                        border: isCurrent
+                          ? "1px solid var(--frigate-primary)"
+                          : "1px solid var(--frigate-border-base)",
+                        color: "var(--frigate-text-primary)",
+                        cursor: taken ? "not-allowed" : "pointer",
                         opacity: taken && !isCurrent ? 0.5 : 1,
-                        transition: 'all 50ms',
+                        transition: "all 50ms",
                       }}
                       onMouseEnter={(e) => {
                         if (!taken && !loading) {
-                          e.currentTarget.style.borderColor = 'var(--frigate-primary)';
-                          e.currentTarget.style.backgroundColor = 'var(--frigate-bg-raised)';
+                          e.currentTarget.style.borderColor = "var(--frigate-primary)";
+                          e.currentTarget.style.backgroundColor = "var(--frigate-bg-raised)";
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!taken && !loading && !isCurrent) {
-                          e.currentTarget.style.borderColor = 'var(--frigate-border-base)';
-                          e.currentTarget.style.backgroundColor = 'var(--frigate-bg-surface)';
+                          e.currentTarget.style.borderColor = "var(--frigate-border-base)";
+                          e.currentTarget.style.backgroundColor = "var(--frigate-bg-surface)";
                         }
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{
-                            fontSize: 'var(--frigate-font-small)',
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            marginBottom: '2px',
-                          }}>
+                          <div
+                            style={{
+                              fontSize: "var(--frigate-font-small)",
+                              fontWeight: 600,
+                              textTransform: "uppercase",
+                              marginBottom: "2px",
+                            }}
+                          >
                             {info.abbr} - {info.name}
                           </div>
-                          <div style={{
-                            fontSize: 'var(--frigate-font-tiny)',
-                            color: 'var(--frigate-text-secondary)',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}>
+                          <div
+                            style={{
+                              fontSize: "var(--frigate-font-tiny)",
+                              color: "var(--frigate-text-secondary)",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
                             {info.description}
                           </div>
                         </div>
                         <div>
-                          {taken && !isCurrent && (
-                            <Badge variant="danger">TAKEN</Badge>
-                          )}
-                          {isCurrent && (
-                            <Badge variant="success">ACTIVE</Badge>
-                          )}
+                          {taken && !isCurrent && <Badge variant="danger">TAKEN</Badge>}
+                          {isCurrent && <Badge variant="success">ACTIVE</Badge>}
                         </div>
                       </div>
                     </button>
@@ -390,19 +412,21 @@ export function RoleAssignment({
         {/* Crew roster - technical display */}
         {crewAssignments.length > 0 && (
           <div>
-            <div style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-tiny)',
-              color: 'var(--frigate-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-              paddingBottom: '4px',
-              borderBottom: '1px solid var(--frigate-border-base)',
-            }}>
+            <div
+              style={{
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: "8px",
+                paddingBottom: "4px",
+                borderBottom: "1px solid var(--frigate-border-base)",
+              }}
+            >
               ASSIGNED CREW ({crewAssignments.length}):
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {crewAssignments.map((assignment) => {
                 const roleInfo = ROLE_INFO[assignment.role];
                 const isCurrent = assignment.player_id === currentPlayerId;
@@ -411,39 +435,43 @@ export function RoleAssignment({
                   <div
                     key={assignment.player_id}
                     style={{
-                      padding: '8px 10px',
-                      fontFamily: 'var(--frigate-font-mono)',
-                      backgroundColor: isCurrent ? 'var(--frigate-primary-muted)' : 'var(--frigate-bg-raised)',
-                      border: isCurrent ? '1px solid var(--frigate-primary)' : '1px solid var(--frigate-border-base)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
+                      padding: "8px 10px",
+                      fontFamily: "var(--frigate-font-mono)",
+                      backgroundColor: isCurrent
+                        ? "var(--frigate-primary-muted)"
+                        : "var(--frigate-bg-raised)",
+                      border: isCurrent
+                        ? "1px solid var(--frigate-primary)"
+                        : "1px solid var(--frigate-border-base)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
                     }}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontSize: 'var(--frigate-font-small)',
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        color: 'var(--frigate-text-primary)',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: "var(--frigate-font-small)",
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          color: "var(--frigate-text-primary)",
+                        }}
+                      >
                         {roleInfo.abbr}
                       </div>
-                      <div style={{
-                        fontSize: 'var(--frigate-font-tiny)',
-                        color: 'var(--frigate-text-muted)',
-                        fontFamily: 'var(--frigate-font-mono)',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: "var(--frigate-font-tiny)",
+                          color: "var(--frigate-text-muted)",
+                          fontFamily: "var(--frigate-font-mono)",
+                        }}
+                      >
                         ID: {assignment.player_id.substring(0, 8).toUpperCase()}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      {assignment.ready && (
-                        <Badge variant="success">RDY</Badge>
-                      )}
-                      {isCurrent && (
-                        <Badge variant="primary">YOU</Badge>
-                      )}
+                    <div style={{ display: "flex", gap: "4px" }}>
+                      {assignment.ready && <Badge variant="success">RDY</Badge>}
+                      {isCurrent && <Badge variant="primary">YOU</Badge>}
                     </div>
                   </div>
                 );

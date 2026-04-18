@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, act, cleanup } from '@testing-library/react';
-import { useFrigateStore } from '@frigate/state';
-import useUiBlueprint from '../useUiBlueprint';
-import React from 'react';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, act, cleanup } from "@testing-library/react";
+import { useFrigateStore } from "@frigate/state";
+import useUiBlueprint from "../useUiBlueprint";
+import React from "react";
 
-describe('useUiBlueprint', () => {
+describe("useUiBlueprint", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     cleanup();
@@ -21,17 +21,20 @@ describe('useUiBlueprint', () => {
     return { Consumer, methods } as const;
   }
 
-  it('optimistically adds an instance and replaces temp id with server id on success', async () => {
-    const blueprintId = 'bp-1';
-    const apiBase = 'http://api.test';
+  it("optimistically adds an instance and replaces temp id with server id on success", async () => {
+    const blueprintId = "bp-1";
+    const apiBase = "http://api.test";
 
-    const serverCreated = { id: 'srv-123', module_slot_id: 'slot-1', variant_id: null };
-    vi.stubGlobal('fetch', vi.fn((url, opts) => {
-      if ((opts as any)?.method === 'POST') {
-        return Promise.resolve({ ok: true, json: async () => serverCreated });
-      }
-      return Promise.resolve({ ok: true, json: async () => ({}) });
-    }));
+    const serverCreated = { id: "srv-123", module_slot_id: "slot-1", variant_id: null };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url, opts) => {
+        if ((opts as any)?.method === "POST") {
+          return Promise.resolve({ ok: true, json: async () => serverCreated });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({}) });
+      })
+    );
 
     const { Consumer, methods } = createHookConsumer(blueprintId, apiBase);
     await act(async () => {
@@ -45,7 +48,7 @@ describe('useUiBlueprint', () => {
 
     // add instance
     await act(async () => {
-      await methods.addInstance('slot-1');
+      await methods.addInstance("slot-1");
     });
 
     const uiState = useFrigateStore.getState().uiBlueprints[blueprintId];
@@ -53,16 +56,19 @@ describe('useUiBlueprint', () => {
     expect(hasServer).toBe(true);
   });
 
-  it('optimistically removes instance and keeps removed on success', async () => {
-    const blueprintId = 'bp-2';
-    const apiBase = 'http://api.test';
+  it("optimistically removes instance and keeps removed on success", async () => {
+    const blueprintId = "bp-2";
+    const apiBase = "http://api.test";
 
-    vi.stubGlobal('fetch', vi.fn((url, opts) => {
-      if ((opts as any)?.method === 'DELETE') {
-        return Promise.resolve({ ok: true });
-      }
-      return Promise.resolve({ ok: true, json: async () => ({}) });
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url, opts) => {
+        if ((opts as any)?.method === "DELETE") {
+          return Promise.resolve({ ok: true });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({}) });
+      })
+    );
 
     const { Consumer, methods } = createHookConsumer(blueprintId, apiBase);
     await act(async () => {
@@ -70,28 +76,34 @@ describe('useUiBlueprint', () => {
     });
 
     act(() => {
-      methods.ensureOpen({ id: blueprintId, instances: [{ id: 'to-remove', module_slot_id: 'slot-x', variant_id: null }] });
+      methods.ensureOpen({
+        id: blueprintId,
+        instances: [{ id: "to-remove", module_slot_id: "slot-x", variant_id: null }],
+      });
     });
 
     await act(async () => {
-      const removed = await methods.removeInstance('to-remove');
+      const removed = await methods.removeInstance("to-remove");
       expect(removed).toBe(true);
     });
 
     const uiState = useFrigateStore.getState().uiBlueprints[blueprintId];
-    expect(uiState.instances.find((i: any) => i.id === 'to-remove')).toBeUndefined();
+    expect(uiState.instances.find((i: any) => i.id === "to-remove")).toBeUndefined();
   });
 
-  it('sets variant optimistically and performs server PATCH', async () => {
-    const blueprintId = 'bp-3';
-    const apiBase = 'http://api.test';
+  it("sets variant optimistically and performs server PATCH", async () => {
+    const blueprintId = "bp-3";
+    const apiBase = "http://api.test";
 
-    vi.stubGlobal('fetch', vi.fn((url, opts) => {
-      if ((opts as any)?.method === 'PATCH') {
-        return Promise.resolve({ ok: true });
-      }
-      return Promise.resolve({ ok: true, json: async () => ({}) });
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url, opts) => {
+        if ((opts as any)?.method === "PATCH") {
+          return Promise.resolve({ ok: true });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({}) });
+      })
+    );
 
     const { Consumer, methods } = createHookConsumer(blueprintId, apiBase);
     await act(async () => {
@@ -99,16 +111,19 @@ describe('useUiBlueprint', () => {
     });
 
     act(() => {
-      methods.ensureOpen({ id: blueprintId, instances: [{ id: 'inst-1', module_slot_id: 'slot-a', variant_id: null }] });
+      methods.ensureOpen({
+        id: blueprintId,
+        instances: [{ id: "inst-1", module_slot_id: "slot-a", variant_id: null }],
+      });
     });
 
     await act(async () => {
-      const ok = await methods.setVariant('inst-1', 'var-9');
+      const ok = await methods.setVariant("inst-1", "var-9");
       expect(ok).toBe(true);
     });
 
     const uiState = useFrigateStore.getState().uiBlueprints[blueprintId];
-    const inst = uiState.instances.find((i: any) => i.id === 'inst-1');
-    expect(inst?.variant_id).toBe('var-9');
+    const inst = uiState.instances.find((i: any) => i.id === "inst-1");
+    expect(inst?.variant_id).toBe("var-9");
   });
 });

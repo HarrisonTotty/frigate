@@ -1,15 +1,15 @@
 /**
  * Blueprint workflow container
- * 
+ *
  * Orchestrates the complete ship blueprint design workflow including
  * blueprint selection, crew role assignment, and launch readiness.
  */
 
-import React, { useState } from 'react';
-import { Grid } from '../layout';
-import { BlueprintList, type Blueprint } from './BlueprintList';
-import { RoleAssignment } from './RoleAssignment';
-import { BlueprintReadiness } from './BlueprintReadiness';
+import React, { useState } from "react";
+import { Grid } from "../layout";
+import { BlueprintList, type Blueprint } from "./BlueprintList";
+import { RoleAssignment } from "./RoleAssignment";
+import { BlueprintReadiness } from "./BlueprintReadiness";
 
 /**
  * Blueprint workflow props
@@ -27,15 +27,15 @@ export interface BlueprintWorkflowProps {
 
 /**
  * Blueprint workflow container
- * 
+ *
  * Provides a complete ship design interface with blueprint selection,
  * role assignment, and readiness management.
  */
 export function BlueprintWorkflow({
   apiUrl,
   currentPlayerId,
-  onLaunch,
-  className = '',
+  onLaunch: _onLaunch,
+  className = "",
 }: BlueprintWorkflowProps) {
   const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);

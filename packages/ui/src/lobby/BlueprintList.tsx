@@ -1,42 +1,42 @@
 /**
  * Ship blueprint components
- * 
+ *
  * Components for browsing, creating, and configuring ship blueprints.
  * Integrates with HYPERION API /v1/blueprints endpoints.
  */
 
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { Panel, Stack, Grid, Modal } from '../layout';
-import { Button, Badge } from '../components';
-import { useAlert } from '../alerts';
-import { safeJsonParse } from './apiHelpers';
+import React, { useState, useEffect } from "react";
+import clsx from "clsx";
+import { Panel, Stack, Modal } from "../layout";
+import { Button, Badge } from "../components";
+import { useAlert } from "../alerts";
+import { safeJsonParse } from "./apiHelpers";
 
 /**
  * Ship class types
  */
-export type ShipClass = 
-  | 'battleship' 
-  | 'cruiser' 
-  | 'destroyer' 
-  | 'frigate' 
-  | 'corvette'
-  | 'scout'
-  | 'carrier';
+export type ShipClass =
+  | "battleship"
+  | "cruiser"
+  | "destroyer"
+  | "frigate"
+  | "corvette"
+  | "scout"
+  | "carrier";
 
 /**
  * Bridge role types
  */
 export type BridgeRole =
-  | 'captain'
-  | 'helm'
-  | 'engineering'
-  | 'comms'
-  | 'science'
-  | 'energy_weapons'
-  | 'kinetic_weapons'
-  | 'missile_weapons'
-  | 'countermeasures';
+  | "captain"
+  | "helm"
+  | "engineering"
+  | "comms"
+  | "science"
+  | "energy_weapons"
+  | "kinetic_weapons"
+  | "missile_weapons"
+  | "countermeasures";
 
 /**
  * Blueprint crew assignment
@@ -57,7 +57,7 @@ export interface ShipModule {
   category: string;
   position?: { x: number; y: number; z: number };
   power_allocation?: number;
-  kind?: string | null;  // Variant ID for modules with multiple kinds
+  kind?: string | null; // Variant ID for modules with multiple kinds
 }
 
 /**
@@ -97,14 +97,14 @@ export function BlueprintList({
   currentPlayerId,
   onBlueprintSelected,
   selectedBlueprint,
-  className = '',
+  className = "",
 }: BlueprintListProps) {
   const [blueprints, setBlueprints] = useState<Blueprint[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newBlueprintName, setNewBlueprintName] = useState('');
-  const [selectedShipClass, setSelectedShipClass] = useState<ShipClass>('frigate');
-  const [selectedFaction, setSelectedFaction] = useState('federation');
+  const [newBlueprintName, setNewBlueprintName] = useState("");
+  const [selectedShipClass, setSelectedShipClass] = useState<ShipClass>("frigate");
+  const [selectedFaction, setSelectedFaction] = useState("federation");
   const alert = useAlert();
 
   useEffect(() => {
@@ -118,11 +118,11 @@ export function BlueprintList({
       if (!response.ok) {
         throw new Error(`Failed to load blueprints: ${response.statusText}`);
       }
-      
+
       const data = await safeJsonParse<Blueprint[]>(response);
       setBlueprints(data && Array.isArray(data) ? data : []);
     } catch (error) {
-      alert.danger('Load Failed', `Could not load blueprints: ${error}`);
+      alert.danger("Load Failed", `Could not load blueprints: ${error}`);
       setBlueprints([]);
     } finally {
       setLoading(false);
@@ -131,15 +131,15 @@ export function BlueprintList({
 
   const createBlueprint = async () => {
     if (!newBlueprintName.trim()) {
-      alert.warning('Invalid Name', 'Please enter a blueprint name');
+      alert.warning("Invalid Name", "Please enter a blueprint name");
       return;
     }
 
     setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/v1/blueprints`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newBlueprintName.trim(),
           ship_class: selectedShipClass,
@@ -153,26 +153,37 @@ export function BlueprintList({
 
       const newBlueprint = await safeJsonParse<Blueprint>(response);
       if (!newBlueprint) {
-        alert.warning('Endpoint Not Implemented', 'Blueprint creation endpoint not yet implemented on server');
+        alert.warning(
+          "Endpoint Not Implemented",
+          "Blueprint creation endpoint not yet implemented on server"
+        );
         return;
       }
-      
+
       setBlueprints((prev) => [...prev, newBlueprint]);
-      setNewBlueprintName('');
+      setNewBlueprintName("");
       setShowCreateModal(false);
-      alert.success('Blueprint Created', `${newBlueprint.name} has been created!`);
+      alert.success("Blueprint Created", `${newBlueprint.name} has been created!`);
 
       if (onBlueprintSelected) {
         onBlueprintSelected(newBlueprint);
       }
     } catch (error) {
-      alert.danger('Creation Failed', `Could not create blueprint: ${error}`);
+      alert.danger("Creation Failed", `Could not create blueprint: ${error}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const shipClasses: ShipClass[] = ['battleship', 'cruiser', 'destroyer', 'frigate', 'corvette', 'scout', 'carrier'];
+  const shipClasses: ShipClass[] = [
+    "battleship",
+    "cruiser",
+    "destroyer",
+    "frigate",
+    "corvette",
+    "scout",
+    "carrier",
+  ];
 
   return (
     <>
@@ -186,12 +197,8 @@ export function BlueprintList({
                   <div className="text-xs text-text-muted uppercase tracking-wide mb-1">
                     Current Blueprint
                   </div>
-                  <div className="font-bold text-base">
-                    {selectedBlueprint.name}
-                  </div>
-                  <div className="text-sm text-text-secondary mt-1">
-                    {selectedBlueprint.class}
-                  </div>
+                  <div className="font-bold text-base">{selectedBlueprint.name}</div>
+                  <div className="text-sm text-text-secondary mt-1">{selectedBlueprint.class}</div>
                 </div>
                 <Badge variant="primary">{selectedBlueprint.crew.length} crew</Badge>
               </div>
@@ -205,7 +212,8 @@ export function BlueprintList({
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {blueprints.map((blueprint) => {
                   const isSelected = selectedBlueprint?.id === blueprint.id;
-                  const isPlayerInCrew = currentPlayerId && blueprint.crew.some(c => c.player_id === currentPlayerId);
+                  const isPlayerInCrew =
+                    currentPlayerId && blueprint.crew.some((c) => c.player_id === currentPlayerId);
 
                   return (
                     <button
@@ -213,11 +221,11 @@ export function BlueprintList({
                       onClick={() => onBlueprintSelected?.(blueprint)}
                       disabled={loading}
                       className={clsx(
-                        'w-full text-left p-3 rounded border transition-colors',
+                        "w-full text-left p-3 rounded border transition-colors",
                         isSelected
-                          ? 'bg-primary-600 border-primary-500'
-                          : 'bg-background-800 border-primary-700 hover:bg-background-700',
-                        loading && 'opacity-50 cursor-not-allowed'
+                          ? "bg-primary-600 border-primary-500"
+                          : "bg-background-800 border-primary-700 hover:bg-background-700",
+                        loading && "opacity-50 cursor-not-allowed"
                       )}
                     >
                       <div className="flex items-start justify-between">
@@ -229,9 +237,7 @@ export function BlueprintList({
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                           <Badge variant="info">{blueprint.crew.length} crew</Badge>
-                          {isPlayerInCrew && (
-                            <Badge variant="success">Joined</Badge>
-                          )}
+                          {isPlayerInCrew && <Badge variant="success">Joined</Badge>}
                         </div>
                       </div>
                     </button>
@@ -241,7 +247,9 @@ export function BlueprintList({
             </div>
           ) : (
             <div className="text-center py-8 text-text-muted">
-              {loading ? 'Loading blueprints...' : 'No blueprints available. Create one to get started!'}
+              {loading
+                ? "Loading blueprints..."
+                : "No blueprints available. Create one to get started!"}
             </div>
           )}
 
@@ -255,14 +263,8 @@ export function BlueprintList({
             >
               Create New Blueprint
             </Button>
-            <Button
-              onClick={loadBlueprints}
-              variant="ghost"
-              size="sm"
-              disabled={loading}
-              fullWidth
-            >
-              {loading ? 'Refreshing...' : 'Refresh Blueprints'}
+            <Button onClick={loadBlueprints} variant="ghost" size="sm" disabled={loading} fullWidth>
+              {loading ? "Refreshing..." : "Refresh Blueprints"}
             </Button>
           </div>
         </Stack>
@@ -278,15 +280,13 @@ export function BlueprintList({
         <Stack direction="column" gap={4}>
           {/* Blueprint name */}
           <div>
-            <label className="block text-sm text-text-muted mb-2">
-              Ship Name:
-            </label>
+            <label className="block text-sm text-text-muted mb-2">Ship Name:</label>
             <input
               type="text"
               value={newBlueprintName}
               onChange={(e) => setNewBlueprintName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   createBlueprint();
                 }
               }}
@@ -299,9 +299,7 @@ export function BlueprintList({
 
           {/* Ship class selection */}
           <div>
-            <label className="block text-sm text-text-muted mb-2">
-              Ship Class:
-            </label>
+            <label className="block text-sm text-text-muted mb-2">Ship Class:</label>
             <div className="grid grid-cols-2 gap-2">
               {shipClasses.map((shipClass) => (
                 <button
@@ -309,11 +307,11 @@ export function BlueprintList({
                   onClick={() => setSelectedShipClass(shipClass)}
                   disabled={loading}
                   className={clsx(
-                    'p-3 rounded border transition-colors text-left',
+                    "p-3 rounded border transition-colors text-left",
                     selectedShipClass === shipClass
-                      ? 'bg-primary-600 border-primary-500'
-                      : 'bg-background-800 border-primary-700 hover:bg-background-700',
-                    loading && 'opacity-50 cursor-not-allowed'
+                      ? "bg-primary-600 border-primary-500"
+                      : "bg-background-800 border-primary-700 hover:bg-background-700",
+                    loading && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <div className="font-medium capitalize">{shipClass}</div>
@@ -324,9 +322,7 @@ export function BlueprintList({
 
           {/* Faction input */}
           <div>
-            <label className="block text-sm text-text-muted mb-2">
-              Faction:
-            </label>
+            <label className="block text-sm text-text-muted mb-2">Faction:</label>
             <input
               type="text"
               value={selectedFaction}
@@ -345,12 +341,12 @@ export function BlueprintList({
               disabled={loading || !newBlueprintName.trim()}
               fullWidth
             >
-              {loading ? 'Creating...' : 'Create Blueprint'}
+              {loading ? "Creating..." : "Create Blueprint"}
             </Button>
             <Button
               onClick={() => {
                 setShowCreateModal(false);
-                setNewBlueprintName('');
+                setNewBlueprintName("");
               }}
               variant="secondary"
               disabled={loading}

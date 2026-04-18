@@ -1,15 +1,15 @@
-import React, { useMemo, useEffect, useCallback, useState } from 'react';
-import type { ModuleSlot, ModuleVariant, ModuleInstance } from '@frigate/api-client';
-import type { ShipBlueprintCanvasProps, SlotPosition } from './types';
-import { ShipSilhouette, SILHOUETTE_LAYOUT } from './ShipSilhouette';
-import { ModuleSlotMarker } from './ModuleSlotMarker';
-import { ConnectionLine } from './ConnectionLine';
+import React, { useMemo, useState } from "react";
+import type { ModuleSlot, ModuleVariant, ModuleInstance } from "@frigate/api-client";
+import type { ShipBlueprintCanvasProps, SlotPosition } from "./types";
+import { ShipSilhouette, SILHOUETTE_LAYOUT } from "./ShipSilhouette";
+import { ModuleSlotMarker } from "./ModuleSlotMarker";
+import { ConnectionLine } from "./ConnectionLine";
 import {
   getSilhouetteBySize,
   inferShipSize,
   generateSlotPositions,
   type ShipSize,
-} from './silhouettes';
+} from "./silhouettes";
 
 /**
  * Convert a position from silhouette-relative (0-100%) to canvas-relative coordinates
@@ -52,10 +52,7 @@ export function ShipBlueprintCanvas({
   }, [explicitShipSize, shipClassId, shipClassName]);
 
   // Get the appropriate silhouette for this ship size
-  const silhouette = useMemo(
-    () => getSilhouetteBySize(shipSize),
-    [shipSize]
-  );
+  const silhouette = useMemo(() => getSilhouetteBySize(shipSize), [shipSize]);
 
   // Generate dynamic slot positions for all instances
   const instancePositions = useMemo(() => {
@@ -83,12 +80,12 @@ export function ShipBlueprintCanvas({
       if (!position) {
         // Fallback position if somehow not generated
         const fallbackPosition: SlotPosition = {
-          group: slot?.groups?.[0] ?? 'unknown',
+          group: slot?.groups?.[0] ?? "unknown",
           x: 8,
           y: 50,
           attachX: 50,
           attachY: 50,
-          labelPosition: 'left',
+          labelPosition: "left",
         };
         markers.push({
           position: fallbackPosition,
@@ -114,40 +111,40 @@ export function ShipBlueprintCanvas({
     return markers;
   }, [instances, moduleSlotsById, variantsById, instancePositions]);
 
-  const handleMarkerClick = (marker: typeof markerData[0]) => {
+  const handleMarkerClick = (marker: (typeof markerData)[0]) => {
     onSelectInstance?.(marker.instance.id);
   };
 
   const canvasStyles: React.CSSProperties = {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    minHeight: '400px',
-    backgroundColor: 'var(--frigate-bg-primary)',
-    border: '1px solid var(--frigate-border-base)',
-    overflow: 'hidden',
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    minHeight: "400px",
+    backgroundColor: "var(--frigate-bg-primary)",
+    border: "1px solid var(--frigate-border-base)",
+    overflow: "hidden",
   };
 
   const headerStyles: React.CSSProperties = {
-    position: 'absolute',
-    top: '8px',
-    left: '8px',
-    fontFamily: 'var(--frigate-font-mono)',
-    fontSize: '12px',
-    color: 'var(--frigate-text-muted)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    position: "absolute",
+    top: "8px",
+    left: "8px",
+    fontFamily: "var(--frigate-font-mono)",
+    fontSize: "12px",
+    color: "var(--frigate-text-muted)",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
   };
 
   const centerMessageStyles: React.CSSProperties = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    fontFamily: 'var(--frigate-font-mono)',
-    fontSize: '14px',
-    textAlign: 'center',
-    padding: '20px',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontFamily: "var(--frigate-font-mono)",
+    fontSize: "14px",
+    textAlign: "center",
+    padding: "20px",
   };
 
   // Loading state
@@ -155,7 +152,7 @@ export function ShipBlueprintCanvas({
     return (
       <div style={canvasStyles}>
         <div style={headerStyles}>[LOADING] BLUEPRINT</div>
-        <div style={{ ...centerMessageStyles, color: 'var(--frigate-text-muted)' }}>
+        <div style={{ ...centerMessageStyles, color: "var(--frigate-text-muted)" }}>
           [LOADING SHIP DATA...]
         </div>
       </div>
@@ -167,9 +164,9 @@ export function ShipBlueprintCanvas({
     return (
       <div style={canvasStyles}>
         <div style={headerStyles}>[ERROR] BLUEPRINT</div>
-        <div style={{ ...centerMessageStyles, color: 'var(--frigate-danger)' }}>
+        <div style={{ ...centerMessageStyles, color: "var(--frigate-danger)" }}>
           [LOAD FAILED]
-          <div style={{ fontSize: '11px', marginTop: '8px', color: 'var(--frigate-text-muted)' }}>
+          <div style={{ fontSize: "11px", marginTop: "8px", color: "var(--frigate-text-muted)" }}>
             {error}
           </div>
         </div>
@@ -178,16 +175,14 @@ export function ShipBlueprintCanvas({
   }
 
   // Size indicator for display
-  const sizeLabel = shipSize === 'small' ? 'LIGHT' : shipSize === 'large' ? 'CAPITAL' : 'MEDIUM';
+  const sizeLabel = shipSize === "small" ? "LIGHT" : shipSize === "large" ? "CAPITAL" : "MEDIUM";
 
   return (
     <div style={canvasStyles}>
       {/* Header */}
       <div style={headerStyles}>
         [{shipClassName ?? silhouette.displayName}] BLUEPRINT
-        <span style={{ marginLeft: '12px', opacity: 0.6 }}>
-          [{sizeLabel}]
-        </span>
+        <span style={{ marginLeft: "12px", opacity: 0.6 }}>[{sizeLabel}]</span>
       </div>
 
       {/* Ship silhouette (top-down view) */}
@@ -196,17 +191,20 @@ export function ShipBlueprintCanvas({
       {/* Connection lines layer (SVG) */}
       <svg
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
         }}
         aria-hidden="true"
       >
         {markerData.map((marker) => {
-          const attachCanvasCoords = toCanvasCoords(marker.position.attachX, marker.position.attachY);
+          const attachCanvasCoords = toCanvasCoords(
+            marker.position.attachX,
+            marker.position.attachY
+          );
           return (
             <ConnectionLine
               key={`line-${marker.key}`}
@@ -243,14 +241,14 @@ export function ShipBlueprintCanvas({
       {/* Instructions footer */}
       <div
         style={{
-          position: 'absolute',
-          bottom: '8px',
-          left: '8px',
-          right: '8px',
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: '10px',
-          color: 'var(--frigate-text-muted)',
-          textAlign: 'center',
+          position: "absolute",
+          bottom: "8px",
+          left: "8px",
+          right: "8px",
+          fontFamily: "var(--frigate-font-mono)",
+          fontSize: "10px",
+          color: "var(--frigate-text-muted)",
+          textAlign: "center",
         }}
       >
         [HOVER TO HIGHLIGHT] [CLICK TO CONFIGURE]

@@ -101,30 +101,12 @@ interface ModuleListHeaderProps {
 export const ModuleListHeader: React.FC<ModuleListHeaderProps> = ({
   count,
   max,
-  status = "online",
+  status: _status = "online",
 }) => {
-  const statusVariant =
-    status === "critical"
-      ? "danger"
-      : status === "warning"
-        ? "warning"
-        : "success";
-
-  const statusLabel =
-    status === "critical"
-      ? "CRITICAL"
-      : status === "warning"
-        ? "WARNING"
-        : "ONLINE";
-
   const isAtMax = count >= max;
 
   return (
-    <div
-      style={componentStyles.header}
-      role="region"
-      aria-label="Installed modules header"
-    >
+    <div style={componentStyles.header} role="region" aria-label="Installed modules header">
       <div style={componentStyles.top} />
 
       <div style={componentStyles.content}>

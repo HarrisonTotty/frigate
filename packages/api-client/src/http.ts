@@ -1,4 +1,7 @@
-export type FetchImplementation = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+export type FetchImplementation = (
+  input: RequestInfo | URL,
+  init?: RequestInit
+) => Promise<Response>;
 
 export interface HttpClientOptions {
   readonly baseUrl: string;
@@ -22,7 +25,13 @@ export class ApiError extends Error {
   public readonly path: string;
   public readonly details: unknown;
 
-  public constructor(message: string, status: number, method: string, path: string, details?: unknown) {
+  public constructor(
+    message: string,
+    status: number,
+    method: string,
+    path: string,
+    details?: unknown
+  ) {
     super(message);
     this.name = "HyperionApiError";
     this.status = status;
@@ -41,13 +50,14 @@ export class HttpClient {
   public constructor(options: HttpClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
     this.timeoutMs = options.timeoutMs ?? 15_000;
-    this.fetchImpl = options.fetchImplementation ?? (globalThis.fetch?.bind(globalThis) as FetchImplementation);
+    this.fetchImpl =
+      options.fetchImplementation ?? (globalThis.fetch?.bind(globalThis) as FetchImplementation);
     if (!this.fetchImpl) {
       throw new Error("No fetch implementation available. Provide one via HttpClientOptions.");
     }
     this.defaultHeaders = {
       Accept: "application/json",
-      ...options.defaultHeaders
+      ...options.defaultHeaders,
     };
   }
 
@@ -61,7 +71,7 @@ export class HttpClient {
         method: options.method,
         headers: this.composeHeaders(options),
         body: this.serializeBody(options.body),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -89,25 +99,46 @@ export class HttpClient {
       if ((error as { name?: string }).name === "AbortError") {
         throw new ApiError("Request timed out", 408, options.method, options.path);
       }
-      throw new ApiError((error as Error)?.message ?? "Unknown error", 500, options.method, options.path, error);
+      throw new ApiError(
+        (error as Error)?.message ?? "Unknown error",
+        500,
+        options.method,
+        options.path,
+        error
+      );
     } finally {
       clearTimeout(timeout);
     }
   }
 
-  public get<TResponse>(path: string, transform?: (payload: unknown) => TResponse, query?: RequestOptions<TResponse>["query"]): Promise<TResponse> {
+  public get<TResponse>(
+    path: string,
+    transform?: (payload: unknown) => TResponse,
+    query?: RequestOptions<TResponse>["query"]
+  ): Promise<TResponse> {
     return this.request({ method: "GET", path, transform, query });
   }
 
-  public post<TResponse>(path: string, body?: unknown, transform?: (payload: unknown) => TResponse): Promise<TResponse> {
+  public post<TResponse>(
+    path: string,
+    body?: unknown,
+    transform?: (payload: unknown) => TResponse
+  ): Promise<TResponse> {
     return this.request({ method: "POST", path, body, transform });
   }
 
-  public patch<TResponse>(path: string, body?: unknown, transform?: (payload: unknown) => TResponse): Promise<TResponse> {
+  public patch<TResponse>(
+    path: string,
+    body?: unknown,
+    transform?: (payload: unknown) => TResponse
+  ): Promise<TResponse> {
     return this.request({ method: "PATCH", path, body, transform });
   }
 
-  public delete<TResponse>(path: string, transform?: (payload: unknown) => TResponse): Promise<TResponse> {
+  public delete<TResponse>(
+    path: string,
+    transform?: (payload: unknown) => TResponse
+  ): Promise<TResponse> {
     return this.request({ method: "DELETE", path, transform });
   }
 

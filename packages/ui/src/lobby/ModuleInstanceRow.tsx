@@ -66,8 +66,8 @@ const styles: Record<string, React.CSSProperties> = {
  * @property {(instanceId: string) => void} onRemove - Callback when [REMOVE] button is clicked
  */
 interface ModuleInstanceRowProps {
-  instance: any;
-  variantInfo?: any;
+  instance: Record<string, unknown>;
+  variantInfo?: Record<string, unknown>;
   onEdit: (instanceId: string) => void;
   onRemove: (instanceId: string) => void;
 }
@@ -105,14 +105,14 @@ export const ModuleInstanceRow: React.FC<ModuleInstanceRowProps> = ({
   onEdit,
   onRemove,
 }) => {
-  const instanceId = instance?.id || "[No ID]";
-  const slotType = instance?.slot_type || "[Unknown Slot]";
-  const variantName = variantInfo?.name || "[UNCONFIGURED]";
+  const instanceId = (instance?.id as string | undefined) || "[No ID]";
+  const slotType = (instance?.slot_type as string | undefined) || "[Unknown Slot]";
+  const variantName = (variantInfo?.name as string | undefined) || "[UNCONFIGURED]";
 
   // Extract key stats from variant info
-  const powerDraw = variantInfo?.power_draw ?? 0;
-  const heatGeneration = variantInfo?.heat_generation ?? 0;
-  const weight = variantInfo?.weight ?? 0;
+  const powerDraw = (variantInfo?.power_draw as number | undefined) ?? 0;
+  const heatGeneration = (variantInfo?.heat_generation as number | undefined) ?? 0;
+  const weight = (variantInfo?.weight as number | undefined) ?? 0;
 
   const handleEditKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {

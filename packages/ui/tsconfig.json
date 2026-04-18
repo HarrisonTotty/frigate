@@ -16,7 +16,5 @@
     }
   },
   "include": ["src"],
-  "references": [
-    { "path": "../state" }
-  ]
+  "references": [{ "path": "../state" }]
 }

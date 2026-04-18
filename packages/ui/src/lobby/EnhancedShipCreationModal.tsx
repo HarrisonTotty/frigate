@@ -1,23 +1,21 @@
 /**
  * Enhanced Ship Creation Modal - Phase 4.12.4
- * 
+ *
  * Two-column modal for ship creation with comprehensive ship class details.
  * Left column: ship name input and class selection
  * Right column: real-time detail panel with specs, bonuses, and constraints
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '../components';
-import { Stack } from '../layout';
-import { LoadingText } from '../loading';
-import { useShipClassStore } from '../stores/shipClassStore';
+import React, { useState, useEffect, useRef } from "react";
+import { Button } from "../components";
+import { LoadingText } from "../loading";
+import { useShipClassStore } from "../stores/shipClassStore";
 // ...existing code...
-import { ShipNameInput } from './ShipNameInput';
-import { ShipClassSelect } from './ShipClassSelect';
-import { ModalBuildConstraintsPanel } from './ModalBuildConstraintsPanel';
-import { ModalShipClassDetailPanel } from './ModalShipClassDetailPanel';
+import { ShipNameInput } from "./ShipNameInput";
+import { ShipClassSelect } from "./ShipClassSelect";
+import { ModalBuildConstraintsPanel } from "./ModalBuildConstraintsPanel";
+import { ModalShipClassDetailPanel } from "./ModalShipClassDetailPanel";
 // ...existing code...
-import type { ShipClassSummary, ShipClassDetails } from '../types/shipClass';
 
 /** Schematic data structure for pre-loading ship configurations */
 export interface SchematicDataForModal {
@@ -56,24 +54,13 @@ export interface EnhancedShipCreationModalProps {
  * Format credit values with thousand separators
  */
 function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null) return '---';
+  if (value === undefined || value === null) return "---";
   return value.toLocaleString();
 }
 
 /**
- * Generate abbreviation from ship class name
- */
-function generateAbbreviation(name: string): string {
-  const words = name.toUpperCase().split(/\s+/);
-  if (words.length === 1) {
-    return words[0].substring(0, 6);
-  }
-  return words.map(w => w[0]).join('').substring(0, 6);
-}
-
-/**
  * Enhanced Ship Creation Modal
- * 
+ *
  * Comprehensive ship creation interface with:
  * - Two-column responsive layout
  * - Real-time ship class detail updates
@@ -87,14 +74,14 @@ export function EnhancedShipCreationModal({
   onClose,
   onCreate,
   isCreating = false,
-  className = '',
+  className = "",
   onLoadSchematic,
   onSchematicLoaded,
   schematicLoading = false,
   initialSchematic,
 }: EnhancedShipCreationModalProps): React.ReactElement | null {
-  const [shipName, setShipName] = useState('');
-  const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [shipName, setShipName] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [schematicIndicator, setSchematicIndicator] = useState<string | null>(null);
   const [schematicWarning, setSchematicWarning] = useState<string | null>(null);
@@ -106,7 +93,7 @@ export function EnhancedShipCreationModal({
   onSchematicLoadedRef.current = onSchematicLoaded;
 
   const shipClassStore = useShipClassStore();
-  
+
   // Load ship classes filtered by faction
   useEffect(() => {
     if (isOpen) {
@@ -116,7 +103,7 @@ export function EnhancedShipCreationModal({
       appliedSchematicRef.current = null;
     }
   }, [isOpen, factionId]);
-  
+
   // Load detailed info for selected ship class
   useEffect(() => {
     if (selectedClassId) {
@@ -126,14 +113,14 @@ export function EnhancedShipCreationModal({
       });
     }
   }, [selectedClassId]);
-  
+
   // Get available ship classes (sorted by build points)
   const availableClasses = shipClassStore.sortShipClasses(
     shipClassStore.shipClasses,
-    'buildPoints',
-    'asc'
+    "buildPoints",
+    "asc"
   );
-  
+
   // Set default selection when data loads
   useEffect(() => {
     if (availableClasses.length > 0 && !selectedClassId) {
@@ -144,7 +131,12 @@ export function EnhancedShipCreationModal({
   // Apply initial schematic when modal opens with one (from external LOAD SCHEMATIC button)
   useEffect(() => {
     // Guard: only apply if we haven't already applied this exact schematic
-    if (isOpen && initialSchematic && availableClasses.length > 0 && appliedSchematicRef.current !== initialSchematic) {
+    if (
+      isOpen &&
+      initialSchematic &&
+      availableClasses.length > 0 &&
+      appliedSchematicRef.current !== initialSchematic
+    ) {
       appliedSchematicRef.current = initialSchematic;
 
       // Pre-fill name and class from schematic
@@ -172,16 +164,16 @@ export function EnhancedShipCreationModal({
   }, [isOpen, initialSchematic, availableClasses]);
 
   // Get detailed info for selected class
-  const selectedClassDetails = selectedClassId 
-    ? shipClassStore.shipClassDetails[selectedClassId] 
+  const selectedClassDetails = selectedClassId
+    ? shipClassStore.shipClassDetails[selectedClassId]
     : null;
-  
+
   const handleCreate = async () => {
     if (!shipName.trim() || !selectedClassId) return;
 
     await onCreate(shipName, selectedClassId);
     // Reset form
-    setShipName('');
+    setShipName("");
     setSchematicIndicator(null);
     setSchematicWarning(null);
   };
@@ -220,32 +212,32 @@ export function EnhancedShipCreationModal({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !isCreating && shipName.trim()) {
+    if (e.key === "Enter" && !isCreating && shipName.trim()) {
       handleCreate();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       onClose();
     }
   };
-  
+
   if (!isOpen) return null;
-  
+
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="create-ship-modal-title"
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.85)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1000,
-        padding: 'var(--frigate-space-4)',
+        padding: "var(--frigate-space-4)",
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget && !isCreating) {
@@ -256,68 +248,63 @@ export function EnhancedShipCreationModal({
       <div
         className={className}
         style={{
-          width: '100%',
-          maxWidth: '1400px',
-          height: '90vh',
-          maxHeight: '900px',
-          border: '2px solid var(--frigate-primary)',
-          backgroundColor: 'var(--frigate-bg-base)',
-          display: 'flex',
-          flexDirection: 'column',
+          width: "100%",
+          maxWidth: "1400px",
+          height: "90vh",
+          maxHeight: "900px",
+          border: "2px solid var(--frigate-primary)",
+          backgroundColor: "var(--frigate-bg-base)",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* Modal Header */}
         <div
           style={{
-            padding: 'var(--frigate-space-4)',
-            borderBottom: '2px solid var(--frigate-primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: 'var(--frigate-bg-surface)',
+            padding: "var(--frigate-space-4)",
+            borderBottom: "2px solid var(--frigate-primary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            backgroundColor: "var(--frigate-bg-surface)",
           }}
         >
           <h2
             id="create-ship-modal-title"
             style={{
               margin: 0,
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-heading)',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--frigate-text-primary)',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-heading)",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              color: "var(--frigate-text-primary)",
             }}
           >
             CREATE NEW SHIP
           </h2>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onClose}
-            disabled={isCreating}
-          >
+          <Button variant="secondary" size="sm" onClick={onClose} disabled={isCreating}>
             [X]
           </Button>
         </div>
 
         {/* Modal Body - Two Column Layout */}
-        <div 
-          style={{ 
-            flex: 1, 
-            overflow: 'hidden',
-            display: 'flex',
-            gap: 'var(--frigate-space-4)',
-            padding: 'var(--frigate-space-4)',
+        <div
+          style={{
+            flex: 1,
+            overflow: "hidden",
+            display: "flex",
+            gap: "var(--frigate-space-4)",
+            padding: "var(--frigate-space-4)",
           }}
         >
           {/* Left Column - Selection */}
           <div
             style={{
-              width: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--frigate-space-4)',
+              width: "400px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "var(--frigate-space-4)",
             }}
           >
             {/* Ship Name Input */}
@@ -331,7 +318,7 @@ export function EnhancedShipCreationModal({
             {/* Ship Class Selection */}
             <ShipClassSelect
               selectedClassId={selectedClassId}
-              onChange={e => setSelectedClassId(e.target.value)}
+              onChange={(e) => setSelectedClassId(e.target.value)}
               disabled={isCreating}
               isLoading={shipClassStore.isLoading}
               availableClasses={availableClasses}
@@ -352,24 +339,24 @@ export function EnhancedShipCreationModal({
             {/* Action Buttons */}
             <div
               style={{
-                marginTop: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--frigate-space-2)',
+                marginTop: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--frigate-space-2)",
               }}
             >
               {/* Schematic loaded indicator */}
               {schematicIndicator && (
                 <div
                   style={{
-                    padding: 'var(--frigate-space-2)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                    border: '1px solid var(--frigate-success, #22c55e)',
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-tiny)',
-                    color: 'var(--frigate-success, #22c55e)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    padding: "var(--frigate-space-2)",
+                    backgroundColor: "rgba(34, 197, 94, 0.1)",
+                    border: "1px solid var(--frigate-success, #22c55e)",
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-success, #22c55e)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
                   }}
                 >
                   [✓] SCHEMATIC LOADED: {schematicIndicator}
@@ -379,48 +366,51 @@ export function EnhancedShipCreationModal({
               {schematicWarning && (
                 <div
                   style={{
-                    padding: 'var(--frigate-space-2)',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    border: '1px solid var(--frigate-warning, #f59e0b)',
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-tiny)',
-                    color: 'var(--frigate-warning, #f59e0b)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    padding: "var(--frigate-space-2)",
+                    backgroundColor: "rgba(245, 158, 11, 0.1)",
+                    border: "1px solid var(--frigate-warning, #f59e0b)",
+                    fontFamily: "var(--frigate-font-mono)",
+                    fontSize: "var(--frigate-font-tiny)",
+                    color: "var(--frigate-warning, #f59e0b)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
                   }}
                 >
                   [!] {schematicWarning}
                 </div>
               )}
               {/* Insufficient credits warning */}
-              {team && selectedClassDetails?.cost !== undefined && team.credits < selectedClassDetails.cost && (
-                <div
-                  style={{
-                    padding: 'var(--frigate-space-2)',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid var(--frigate-danger)',
-                    fontFamily: 'var(--frigate-font-mono)',
-                    fontSize: 'var(--frigate-font-tiny)',
-                    color: 'var(--frigate-danger)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  [!] INSUFFICIENT CREDITS: NEED {formatCredits(selectedClassDetails.cost)} CR, HAVE {formatCredits(team.credits)} CR
-                </div>
-              )}
+              {team &&
+                selectedClassDetails?.cost !== undefined &&
+                team.credits < selectedClassDetails.cost && (
+                  <div
+                    style={{
+                      padding: "var(--frigate-space-2)",
+                      backgroundColor: "rgba(239, 68, 68, 0.1)",
+                      border: "1px solid var(--frigate-danger)",
+                      fontFamily: "var(--frigate-font-mono)",
+                      fontSize: "var(--frigate-font-tiny)",
+                      color: "var(--frigate-danger)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    [!] INSUFFICIENT CREDITS: NEED {formatCredits(selectedClassDetails.cost)} CR,
+                    HAVE {formatCredits(team.credits)} CR
+                  </div>
+                )}
               {/* Load Schematic Button */}
               {onLoadSchematic && (
                 <Button
                   variant="secondary"
                   onClick={handleLoadSchematic}
                   disabled={isCreating || schematicLoading}
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 >
-                  {schematicLoading ? '[LOADING...]' : '[LOAD SCHEMATIC]'}
+                  {schematicLoading ? "[LOADING...]" : "[LOAD SCHEMATIC]"}
                 </Button>
               )}
-              <div style={{ display: 'flex', gap: 'var(--frigate-space-3)' }}>
+              <div style={{ display: "flex", gap: "var(--frigate-space-3)" }}>
                 <Button
                   variant="primary"
                   onClick={handleCreate}
@@ -429,11 +419,14 @@ export function EnhancedShipCreationModal({
                     schematicLoading ||
                     !shipName.trim() ||
                     !selectedClassId ||
-                    (team !== undefined && team !== null && selectedClassDetails?.cost !== undefined && team.credits < selectedClassDetails.cost)
+                    (team !== undefined &&
+                      team !== null &&
+                      selectedClassDetails?.cost !== undefined &&
+                      team.credits < selectedClassDetails.cost)
                   }
                   style={{ flex: 1 }}
                 >
-                  {isCreating ? '[CREATING...]' : '[CREATE]'}
+                  {isCreating ? "[CREATING...]" : "[CREATE]"}
                 </Button>
                 <Button
                   variant="secondary"
@@ -450,17 +443,17 @@ export function EnhancedShipCreationModal({
           <div
             style={{
               flex: 1,
-              overflow: 'auto',
-              backgroundColor: 'var(--frigate-bg-base)',
-              border: '1px solid var(--frigate-border-base)',
+              overflow: "auto",
+              backgroundColor: "var(--frigate-bg-base)",
+              border: "1px solid var(--frigate-border-base)",
             }}
           >
             {shipClassStore.isLoading || detailsLoading ? (
-              <div style={{ padding: 'var(--frigate-space-8)' }}>
+              <div style={{ padding: "var(--frigate-space-8)" }}>
                 <LoadingText message="LOADING SHIP CLASS DETAILS..." />
               </div>
             ) : selectedClassDetails ? (
-              <div style={{ padding: 'var(--frigate-space-4)' }}>
+              <div style={{ padding: "var(--frigate-space-4)" }}>
                 <ModalShipClassDetailPanel
                   shipClass={selectedClassDetails}
                   factionId={factionId || undefined}
@@ -469,11 +462,11 @@ export function EnhancedShipCreationModal({
             ) : (
               <div
                 style={{
-                  padding: 'var(--frigate-space-8)',
-                  textAlign: 'center',
-                  fontFamily: 'var(--frigate-font-mono)',
-                  fontSize: 'var(--frigate-font-small)',
-                  color: 'var(--frigate-text-muted)',
+                  padding: "var(--frigate-space-8)",
+                  textAlign: "center",
+                  fontFamily: "var(--frigate-font-mono)",
+                  fontSize: "var(--frigate-font-small)",
+                  color: "var(--frigate-text-muted)",
                 }}
               >
                 SELECT A SHIP CLASS TO VIEW DETAILS

@@ -5,7 +5,7 @@ import type {
   HyperionEvent,
   HyperionEventType,
   ShipPositionEvent,
-  ShipStatusEvent
+  ShipStatusEvent,
 } from "./types";
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -31,7 +31,7 @@ export function ensureVector3(value: unknown) {
   return {
     x: ensureNumber(value.x),
     y: ensureNumber(value.y),
-    z: ensureNumber(value.z)
+    z: ensureNumber(value.z),
   } as const;
 }
 
@@ -43,7 +43,7 @@ export function ensureQuaternion(value: unknown) {
     w: ensureNumber(value.w, 1),
     x: ensureNumber(value.x),
     y: ensureNumber(value.y),
-    z: ensureNumber(value.z)
+    z: ensureNumber(value.z),
   } as const;
 }
 
@@ -62,7 +62,7 @@ export function parseHyperionEvent(payload: unknown): HyperionEvent {
           shipId: ensureString(data.ship_id),
           position: ensureVector3(data.position),
           velocity: ensureVector3(data.velocity),
-          rotation: ensureQuaternion(data.rotation)
+          rotation: ensureQuaternion(data.rotation),
         };
         return { type, data: event };
       }
@@ -76,7 +76,7 @@ export function parseHyperionEvent(payload: unknown): HyperionEvent {
           weaponType: ensureString(data.weapon_type),
           hullDamage: ensureNumber(data.hull_damage),
           shieldDamage: ensureNumber(data.shield_damage),
-          critical: ensureBoolean(data.critical)
+          critical: ensureBoolean(data.critical),
         };
         return { type, data: event };
       }
@@ -91,7 +91,7 @@ export function parseHyperionEvent(payload: unknown): HyperionEvent {
           power: ensureNumber(data.power),
           statusEffects: Array.isArray(data.status_effects)
             ? (data.status_effects.filter((value) => typeof value === "string") as string[])
-            : []
+            : [],
         };
         return { type, data: event };
       }
@@ -103,7 +103,7 @@ export function parseHyperionEvent(payload: unknown): HyperionEvent {
           fromShip: ensureString(data.from_ship),
           toShip: ensureString(data.to_ship),
           message: ensureString(data.message),
-          tone: ensureString(data.tone)
+          tone: ensureString(data.tone),
         };
         return { type, data: event };
       }
@@ -114,7 +114,7 @@ export function parseHyperionEvent(payload: unknown): HyperionEvent {
         const event: DockingEvent = {
           shipId: ensureString(data.ship_id),
           stationId: ensureString(data.station_id),
-          status: ensureString(data.status) as DockingEvent["status"]
+          status: ensureString(data.status) as DockingEvent["status"],
         };
         return { type, data: event };
       }

@@ -6,19 +6,19 @@
  * Ship class browser for exploration (Phase 4.12.5)
  */
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '../components';
-import { useAlert } from '../alerts';
-import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
-import { useShipClassStore } from '../stores/shipClassStore';
-import { EnhancedShipCreationModal } from './EnhancedShipCreationModal';
-import type { SchematicDataForModal } from './EnhancedShipCreationModal';
-import { ShipClassBrowser } from '../shipclass';
-import ShipSelectionHeader from './ShipSelectionHeader';
-import ShipList from './ShipList';
-import type { Player } from './PlayerSelectionView';
-import type { Team } from './TeamBrowser';
-import type { Blueprint } from './BlueprintList';
+import React, { useState, useEffect } from "react";
+import { Button } from "../components";
+import { useAlert } from "../alerts";
+import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
+import { useShipClassStore } from "../stores/shipClassStore";
+import { EnhancedShipCreationModal } from "./EnhancedShipCreationModal";
+import type { SchematicDataForModal } from "./EnhancedShipCreationModal";
+import { ShipClassBrowser } from "../shipclass";
+import ShipSelectionHeader from "./ShipSelectionHeader";
+import ShipList from "./ShipList";
+import type { Player } from "./PlayerSelectionView";
+import type { Team } from "./TeamBrowser";
+import type { Blueprint } from "./BlueprintList";
 
 export interface ShipSelectionViewProps {
   apiUrl: string;
@@ -39,7 +39,7 @@ export function ShipSelectionView({
   team,
   onBack,
   onDisconnect,
-  className = '',
+  className = "",
   onLoadSchematic,
   schematicLoading = false,
 }: ShipSelectionViewProps): React.ReactElement {
@@ -51,13 +51,13 @@ export function ShipSelectionView({
 
   const alert = useAlert();
   const { setBlueprint, goBack, setPendingSchematic } = useLobbyWorkflowStore();
-  
+
   // Phase 4.12.1: Use ship class store with faction-aware filtering
   const shipClassStore = useShipClassStore();
-  
+
   // Load ship classes on mount, filtered by team's faction
   useEffect(() => {
-    console.log('[ShipSelectionView] Loading ship classes for faction:', team.faction);
+    console.log("[ShipSelectionView] Loading ship classes for faction:", team.faction);
     shipClassStore.loadShipClasses(team.faction);
   }, [team.faction]);
 
@@ -71,7 +71,7 @@ export function ShipSelectionView({
           if (data && data.blueprints) setShips(data.blueprints);
         }
       } catch (error) {
-        console.error('Failed to load ships:', error);
+        console.error("Failed to load ships:", error);
       } finally {
         setLoading(false);
       }
@@ -82,15 +82,15 @@ export function ShipSelectionView({
   const handleCreateShip = async (shipName: string, shipClassId: string) => {
     // Validation: 3-32 characters
     if (shipName.length < 3 || shipName.length > 32) {
-      alert.danger('Invalid Name', 'Ship name must be 3-32 characters');
+      alert.danger("Invalid Name", "Ship name must be 3-32 characters");
       return;
     }
 
     setCreating(true);
     try {
       const response = await fetch(`${apiUrl}/v1/blueprints`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: shipName,
           ship_class: shipClassId,
@@ -102,7 +102,7 @@ export function ShipSelectionView({
       if (response.ok) {
         const data = await response.json();
         if (data && data.id) {
-          alert.success('Ship Created', `Successfully created ${shipName}`);
+          alert.success("Ship Created", `Successfully created ${shipName}`);
           setBlueprint(data.id);
           setShowCreateModal(false);
           // Reload ships list
@@ -114,11 +114,11 @@ export function ShipSelectionView({
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
-        alert.danger('Creation Failed', errorData.error || 'Failed to create ship');
+        alert.danger("Creation Failed", errorData.error || "Failed to create ship");
       }
     } catch (error) {
-      console.error('Failed to create ship:', error);
-      alert.danger('Network Error', 'Failed to connect to server');
+      console.error("Failed to create ship:", error);
+      alert.danger("Network Error", "Failed to connect to server");
     } finally {
       setCreating(false);
     }
@@ -126,7 +126,7 @@ export function ShipSelectionView({
 
   const handleSelectShip = (shipId: string) => {
     setBlueprint(shipId);
-    alert.success('Ship Selected', 'Successfully joined ship');
+    alert.success("Ship Selected", "Successfully joined ship");
   };
 
   const handleBack = () => {
@@ -156,7 +156,7 @@ export function ShipSelectionView({
 
     // Validate schematic has required fields
     if (!schematic.name || !schematic.ship_class) {
-      alert.danger('Invalid Schematic', 'Schematic must have a name and ship class');
+      alert.danger("Invalid Schematic", "Schematic must have a name and ship class");
       return;
     }
 
@@ -164,8 +164,8 @@ export function ShipSelectionView({
     setCreating(true);
     try {
       const response = await fetch(`${apiUrl}/v1/blueprints`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: schematic.name,
           ship_class: schematic.ship_class,
@@ -188,17 +188,17 @@ export function ShipSelectionView({
             })),
           });
 
-          alert.success('Schematic Loaded', `Creating ${schematic.name} from schematic...`);
+          alert.success("Schematic Loaded", `Creating ${schematic.name} from schematic...`);
           // Advance to design workspace - the pending schematic will be applied there
           setBlueprint(data.id);
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
-        alert.danger('Creation Failed', errorData.error || 'Failed to create ship from schematic');
+        alert.danger("Creation Failed", errorData.error || "Failed to create ship from schematic");
       }
     } catch (error) {
-      console.error('Failed to create ship from schematic:', error);
-      alert.danger('Network Error', 'Failed to connect to server');
+      console.error("Failed to create ship from schematic:", error);
+      alert.danger("Network Error", "Failed to connect to server");
     } finally {
       setCreating(false);
     }
@@ -212,12 +212,12 @@ export function ShipSelectionView({
   // Phase 4.12.1: Get ship classes from store (sorted by build points)
   const availableShipClasses = shipClassStore.sortShipClasses(
     shipClassStore.shipClasses,
-    'buildPoints',
-    'asc'
+    "buildPoints",
+    "asc"
   );
 
   return (
-    <div className={className} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div className={className} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <ShipSelectionHeader
         player={player}
         team={team}
@@ -227,9 +227,9 @@ export function ShipSelectionView({
       />
 
       {/* Main Content */}
-      <div style={{ flex: 1, overflow: 'auto', padding: 'var(--frigate-space-4)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ flex: 1, overflow: "auto", padding: "var(--frigate-space-4)" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <div style={{ maxWidth: "800px", margin: "0 auto" }}>
             <ShipList
               ships={ships}
               loading={loading}
@@ -237,17 +237,20 @@ export function ShipSelectionView({
               onSelectShip={handleSelectShip}
             />
 
-            <div style={{ display: 'flex', gap: 'var(--frigate-space-2)', flexWrap: 'wrap', marginTop: 'var(--frigate-space-3)' }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "var(--frigate-space-2)",
+                flexWrap: "wrap",
+                marginTop: "var(--frigate-space-3)",
+              }}
+            >
               <Button variant="primary" onClick={() => setShowCreateModal(true)}>
                 [CREATE NEW SHIP]
               </Button>
               {onLoadSchematic && (
-                <Button
-                  variant="primary"
-                  onClick={handleLoadSchematic}
-                  disabled={schematicLoading}
-                >
-                  {schematicLoading ? '[LOADING...]' : '[LOAD SCHEMATIC]'}
+                <Button variant="primary" onClick={handleLoadSchematic} disabled={schematicLoading}>
+                  {schematicLoading ? "[LOADING...]" : "[LOAD SCHEMATIC]"}
                 </Button>
               )}
               <Button variant="secondary" onClick={() => setShowBrowser(true)}>

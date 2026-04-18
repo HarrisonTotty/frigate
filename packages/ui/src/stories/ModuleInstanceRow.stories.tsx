@@ -1,18 +1,17 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { ModuleInstanceRow } from '../lobby/ModuleInstanceRow';
+import type { Meta, StoryObj } from "@storybook/react";
+import { ModuleInstanceRow } from "../lobby/ModuleInstanceRow";
 
 /**
  * Module Instance Row Story
- * 
+ *
  * Component for displaying an individual installed module instance in the Ship Design Workspace.
  * Shows module info, stats, and action buttons for editing or removing the module.
  */
 const meta: Meta<typeof ModuleInstanceRow> = {
-  title: 'Lobby/ModuleInstanceRow',
+  title: "Lobby/ModuleInstanceRow",
   component: ModuleInstanceRow,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component: `
@@ -55,19 +54,19 @@ Three main sections:
   argTypes: {
     instance: {
       control: false,
-      description: 'The module instance data to display',
+      description: "The module instance data to display",
     },
     variantInfo: {
       control: false,
-      description: 'Optional variant information for the installed module',
+      description: "Optional variant information for the installed module",
     },
     onEdit: {
-      action: 'edit clicked',
-      description: 'Callback when [EDIT] button is clicked',
+      action: "edit clicked",
+      description: "Callback when [EDIT] button is clicked",
     },
     onRemove: {
-      action: 'remove clicked',
-      description: 'Callback when [REMOVE] button is clicked',
+      action: "remove clicked",
+      description: "Callback when [REMOVE] button is clicked",
     },
   },
 };
@@ -81,28 +80,28 @@ type Story = StoryObj<typeof ModuleInstanceRow>;
 export const Configured: Story = {
   args: {
     instance: {
-      id: 'instance-1',
-      slotId: 'slot-power-1',
-      slotName: 'Power Core',
-      variantId: 'core-mk2',
+      id: "instance-1",
+      slotId: "slot-power-1",
+      slotName: "Power Core",
+      variantId: "core-mk2",
       stats: {
         power: 120,
         heat: 45,
         weight: 850,
       },
-    } as any,
+    } as Record<string, unknown>,
     variantInfo: {
-      id: 'core-mk2',
-      name: 'Mk II Fusion Core',
-      description: 'Improved fusion power core with 30% output boost',
+      id: "core-mk2",
+      name: "Mk II Fusion Core",
+      description: "Improved fusion power core with 30% output boost",
     },
-    onEdit: () => console.log('Edit clicked'),
-    onRemove: () => console.log('Remove clicked'),
+    onEdit: () => console.log("Edit clicked"),
+    onRemove: () => console.log("Remove clicked"),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a module instance that has been configured with a variant selection.',
+        story: "Shows a module instance that has been configured with a variant selection.",
       },
     },
   },
@@ -114,24 +113,25 @@ export const Configured: Story = {
 export const Unconfigured: Story = {
   args: {
     instance: {
-      id: 'instance-2',
-      slotId: 'slot-weapon-1',
-      slotName: 'Weapon System',
+      id: "instance-2",
+      slotId: "slot-weapon-1",
+      slotName: "Weapon System",
       variantId: null,
       stats: {
         power: 0,
         heat: 0,
         weight: 0,
       },
-    } as any,
+    } as Record<string, unknown>,
     variantInfo: undefined,
-    onEdit: () => console.log('Edit clicked'),
-    onRemove: () => console.log('Remove clicked'),
+    onEdit: () => console.log("Edit clicked"),
+    onRemove: () => console.log("Remove clicked"),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a module instance that has not been configured yet, displaying [UNCONFIGURED] badge.',
+        story:
+          "Shows a module instance that has not been configured yet, displaying [UNCONFIGURED] badge.",
       },
     },
   },
@@ -143,28 +143,28 @@ export const Unconfigured: Story = {
 export const HighPowerConsumption: Story = {
   args: {
     instance: {
-      id: 'instance-3',
-      slotId: 'slot-engine-1',
-      slotName: 'Main Impulse Engine',
-      variantId: 'engine-mk3',
+      id: "instance-3",
+      slotId: "slot-engine-1",
+      slotName: "Main Impulse Engine",
+      variantId: "engine-mk3",
       stats: {
         power: 450,
         heat: 280,
         weight: 3200,
       },
-    } as any,
+    } as Record<string, unknown>,
     variantInfo: {
-      id: 'engine-mk3',
-      name: 'Mk III Warp Drive',
-      description: 'High-performance FTL engine system',
+      id: "engine-mk3",
+      name: "Mk III Warp Drive",
+      description: "High-performance FTL engine system",
     },
-    onEdit: () => console.log('Edit clicked'),
-    onRemove: () => console.log('Remove clicked'),
+    onEdit: () => console.log("Edit clicked"),
+    onRemove: () => console.log("Remove clicked"),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a module with high power and heat consumption, representing a major system.',
+        story: "Shows a module with high power and heat consumption, representing a major system.",
       },
     },
   },
@@ -176,28 +176,28 @@ export const HighPowerConsumption: Story = {
 export const SupportSystem: Story = {
   args: {
     instance: {
-      id: 'instance-4',
-      slotId: 'slot-support-1',
-      slotName: 'Auxiliary Support System',
-      variantId: 'support-1',
+      id: "instance-4",
+      slotId: "slot-support-1",
+      slotName: "Auxiliary Support System",
+      variantId: "support-1",
       stats: {
         power: 15,
         heat: 8,
         weight: 120,
       },
-    } as any,
+    } as Record<string, unknown>,
     variantInfo: {
-      id: 'support-1',
-      name: 'Standard Repair Bay',
-      description: 'Basic repair and maintenance facilities',
+      id: "support-1",
+      name: "Standard Repair Bay",
+      description: "Basic repair and maintenance facilities",
     },
-    onEdit: () => console.log('Edit clicked'),
-    onRemove: () => console.log('Remove clicked'),
+    onEdit: () => console.log("Edit clicked"),
+    onRemove: () => console.log("Remove clicked"),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a support system with minimal power/heat/weight requirements.',
+        story: "Shows a support system with minimal power/heat/weight requirements.",
       },
     },
   },
@@ -209,28 +209,29 @@ export const SupportSystem: Story = {
 export const MultipleInstances: Story = {
   args: {
     instance: {
-      id: 'instance-5',
-      slotId: 'slot-comms-1',
-      slotName: 'Communication System',
-      variantId: 'comms-advanced',
+      id: "instance-5",
+      slotId: "slot-comms-1",
+      slotName: "Communication System",
+      variantId: "comms-advanced",
       stats: {
         power: 45,
         heat: 20,
         weight: 280,
       },
-    } as any,
+    } as Record<string, unknown>,
     variantInfo: {
-      id: 'comms-advanced',
-      name: 'Advanced Communications Array',
-      description: 'Long-range communication and sensor suite',
+      id: "comms-advanced",
+      name: "Advanced Communications Array",
+      description: "Long-range communication and sensor suite",
     },
-    onEdit: () => console.log('Edit clicked'),
-    onRemove: () => console.log('Remove clicked'),
+    onEdit: () => console.log("Edit clicked"),
+    onRemove: () => console.log("Remove clicked"),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a communication system instance. Multiple of these rows would appear in a list.',
+        story:
+          "Shows a communication system instance. Multiple of these rows would appear in a list.",
       },
     },
   },

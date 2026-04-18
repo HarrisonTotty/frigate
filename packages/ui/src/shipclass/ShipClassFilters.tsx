@@ -1,12 +1,12 @@
-import React from 'react';
-import { Select, Button } from '../components';
-import type { ShipSize, ShipRole, ShipClassSortBy, SortOrder } from '../types/shipClass';
+import React from "react";
+import { Select, Button } from "../components";
+import type { ShipSize, ShipRole, ShipClassSortBy, SortOrder } from "../types/shipClass";
 
 interface FiltersProps {
-  filterSize: ShipSize | 'all';
-  setFilterSize: (v: ShipSize | 'all') => void;
-  filterRole: ShipRole | 'all';
-  setFilterRole: (v: ShipRole | 'all') => void;
+  filterSize: ShipSize | "all";
+  setFilterSize: (v: ShipSize | "all") => void;
+  filterRole: ShipRole | "all";
+  setFilterRole: (v: ShipRole | "all") => void;
   sortBy: ShipClassSortBy;
   setSortBy: (v: ShipClassSortBy) => void;
   sortOrder: SortOrder;
@@ -32,27 +32,27 @@ export function ShipClassFilters({
       role="region"
       aria-label="Ship class filters and sorting"
       style={{
-        padding: 'var(--frigate-space-3)',
-        borderBottom: '1px solid var(--frigate-border-base)',
-        backgroundColor: 'var(--frigate-bg-surface)',
+        padding: "var(--frigate-space-3)",
+        borderBottom: "1px solid var(--frigate-border-base)",
+        backgroundColor: "var(--frigate-bg-surface)",
       }}
     >
       <div
         style={{
-          display: 'flex',
-          gap: 'var(--frigate-space-3)',
-          alignItems: 'center',
-          flexWrap: 'wrap',
+          display: "flex",
+          gap: "var(--frigate-space-3)",
+          alignItems: "center",
+          flexWrap: "wrap",
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-2)" }}>
           <label
             htmlFor="filter-size"
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
+              color: "var(--frigate-text-secondary)",
+              textTransform: "uppercase",
             }}
           >
             SIZE:
@@ -60,7 +60,7 @@ export function ShipClassFilters({
           <Select
             id="filter-size"
             value={filterSize}
-            onChange={(e) => setFilterSize(e.target.value as ShipSize | 'all')}
+            onChange={(e) => setFilterSize(e.target.value as ShipSize | "all")}
             aria-label="Filter by ship size"
           >
             <option value="all">ALL</option>
@@ -70,14 +70,14 @@ export function ShipClassFilters({
           </Select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-2)" }}>
           <label
             htmlFor="filter-role"
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
+              color: "var(--frigate-text-secondary)",
+              textTransform: "uppercase",
             }}
           >
             ROLE:
@@ -85,7 +85,7 @@ export function ShipClassFilters({
           <Select
             id="filter-role"
             value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value as ShipRole | 'all')}
+            onChange={(e) => setFilterRole(e.target.value as ShipRole | "all")}
             aria-label="Filter by ship role"
           >
             <option value="all">ALL</option>
@@ -99,14 +99,14 @@ export function ShipClassFilters({
           </Select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-2)" }}>
           <label
             htmlFor="sort-by"
             style={{
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-small)',
-              color: 'var(--frigate-text-secondary)',
-              textTransform: 'uppercase',
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
+              color: "var(--frigate-text-secondary)",
+              textTransform: "uppercase",
             }}
           >
             SORT:
@@ -125,18 +125,18 @@ export function ShipClassFilters({
           </Select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-2)" }}>
           <Button
-            variant={sortOrder === 'asc' ? 'primary' : 'secondary'}
+            variant={sortOrder === "asc" ? "primary" : "secondary"}
             size="sm"
-            onClick={() => setSortOrder('asc')}
+            onClick={() => setSortOrder("asc")}
           >
             [ASC]
           </Button>
           <Button
-            variant={sortOrder === 'desc' ? 'primary' : 'secondary'}
+            variant={sortOrder === "desc" ? "primary" : "secondary"}
             size="sm"
-            onClick={() => setSortOrder('desc')}
+            onClick={() => setSortOrder("desc")}
           >
             [DESC]
           </Button>
@@ -148,13 +148,13 @@ export function ShipClassFilters({
 
         <div
           style={{
-            marginLeft: 'auto',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-muted)',
+            marginLeft: "auto",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-muted)",
           }}
         >
-          {resultCount} SHIP {resultCount === 1 ? 'CLASS' : 'CLASSES'}
+          {resultCount} SHIP {resultCount === 1 ? "CLASS" : "CLASSES"}
         </div>
       </div>
     </div>

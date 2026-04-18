@@ -6,8 +6,8 @@
  * totals, and enforces weight/credit constraints.
  */
 
-import { create } from 'zustand';
-import type { Ammunition, InventoryItem } from '@frigate/api-client';
+import { create } from "zustand";
+import type { Ammunition, InventoryItem } from "@frigate/api-client";
 
 /**
  * Inventory store state interface
@@ -37,11 +37,7 @@ export interface InventoryState {
   // Actions
   setAmmoCatalog: (catalog: Ammunition[]) => void;
   setConstraints: (weight: number, credits: number) => void;
-  setCompatibility: (
-    ammoTypes: Set<string>,
-    hasMissiles: boolean,
-    hasTorpedos: boolean
-  ) => void;
+  setCompatibility: (ammoTypes: Set<string>, hasMissiles: boolean, hasTorpedos: boolean) => void;
 
   addAmmo: (ammoId: string, quantity?: number) => void;
   removeAmmo: (ammoId: string, quantity?: number) => void;
@@ -252,16 +248,16 @@ export const useInventoryStore = create<InventoryState>((set, get) => ({
     const ammo = state.ammoCatalog.find((a) => a.id === ammoId);
     if (!ammo) return false;
 
-    if (ammo.category === 'kinetic') {
+    if (ammo.category === "kinetic") {
       const key = `${ammo.ammo_type}:${ammo.ammo_size}`;
       return state.compatibleAmmoTypes.has(key);
     }
 
-    if (ammo.category === 'missiles') {
+    if (ammo.category === "missiles") {
       return state.compatibleMissiles;
     }
 
-    if (ammo.category === 'torpedos') {
+    if (ammo.category === "torpedos") {
       return state.compatibleTorpedos;
     }
 

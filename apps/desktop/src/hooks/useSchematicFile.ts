@@ -6,9 +6,9 @@
  * browser File API for web builds.
  */
 
-import { useState, useCallback } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import type { SchematicFile } from '../types/schematic';
+import { useState, useCallback } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import type { SchematicFile } from "../types/schematic";
 
 /**
  * Hook return type
@@ -31,8 +31,9 @@ export interface UseSchematicFileReturn {
  * Tauri 2.0 uses __TAURI_INTERNALS__ instead of __TAURI__
  */
 const isTauri = (): boolean => {
-  return typeof window !== 'undefined' &&
-    ('__TAURI__' in window || '__TAURI_INTERNALS__' in window);
+  return (
+    typeof window !== "undefined" && ("__TAURI__" in window || "__TAURI_INTERNALS__" in window)
+  );
 };
 
 /**
@@ -42,7 +43,7 @@ const isTauri = (): boolean => {
  * For production use, consider using a proper YAML library.
  */
 function parseSchematicYaml(yaml: string): SchematicFile {
-  const lines = yaml.split('\n');
+  const lines = yaml.split("\n");
   const schematic: Partial<SchematicFile> = {
     modules: [],
   };
@@ -54,18 +55,18 @@ function parseSchematicYaml(yaml: string): SchematicFile {
     const trimmed = line.trim();
 
     // Skip empty lines and comments
-    if (!trimmed || trimmed.startsWith('#')) continue;
+    if (!trimmed || trimmed.startsWith("#")) continue;
 
     // Check for key-value pairs
-    if (trimmed.startsWith('version:')) {
-      schematic.version = parseInt(trimmed.split(':')[1].trim(), 10);
-    } else if (trimmed.startsWith('name:')) {
-      schematic.name = trimmed.split(':').slice(1).join(':').trim();
-    } else if (trimmed.startsWith('ship_class:')) {
-      schematic.ship_class = trimmed.split(':').slice(1).join(':').trim();
-    } else if (trimmed === 'modules:') {
+    if (trimmed.startsWith("version:")) {
+      schematic.version = parseInt(trimmed.split(":")[1].trim(), 10);
+    } else if (trimmed.startsWith("name:")) {
+      schematic.name = trimmed.split(":").slice(1).join(":").trim();
+    } else if (trimmed.startsWith("ship_class:")) {
+      schematic.ship_class = trimmed.split(":").slice(1).join(":").trim();
+    } else if (trimmed === "modules:") {
       inModules = true;
-    } else if (inModules && trimmed.startsWith('- slot:')) {
+    } else if (inModules && trimmed.startsWith("- slot:")) {
       // New module entry
       if (currentModule && currentModule.slot) {
         schematic.modules!.push({
@@ -74,12 +75,12 @@ function parseSchematicYaml(yaml: string): SchematicFile {
         });
       }
       currentModule = {
-        slot: trimmed.replace('- slot:', '').trim(),
+        slot: trimmed.replace("- slot:", "").trim(),
         module: null,
       };
-    } else if (inModules && currentModule && trimmed.startsWith('module:')) {
-      const value = trimmed.split(':').slice(1).join(':').trim();
-      currentModule.module = value === 'null' || value === '' ? null : value;
+    } else if (inModules && currentModule && trimmed.startsWith("module:")) {
+      const value = trimmed.split(":").slice(1).join(":").trim();
+      currentModule.module = value === "null" || value === "" ? null : value;
     }
   }
 
@@ -92,9 +93,9 @@ function parseSchematicYaml(yaml: string): SchematicFile {
   }
 
   // Validate required fields
-  if (schematic.version === undefined) throw new Error('Missing version field');
-  if (!schematic.name) throw new Error('Missing name field');
-  if (!schematic.ship_class) throw new Error('Missing ship_class field');
+  if (schematic.version === undefined) throw new Error("Missing version field");
+  if (!schematic.name) throw new Error("Missing name field");
+  if (!schematic.ship_class) throw new Error("Missing ship_class field");
 
   return schematic as SchematicFile;
 }
@@ -107,15 +108,15 @@ function serializeSchematicYaml(schematic: SchematicFile): string {
     `version: ${schematic.version}`,
     `name: ${schematic.name}`,
     `ship_class: ${schematic.ship_class}`,
-    'modules:',
+    "modules:",
   ];
 
   for (const mod of schematic.modules) {
     lines.push(`  - slot: ${mod.slot}`);
-    lines.push(`    module: ${mod.module ?? 'null'}`);
+    lines.push(`    module: ${mod.module ?? "null"}`);
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
@@ -140,15 +141,15 @@ export function useSchematicFile(): UseSchematicFileReturn {
     try {
       if (isTauri()) {
         // Use Tauri command
-        const saved = await invoke<boolean>('save_schematic_file', { schematic });
+        const saved = await invoke<boolean>("save_schematic_file", { schematic });
         return saved;
       } else {
         // Web fallback: Download as file
         const yaml = serializeSchematicYaml(schematic);
-        const blob = new Blob([yaml], { type: 'application/x-yaml' });
+        const blob = new Blob([yaml], { type: "application/x-yaml" });
         const url = URL.createObjectURL(blob);
 
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = `${schematic.name}.yaml`;
         document.body.appendChild(a);
@@ -160,7 +161,7 @@ export function useSchematicFile(): UseSchematicFileReturn {
       }
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      console.error('[useSchematicFile] Save error:', message);
+      console.error("[useSchematicFile] Save error:", message);
       setError(message);
       return false;
     } finally {
@@ -179,7 +180,7 @@ export function useSchematicFile(): UseSchematicFileReturn {
     try {
       if (isTauri()) {
         // Use Tauri command
-        const schematic = await invoke<SchematicFile | null>('load_schematic_file');
+        const schematic = await invoke<SchematicFile | null>("load_schematic_file");
         return schematic;
       } else {
         // Web fallback: File input
@@ -187,9 +188,9 @@ export function useSchematicFile(): UseSchematicFileReturn {
         // because the file input is async and we want loading to stay true
         // until the user completes their selection
         return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = '.yaml,.yml';
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = ".yaml,.yml";
 
           input.onchange = async (event) => {
             const file = (event.target as HTMLInputElement).files?.[0];
@@ -206,7 +207,7 @@ export function useSchematicFile(): UseSchematicFileReturn {
               resolve(schematic);
             } catch (parseError) {
               const message = parseError instanceof Error ? parseError.message : String(parseError);
-              console.error('[useSchematicFile] Parse error:', message);
+              console.error("[useSchematicFile] Parse error:", message);
               setError(`Failed to parse schematic: ${message}`);
               setLoading(false);
               resolve(null);
@@ -224,7 +225,7 @@ export function useSchematicFile(): UseSchematicFileReturn {
       }
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      console.error('[useSchematicFile] Load error:', message);
+      console.error("[useSchematicFile] Load error:", message);
       setError(message);
       return null;
     } finally {

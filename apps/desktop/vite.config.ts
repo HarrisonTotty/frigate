@@ -8,6 +8,6 @@ export default defineConfig({
     strictPort: true, // Fail if port is already in use instead of trying another port
   },
   define: {
-    __BUILD_TIME__: JSON.stringify(new Date().toISOString())
-  }
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
 });

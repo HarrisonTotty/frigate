@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import clsx from 'clsx';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import clsx from "clsx";
 
 /**
  * Option type for the Select component
@@ -25,7 +25,7 @@ export interface SelectProps {
   /** Change handler */
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   /** Size variant */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   /** Full width select */
   fullWidth?: boolean;
   /** Disabled state */
@@ -36,6 +36,10 @@ export interface SelectProps {
   className?: string;
   /** Additional styles */
   style?: React.CSSProperties;
+  /** Accessible label for the select */
+  "aria-label"?: string;
+  /** ID of element describing this select */
+  "aria-labelledby"?: string;
 }
 
 /**
@@ -50,11 +54,11 @@ function extractOptions(children: React.ReactNode): SelectOption[] {
         // Handle React.Fragment - recursively extract children
         if (child.type === React.Fragment) {
           collectOptions(child.props.children);
-        } else if (child.type === 'option') {
+        } else if (child.type === "option") {
           const props = child.props as React.OptionHTMLAttributes<HTMLOptionElement>;
           options.push({
-            value: String(props.value ?? ''),
-            label: String(props.children ?? ''),
+            value: String(props.value ?? ""),
+            label: String(props.children ?? ""),
             disabled: props.disabled,
           });
         }
@@ -70,12 +74,14 @@ export function Select({
   id,
   value,
   onChange,
-  size = 'md',
+  size = "md",
   fullWidth = false,
   disabled = false,
   children,
   className,
   style,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -84,7 +90,7 @@ export function Select({
 
   const options = extractOptions(children);
   const selectedOption = options.find((opt) => opt.value === value);
-  const selectedLabel = selectedOption?.label ?? options[0]?.label ?? '';
+  const selectedLabel = selectedOption?.label ?? options[0]?.label ?? "";
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -95,18 +101,18 @@ export function Select({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   // Scroll highlighted option into view
   useEffect(() => {
     if (isOpen && highlightedIndex >= 0 && listRef.current) {
-      const items = listRef.current.querySelectorAll('[data-option]');
+      const items = listRef.current.querySelectorAll("[data-option]");
       const item = items[highlightedIndex] as HTMLElement;
-      if (item && typeof item.scrollIntoView === 'function') {
-        item.scrollIntoView({ block: 'nearest' });
+      if (item && typeof item.scrollIntoView === "function") {
+        item.scrollIntoView({ block: "nearest" });
       }
     }
   }, [highlightedIndex, isOpen]);
@@ -131,8 +137,8 @@ export function Select({
       if (disabled) return;
 
       switch (e.key) {
-        case 'Enter':
-        case ' ':
+        case "Enter":
+        case " ":
           e.preventDefault();
           if (isOpen && highlightedIndex >= 0) {
             const option = options[highlightedIndex];
@@ -144,11 +150,11 @@ export function Select({
             setHighlightedIndex(options.findIndex((opt) => opt.value === value));
           }
           break;
-        case 'Escape':
+        case "Escape":
           e.preventDefault();
           setIsOpen(false);
           break;
-        case 'ArrowDown':
+        case "ArrowDown":
           e.preventDefault();
           if (!isOpen) {
             setIsOpen(true);
@@ -163,7 +169,7 @@ export function Select({
             });
           }
           break;
-        case 'ArrowUp':
+        case "ArrowUp":
           e.preventDefault();
           if (isOpen) {
             setHighlightedIndex((prev) => {
@@ -175,14 +181,14 @@ export function Select({
             });
           }
           break;
-        case 'Home':
+        case "Home":
           e.preventDefault();
           if (isOpen) {
             const firstEnabled = options.findIndex((opt) => !opt.disabled);
             if (firstEnabled >= 0) setHighlightedIndex(firstEnabled);
           }
           break;
-        case 'End':
+        case "End":
           e.preventDefault();
           if (isOpen) {
             for (let i = options.length - 1; i >= 0; i--) {
@@ -199,71 +205,71 @@ export function Select({
   );
 
   const baseStyles: React.CSSProperties = {
-    fontFamily: 'var(--frigate-font-mono)',
-    color: 'var(--frigate-text-primary)',
-    backgroundColor: 'var(--frigate-bg-surface)',
-    border: '1px solid var(--frigate-border-base)',
+    fontFamily: "var(--frigate-font-mono)",
+    color: "var(--frigate-text-primary)",
+    backgroundColor: "var(--frigate-bg-surface)",
+    border: "1px solid var(--frigate-border-base)",
     borderRadius: 0,
-    outline: 'none',
-    textTransform: 'uppercase',
-    width: fullWidth ? '100%' : undefined,
-    cursor: disabled ? 'not-allowed' : 'pointer',
+    outline: "none",
+    textTransform: "uppercase",
+    width: fullWidth ? "100%" : undefined,
+    cursor: disabled ? "not-allowed" : "pointer",
     opacity: disabled ? 0.5 : 1,
-    transition: 'border-color 50ms ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    boxSizing: 'border-box',
+    transition: "border-color 50ms ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    boxSizing: "border-box",
   };
 
   const sizeStyles: React.CSSProperties = {
     sm: {
-      padding: 'var(--frigate-space-2) var(--frigate-space-3)',
-      fontSize: 'var(--frigate-font-small)',
+      padding: "var(--frigate-space-2) var(--frigate-space-3)",
+      fontSize: "var(--frigate-font-small)",
     },
     md: {
-      padding: 'var(--frigate-space-3) var(--frigate-space-4)',
-      fontSize: 'var(--frigate-font-body)',
+      padding: "var(--frigate-space-3) var(--frigate-space-4)",
+      fontSize: "var(--frigate-font-body)",
     },
     lg: {
-      padding: 'var(--frigate-space-4) var(--frigate-space-6)',
-      fontSize: 'var(--frigate-font-heading)',
+      padding: "var(--frigate-space-4) var(--frigate-space-6)",
+      fontSize: "var(--frigate-font-heading)",
     },
   }[size];
 
   const dropdownStyles: React.CSSProperties = {
-    position: 'absolute',
-    top: '100%',
+    position: "absolute",
+    top: "100%",
     left: 0,
     right: 0,
-    marginTop: '1px',
-    backgroundColor: 'var(--frigate-bg-surface)',
-    border: '1px solid var(--frigate-border-base)',
+    marginTop: "1px",
+    backgroundColor: "var(--frigate-bg-surface)",
+    border: "1px solid var(--frigate-border-base)",
     borderRadius: 0,
-    maxHeight: '200px',
-    overflowY: 'auto',
+    maxHeight: "200px",
+    overflowY: "auto",
     zIndex: 1000,
-    boxSizing: 'border-box',
+    boxSizing: "border-box",
   };
 
   const optionBaseStyles: React.CSSProperties = {
-    fontFamily: 'var(--frigate-font-mono)',
+    fontFamily: "var(--frigate-font-mono)",
     fontSize: sizeStyles.fontSize,
     padding: sizeStyles.padding,
-    cursor: 'pointer',
-    textTransform: 'uppercase',
-    color: 'var(--frigate-text-primary)',
-    backgroundColor: 'transparent',
-    transition: 'background-color 50ms ease',
+    cursor: "pointer",
+    textTransform: "uppercase",
+    color: "var(--frigate-text-primary)",
+    backgroundColor: "transparent",
+    transition: "background-color 50ms ease",
   };
 
   return (
     <div
       ref={containerRef}
-      className={clsx('frigate-select', className)}
+      className={clsx("frigate-select", className)}
       style={{
-        position: 'relative',
-        width: fullWidth ? '100%' : undefined,
+        position: "relative",
+        width: fullWidth ? "100%" : undefined,
         ...style,
       }}
     >
@@ -273,32 +279,34 @@ export function Select({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-disabled={disabled}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
         onFocus={(e) => {
           if (!disabled) {
-            e.currentTarget.style.borderColor = 'var(--frigate-primary)';
+            e.currentTarget.style.borderColor = "var(--frigate-primary)";
           }
         }}
         onBlur={(e) => {
           if (!disabled) {
-            e.currentTarget.style.borderColor = 'var(--frigate-border-base)';
+            e.currentTarget.style.borderColor = "var(--frigate-border-base)";
           }
         }}
         style={{ ...baseStyles, ...sizeStyles }}
       >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {selectedLabel}
         </span>
         <span
           style={{
-            marginLeft: 'var(--frigate-space-2)',
-            color: 'var(--frigate-text-secondary)',
+            marginLeft: "var(--frigate-space-2)",
+            color: "var(--frigate-text-secondary)",
             flexShrink: 0,
           }}
         >
-          {isOpen ? '[^]' : '[v]'}
+          {isOpen ? "[^]" : "[v]"}
         </span>
       </div>
 
@@ -321,15 +329,15 @@ export function Select({
                 style={{
                   ...optionBaseStyles,
                   backgroundColor: isHighlighted
-                    ? 'var(--frigate-bg-raised)'
+                    ? "var(--frigate-bg-raised)"
                     : isSelected
-                      ? 'var(--frigate-bg-raised)'
-                      : 'transparent',
-                  color: isDisabled
-                    ? 'var(--frigate-text-muted)'
-                    : 'var(--frigate-text-primary)',
-                  cursor: isDisabled ? 'not-allowed' : 'pointer',
-                  borderLeft: isSelected ? '2px solid var(--frigate-primary)' : '2px solid transparent',
+                      ? "var(--frigate-bg-raised)"
+                      : "transparent",
+                  color: isDisabled ? "var(--frigate-text-muted)" : "var(--frigate-text-primary)",
+                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  borderLeft: isSelected
+                    ? "2px solid var(--frigate-primary)"
+                    : "2px solid transparent",
                 }}
               >
                 {option.label}

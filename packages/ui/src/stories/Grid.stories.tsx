@@ -1,14 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
-import { Grid, Panel, type GridProps } from '../layout';
+import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+import { Grid, Panel, type GridProps } from "../layout";
 
 const meta: Meta<typeof Grid> = {
-  title: 'Layout/Grid',
+  title: "Layout/Grid",
   component: Grid,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -16,7 +16,7 @@ type Story = StoryObj<typeof Grid>;
 
 export const TwoColumns: Story = {
   args: {
-    cols: '1fr 1fr',
+    cols: "1fr 1fr",
     gap: 4,
   },
   render: (args: GridProps) => (
@@ -33,7 +33,7 @@ export const TwoColumns: Story = {
 
 export const ThreeColumns: Story = {
   args: {
-    cols: 'repeat(3, 1fr)',
+    cols: "repeat(3, 1fr)",
     gap: 4,
   },
   render: (args: GridProps) => (
@@ -53,7 +53,7 @@ export const ThreeColumns: Story = {
 
 export const ResponsiveGrid: Story = {
   args: {
-    cols: 'repeat(auto-fit, minmax(250px, 1fr))',
+    cols: "repeat(auto-fit, minmax(250px, 1fr))",
     gap: 4,
     fullHeight: false,
   },
@@ -69,15 +69,15 @@ export const ResponsiveGrid: Story = {
 
 export const SidebarLayout: Story = {
   args: {
-    cols: '250px 1fr',
+    cols: "250px 1fr",
     gap: 4,
     fullHeight: true,
   },
   render: (args: GridProps) => (
-    <div style={{ height: '400px' }}>
+    <div style={{ height: "400px" }}>
       <Grid {...args}>
         <Panel title="Navigation" fullHeight scrollable>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul style={{ listStyle: "none", padding: 0 }}>
             <li>Helm</li>
             <li>Engineering</li>
             <li>Weapons</li>

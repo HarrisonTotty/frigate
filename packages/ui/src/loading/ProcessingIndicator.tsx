@@ -6,7 +6,7 @@
  * <ProcessingIndicator processing={isSaving} processName="AUTOSAVE" />
  * ```
  */
-import React from 'react';
+import React from "react";
 
 export interface ProcessingIndicatorProps {
   /** Whether currently processing */
@@ -19,8 +19,8 @@ export interface ProcessingIndicatorProps {
 
 export function ProcessingIndicator({
   processing,
-  processName = 'PROC',
-  className = '',
+  processName = "PROC",
+  className = "",
 }: ProcessingIndicatorProps) {
   if (!processing) return null;
 
@@ -28,15 +28,15 @@ export function ProcessingIndicator({
     <div
       className={className}
       style={{
-        display: 'inline-block',
-        fontFamily: 'var(--frigate-font-mono)',
-        fontSize: 'var(--frigate-font-tiny)',
-        color: 'var(--frigate-text-muted)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.1em',
-        padding: '2px 6px',
-        border: '1px solid var(--frigate-border-base)',
-        backgroundColor: 'var(--frigate-bg-surface)',
+        display: "inline-block",
+        fontFamily: "var(--frigate-font-mono)",
+        fontSize: "var(--frigate-font-tiny)",
+        color: "var(--frigate-text-muted)",
+        textTransform: "uppercase",
+        letterSpacing: "0.1em",
+        padding: "2px 6px",
+        border: "1px solid var(--frigate-border-base)",
+        backgroundColor: "var(--frigate-bg-surface)",
       }}
     >
       <span className="frigate-loading">[{processName}]</span>

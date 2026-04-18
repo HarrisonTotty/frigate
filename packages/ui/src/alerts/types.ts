@@ -1,4 +1,4 @@
-export type AlertSeverity = 'info' | 'success' | 'warning' | 'danger' | 'critical';
+export type AlertSeverity = "info" | "success" | "warning" | "danger" | "critical";
 
 export interface Alert {
   id: string;

@@ -10,7 +10,7 @@ export function indexById<T extends { id: string }, U = T>(
 ): Record<string, U> {
   const result: Record<string, U> = {};
   for (const item of items) {
-    result[item.id] = transform ? transform(item) : ((item as unknown) as U);
+    result[item.id] = transform ? transform(item) : (item as unknown as U);
   }
   return result;
 }

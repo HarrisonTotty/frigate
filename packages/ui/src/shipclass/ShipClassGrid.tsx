@@ -1,7 +1,7 @@
-import React from 'react';
-import { LoadingText } from '../loading';
-import { ShipClassCard } from '../shipclass';
-import type { ShipClassSummary } from '../types/shipClass';
+import React from "react";
+import { LoadingText } from "../loading";
+import { ShipClassCard } from "../shipclass";
+import type { ShipClassSummary } from "../types/shipClass";
 
 interface GridProps {
   classes: ShipClassSummary[];
@@ -13,7 +13,7 @@ interface GridProps {
 export function ShipClassGrid({ classes, isLoading, selectedClassId, onCardClick }: GridProps) {
   if (isLoading) {
     return (
-      <div style={{ padding: 'var(--frigate-space-8)' }}>
+      <div style={{ padding: "var(--frigate-space-8)" }}>
         <LoadingText message="LOADING SHIP CLASSES..." />
       </div>
     );
@@ -23,11 +23,11 @@ export function ShipClassGrid({ classes, isLoading, selectedClassId, onCardClick
     return (
       <div
         style={{
-          padding: 'var(--frigate-space-8)',
-          textAlign: 'center',
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-muted)',
+          padding: "var(--frigate-space-8)",
+          textAlign: "center",
+          fontFamily: "var(--frigate-font-mono)",
+          fontSize: "var(--frigate-font-small)",
+          color: "var(--frigate-text-muted)",
         }}
       >
         NO SHIP CLASSES MATCH FILTERS
@@ -38,9 +38,9 @@ export function ShipClassGrid({ classes, isLoading, selectedClassId, onCardClick
   return (
     <div
       style={{
-        display: 'grid',
-        gridTemplateColumns: selectedClassId ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: 'var(--frigate-space-3)',
+        display: "grid",
+        gridTemplateColumns: selectedClassId ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
+        gap: "var(--frigate-space-3)",
       }}
     >
       {classes.map((shipClass) => (

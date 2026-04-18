@@ -5,8 +5,8 @@
  * Allows players to adjust quantities or remove items from inventory.
  * Follows the technical aesthetic with monospace typography and bracket notation.
  */
-import React, { useState, useCallback } from 'react';
-import type { Ammunition, InventoryItem } from '@frigate/api-client';
+import React, { useState, useCallback } from "react";
+import type { Ammunition, InventoryItem } from "@frigate/api-client";
 
 /**
  * LoadedInventoryPanel Props
@@ -73,9 +73,9 @@ function InventoryItemRow({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         handleQuantitySubmit();
-      } else if (e.key === 'Escape') {
+      } else if (e.key === "Escape") {
         setEditValue(String(item.quantity));
         setIsEditing(false);
       }
@@ -86,38 +86,38 @@ function InventoryItemRow({
   return (
     <div
       style={{
-        backgroundColor: 'var(--frigate-bg-surface)',
-        border: '1px solid var(--frigate-border-base)',
+        backgroundColor: "var(--frigate-bg-surface)",
+        border: "1px solid var(--frigate-border-base)",
         borderRadius: 0,
-        marginBottom: 'var(--frigate-space-1)',
+        marginBottom: "var(--frigate-space-1)",
       }}
     >
       {/* Item Header - Name and Quantity */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: 'var(--frigate-space-2)',
-          borderBottom: '1px solid var(--frigate-border-base)',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "var(--frigate-space-2)",
+          borderBottom: "1px solid var(--frigate-border-base)",
         }}
       >
         {/* Name (clickable for details) */}
         <button
           onClick={onShowDetails}
           style={{
-            background: 'none',
-            border: 'none',
+            background: "none",
+            border: "none",
             padding: 0,
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
             fontWeight: 600,
-            color: 'var(--frigate-text-primary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            cursor: onShowDetails ? 'pointer' : 'default',
-            textDecoration: onShowDetails ? 'underline' : 'none',
-            textAlign: 'left',
+            color: "var(--frigate-text-primary)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            cursor: onShowDetails ? "pointer" : "default",
+            textDecoration: onShowDetails ? "underline" : "none",
+            textAlign: "left",
           }}
           aria-label={`View details for ${ammo.name}`}
         >
@@ -135,16 +135,16 @@ function InventoryItemRow({
             min={0}
             autoFocus
             style={{
-              width: '80px',
-              padding: 'var(--frigate-space-1)',
-              backgroundColor: 'var(--frigate-bg-base)',
-              border: '1px solid var(--frigate-primary)',
+              width: "80px",
+              padding: "var(--frigate-space-1)",
+              backgroundColor: "var(--frigate-bg-base)",
+              border: "1px solid var(--frigate-primary)",
               borderRadius: 0,
-              color: 'var(--frigate-text-primary)',
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-small)',
+              color: "var(--frigate-text-primary)",
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
               fontWeight: 700,
-              textAlign: 'right',
+              textAlign: "right",
             }}
             aria-label="Edit quantity"
           />
@@ -155,20 +155,20 @@ function InventoryItemRow({
               setIsEditing(true);
             }}
             style={{
-              background: 'none',
-              border: '1px solid transparent',
-              padding: 'var(--frigate-space-1)',
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-small)',
+              background: "none",
+              border: "1px solid transparent",
+              padding: "var(--frigate-space-1)",
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
               fontWeight: 700,
-              color: 'var(--frigate-text-primary)',
-              cursor: 'pointer',
+              color: "var(--frigate-text-primary)",
+              cursor: "pointer",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--frigate-border-light)';
+              e.currentTarget.style.borderColor = "var(--frigate-border-light)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'transparent';
+              e.currentTarget.style.borderColor = "transparent";
             }}
             title="Click to edit quantity"
             aria-label={`Quantity: ${item.quantity}, click to edit`}
@@ -181,13 +181,13 @@ function InventoryItemRow({
       {/* Item Stats Row */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-          fontSize: 'var(--frigate-font-tiny)',
-          color: 'var(--frigate-text-muted)',
-          borderBottom: '1px solid var(--frigate-border-base)',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "var(--frigate-space-1) var(--frigate-space-2)",
+          fontSize: "var(--frigate-font-tiny)",
+          color: "var(--frigate-text-muted)",
+          borderBottom: "1px solid var(--frigate-border-base)",
         }}
       >
         <span>
@@ -201,15 +201,15 @@ function InventoryItemRow({
       {/* Quantity Controls Row */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-          gap: 'var(--frigate-space-1)',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "var(--frigate-space-1) var(--frigate-space-2)",
+          gap: "var(--frigate-space-1)",
         }}
       >
         {/* Decrement Controls */}
-        <div style={{ display: 'flex', gap: 'var(--frigate-space-1)' }}>
+        <div style={{ display: "flex", gap: "var(--frigate-space-1)" }}>
           <QuantityButton
             label="[-10]"
             onClick={() => onRemoveQuantity(10)}
@@ -225,17 +225,9 @@ function InventoryItemRow({
         </div>
 
         {/* Increment Controls */}
-        <div style={{ display: 'flex', gap: 'var(--frigate-space-1)' }}>
-          <QuantityButton
-            label="[+1]"
-            onClick={() => onAddQuantity(1)}
-            title="Add 1"
-          />
-          <QuantityButton
-            label="[+10]"
-            onClick={() => onAddQuantity(10)}
-            title="Add 10"
-          />
+        <div style={{ display: "flex", gap: "var(--frigate-space-1)" }}>
+          <QuantityButton label="[+1]" onClick={() => onAddQuantity(1)} title="Add 1" />
+          <QuantityButton label="[+10]" onClick={() => onAddQuantity(10)} title="Add 10" />
         </div>
 
         {/* Remove Button */}
@@ -257,21 +249,20 @@ function QuantityButton({
   label,
   onClick,
   disabled = false,
-  variant = 'default',
+  variant = "default",
   title,
 }: {
   label: string;
   onClick: () => void;
   disabled?: boolean;
-  variant?: 'default' | 'danger';
+  variant?: "default" | "danger";
   title?: string;
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const baseColor =
-    variant === 'danger' ? 'var(--frigate-danger)' : 'var(--frigate-text-secondary)';
-  const hoverColor =
-    variant === 'danger' ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)';
+    variant === "danger" ? "var(--frigate-danger)" : "var(--frigate-text-secondary)";
+  const hoverColor = variant === "danger" ? "var(--frigate-danger)" : "var(--frigate-text-primary)";
 
   return (
     <button
@@ -280,18 +271,18 @@ function QuantityButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        padding: 'var(--frigate-space-1)',
-        backgroundColor: 'transparent',
-        border: 'none',
+        padding: "var(--frigate-space-1)",
+        backgroundColor: "transparent",
+        border: "none",
         borderRadius: 0,
-        color: disabled ? 'var(--frigate-text-muted)' : isHovered ? hoverColor : baseColor,
-        fontFamily: 'var(--frigate-font-mono)',
-        fontSize: 'var(--frigate-font-tiny)',
+        color: disabled ? "var(--frigate-text-muted)" : isHovered ? hoverColor : baseColor,
+        fontFamily: "var(--frigate-font-mono)",
+        fontSize: "var(--frigate-font-tiny)",
         fontWeight: 600,
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.4 : 1,
-        textTransform: 'uppercase',
-        transition: 'color 0.1s ease',
+        textTransform: "uppercase",
+        transition: "color 0.1s ease",
       }}
       title={title}
       aria-label={title}
@@ -308,31 +299,31 @@ function PanelHeader({ itemCount }: { itemCount: number }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--frigate-bg-base)',
-        padding: 'var(--frigate-space-2)',
-        borderBottom: '1px solid var(--frigate-border-base)',
+        backgroundColor: "var(--frigate-bg-base)",
+        padding: "var(--frigate-space-2)",
+        borderBottom: "1px solid var(--frigate-border-base)",
       }}
     >
       <div
         style={{
           fontWeight: 800,
-          fontSize: 'var(--frigate-font-heading)',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
+          fontSize: "var(--frigate-font-heading)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
         }}
       >
         LOADED INVENTORY
       </div>
       <div
         style={{
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginTop: 'var(--frigate-space-1)',
+          fontSize: "var(--frigate-font-small)",
+          color: "var(--frigate-text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginTop: "var(--frigate-space-1)",
         }}
       >
-        {itemCount} ITEM{itemCount !== 1 ? 'S' : ''} LOADED
+        {itemCount} ITEM{itemCount !== 1 ? "S" : ""} LOADED
       </div>
     </div>
   );
@@ -345,15 +336,15 @@ function PanelFooter() {
   return (
     <div
       style={{
-        fontSize: 'var(--frigate-font-tiny)',
-        color: 'var(--frigate-text-muted)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-        borderTop: '1px solid var(--frigate-border-base)',
-        letterSpacing: '0.05em',
+        fontSize: "var(--frigate-font-tiny)",
+        color: "var(--frigate-text-muted)",
+        backgroundColor: "var(--frigate-bg-base)",
+        padding: "var(--frigate-space-1) var(--frigate-space-2)",
+        borderTop: "1px solid var(--frigate-border-base)",
+        letterSpacing: "0.05em",
       }}
     >
-      [+/-] ADJUST QTY  [CLICK QTY] EDIT  [DEL] REMOVE
+      [+/-] ADJUST QTY [CLICK QTY] EDIT [DEL] REMOVE
     </div>
   );
 }
@@ -365,32 +356,32 @@ function EmptyState() {
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'var(--frigate-space-4)',
-        height: '100%',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "var(--frigate-space-4)",
+        height: "100%",
         minHeight: 200,
       }}
     >
       <div
         style={{
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          textAlign: 'center',
+          fontSize: "var(--frigate-font-small)",
+          color: "var(--frigate-text-muted)",
+          textTransform: "uppercase",
+          letterSpacing: "0.1em",
+          textAlign: "center",
         }}
       >
         [NO ITEMS LOADED]
       </div>
       <div
         style={{
-          marginTop: 'var(--frigate-space-2)',
-          fontSize: 'var(--frigate-font-tiny)',
-          color: 'var(--frigate-text-muted)',
-          textAlign: 'center',
+          marginTop: "var(--frigate-space-2)",
+          fontSize: "var(--frigate-font-tiny)",
+          color: "var(--frigate-text-muted)",
+          textAlign: "center",
         }}
       >
         Select ammunition from the catalog
@@ -417,7 +408,7 @@ export function LoadedInventoryPanel({
   onSetQuantity,
   onRemoveAll,
   onShowAmmoDetails,
-  className = '',
+  className = "",
 }: LoadedInventoryPanelProps): React.ReactElement {
   // Look up ammo details for each inventory item
   const getAmmo = useCallback(
@@ -434,16 +425,16 @@ export function LoadedInventoryPanel({
     <div
       className={className}
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
-        background: 'var(--frigate-bg-base)',
-        color: 'var(--frigate-text-primary)',
-        border: '1px solid var(--frigate-border-base)',
+        fontFamily: "var(--frigate-font-mono)",
+        background: "var(--frigate-bg-base)",
+        color: "var(--frigate-text-primary)",
+        border: "1px solid var(--frigate-border-base)",
         borderRadius: 0,
-        boxShadow: 'none',
+        boxShadow: "none",
         minHeight: 400,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
       aria-label="Loaded Inventory"
       role="region"
@@ -455,9 +446,9 @@ export function LoadedInventoryPanel({
       <div
         style={{
           flex: 1,
-          overflow: 'auto',
-          padding: 'var(--frigate-space-1)',
-          backgroundColor: 'var(--frigate-bg-surface)',
+          overflow: "auto",
+          padding: "var(--frigate-space-1)",
+          backgroundColor: "var(--frigate-bg-surface)",
         }}
       >
         {validItems.length === 0 ? (
@@ -474,9 +465,7 @@ export function LoadedInventoryPanel({
                 onRemoveQuantity={(amount) => onRemoveQuantity(item.itemId, amount)}
                 onSetQuantity={(qty) => onSetQuantity(item.itemId, qty)}
                 onRemoveAll={() => onRemoveAll(item.itemId)}
-                onShowDetails={
-                  onShowAmmoDetails ? () => onShowAmmoDetails(ammo) : undefined
-                }
+                onShowDetails={onShowAmmoDetails ? () => onShowAmmoDetails(ammo) : undefined}
               />
             );
           })

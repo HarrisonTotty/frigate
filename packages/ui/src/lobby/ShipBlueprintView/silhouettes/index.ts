@@ -1,9 +1,9 @@
-import type { ShipSilhouetteData, SlotPosition } from '../types';
+import type { ShipSilhouetteData, SlotPosition } from "../types";
 
 /**
  * Ship size categories for silhouette selection
  */
-export type ShipSize = 'small' | 'medium' | 'large';
+export type ShipSize = "small" | "medium" | "large";
 
 /**
  * Small ship silhouette - Fighter/Interceptor style
@@ -11,8 +11,8 @@ export type ShipSize = 'small' | 'medium' | 'large';
  * Compact with limited module capacity
  */
 const smallShipSilhouette: ShipSilhouetteData = {
-  shipClassId: 'small',
-  displayName: 'Light Vessel',
+  shipClassId: "small",
+  displayName: "Light Vessel",
   viewBox: { width: 200, height: 300 },
   // Top-down fighter: pointed nose, swept wings, twin engines
   pathData: `
@@ -48,8 +48,8 @@ const smallShipSilhouette: ShipSilhouetteData = {
  * Balanced module capacity
  */
 const mediumShipSilhouette: ShipSilhouetteData = {
-  shipClassId: 'medium',
-  displayName: 'Medium Vessel',
+  shipClassId: "medium",
+  displayName: "Medium Vessel",
   viewBox: { width: 200, height: 400 },
   // Top-down frigate: tapered bow, wider mid-section, dual engines
   pathData: `
@@ -88,8 +88,8 @@ const mediumShipSilhouette: ShipSilhouetteData = {
  * High module capacity
  */
 const largeShipSilhouette: ShipSilhouetteData = {
-  shipClassId: 'large',
-  displayName: 'Capital Ship',
+  shipClassId: "large",
+  displayName: "Capital Ship",
   viewBox: { width: 240, height: 500 },
   // Top-down capital ship: wedge bow, wide body, multiple engine clusters
   pathData: `
@@ -136,9 +136,9 @@ const largeShipSilhouette: ShipSilhouetteData = {
  * Y values define the vertical range for that zone
  */
 interface AttachmentZone {
-  x: number;      // X position on hull edge
-  minY: number;   // Start of vertical range
-  maxY: number;   // End of vertical range
+  x: number; // X position on hull edge
+  minY: number; // Start of vertical range
+  maxY: number; // End of vertical range
 }
 
 // Left-side attachment zones (on left edge of hull)
@@ -197,34 +197,34 @@ const rightAttachmentZones: Record<ShipSize, Record<string, AttachmentZone>> = {
  */
 const groupToZone: Record<string, string[]> = {
   // Propulsion systems at the rear
-  propulsion: ['engines', 'aft'],
-  Propulsion: ['engines', 'aft'],
+  propulsion: ["engines", "aft"],
+  Propulsion: ["engines", "aft"],
 
   // Power systems in the midship/aft
-  power: ['midship', 'aft'],
-  Power: ['midship', 'aft'],
-  Essential: ['midship'],
+  power: ["midship", "aft"],
+  Power: ["midship", "aft"],
+  Essential: ["midship"],
 
   // Weapons distributed across ship
-  weapons: ['forward', 'midship', 'bow'],
-  Weapons: ['forward', 'midship', 'bow'],
-  Offense: ['forward', 'bow', 'midship'],
+  weapons: ["forward", "midship", "bow"],
+  Weapons: ["forward", "midship", "bow"],
+  Offense: ["forward", "bow", "midship"],
 
   // Defense systems midship
-  defense: ['midship', 'forward', 'aft'],
-  Defense: ['midship', 'forward', 'aft'],
+  defense: ["midship", "forward", "aft"],
+  Defense: ["midship", "forward", "aft"],
 
   // Sensors at bow/forward
-  sensors: ['bow', 'forward'],
-  Sensors: ['bow', 'forward'],
+  sensors: ["bow", "forward"],
+  Sensors: ["bow", "forward"],
 
   // Utility distributed
-  utility: ['midship', 'aft', 'forward'],
-  Utility: ['midship', 'aft', 'forward'],
-  Support: ['midship', 'aft'],
+  utility: ["midship", "aft", "forward"],
+  Utility: ["midship", "aft", "forward"],
+  Support: ["midship", "aft"],
 
   // Unknown defaults to midship
-  unknown: ['midship'],
+  unknown: ["midship"],
 };
 
 /**
@@ -234,7 +234,7 @@ function seededRandom(seed: string): () => number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     const char = seed.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
 
@@ -256,7 +256,7 @@ const MIN_MARKER_SPACING = 8;
 interface SlotData {
   instanceId: string;
   group: string;
-  side: 'left' | 'right';
+  side: "left" | "right";
   attachX: number;
   attachY: number;
 }
@@ -269,7 +269,7 @@ function calculateAttachmentPoint(
   group: string,
   index: number,
   size: ShipSize,
-  side: 'left' | 'right'
+  side: "left" | "right"
 ): { attachX: number; attachY: number } {
   const random = seededRandom(instanceId);
 
@@ -278,7 +278,7 @@ function calculateAttachmentPoint(
   const zoneKey = zones[index % zones.length];
 
   // Use the appropriate side's attachment zones
-  const sideZones = side === 'left' ? leftAttachmentZones : rightAttachmentZones;
+  const sideZones = side === "left" ? leftAttachmentZones : rightAttachmentZones;
   const zone = sideZones[size][zoneKey] ?? sideZones[size].midship;
 
   // Generate attachment point on the hull edge for this zone
@@ -294,7 +294,7 @@ function calculateAttachmentPoint(
  */
 function assignMarkerPositions(
   slots: SlotData[],
-  side: 'left' | 'right'
+  side: "left" | "right"
 ): Map<string, SlotPosition> {
   const positions = new Map<string, SlotPosition>();
 
@@ -313,9 +313,10 @@ function assignMarkerPositions(
   const requiredHeight = (sortedSlots.length - 1) * MIN_MARKER_SPACING;
 
   // Determine actual spacing (use minimum spacing, or compress if too many items)
-  const actualSpacing = requiredHeight <= availableHeight
-    ? MIN_MARKER_SPACING
-    : availableHeight / Math.max(sortedSlots.length - 1, 1);
+  const actualSpacing =
+    requiredHeight <= availableHeight
+      ? MIN_MARKER_SPACING
+      : availableHeight / Math.max(sortedSlots.length - 1, 1);
 
   // Calculate starting Y to center the group vertically
   const totalHeight = (sortedSlots.length - 1) * actualSpacing;
@@ -324,7 +325,7 @@ function assignMarkerPositions(
   // X position based on side
   // Position markers closer to the ship silhouette to avoid being cut off by adjacent panels
   // Left markers anchor to their right edge (via CSS transform), right markers to their left edge
-  const markerX = side === 'left' ? 18 : 82;
+  const markerX = side === "left" ? 18 : 82;
 
   // Assign positions in sorted order
   for (let i = 0; i < sortedSlots.length; i++) {
@@ -349,11 +350,11 @@ function assignMarkerPositions(
  */
 export function getSilhouetteBySize(size: ShipSize): ShipSilhouetteData {
   switch (size) {
-    case 'small':
+    case "small":
       return smallShipSilhouette;
-    case 'medium':
+    case "medium":
       return mediumShipSilhouette;
-    case 'large':
+    case "large":
       return largeShipSilhouette;
     default:
       return mediumShipSilhouette;
@@ -366,30 +367,46 @@ export function getSilhouetteBySize(size: ShipSize): ShipSilhouetteData {
  */
 export function inferShipSize(shipClassId: string, shipClassName?: string): ShipSize {
   const id = shipClassId.toLowerCase();
-  const name = (shipClassName ?? '').toLowerCase();
+  const name = (shipClassName ?? "").toLowerCase();
 
   // Small ships
   if (
-    id.includes('fighter') || id.includes('interceptor') || id.includes('scout') ||
-    id.includes('shuttle') || id.includes('corvette') || id.includes('patrol') ||
-    name.includes('fighter') || name.includes('interceptor') || name.includes('scout') ||
-    name.includes('shuttle') || name.includes('corvette') || name.includes('patrol')
+    id.includes("fighter") ||
+    id.includes("interceptor") ||
+    id.includes("scout") ||
+    id.includes("shuttle") ||
+    id.includes("corvette") ||
+    id.includes("patrol") ||
+    name.includes("fighter") ||
+    name.includes("interceptor") ||
+    name.includes("scout") ||
+    name.includes("shuttle") ||
+    name.includes("corvette") ||
+    name.includes("patrol")
   ) {
-    return 'small';
+    return "small";
   }
 
   // Large ships
   if (
-    id.includes('cruiser') || id.includes('battleship') || id.includes('carrier') ||
-    id.includes('dreadnought') || id.includes('capital') || id.includes('heavy') ||
-    name.includes('cruiser') || name.includes('battleship') || name.includes('carrier') ||
-    name.includes('dreadnought') || name.includes('capital') || name.includes('heavy')
+    id.includes("cruiser") ||
+    id.includes("battleship") ||
+    id.includes("carrier") ||
+    id.includes("dreadnought") ||
+    id.includes("capital") ||
+    id.includes("heavy") ||
+    name.includes("cruiser") ||
+    name.includes("battleship") ||
+    name.includes("carrier") ||
+    name.includes("dreadnought") ||
+    name.includes("capital") ||
+    name.includes("heavy")
   ) {
-    return 'large';
+    return "large";
   }
 
   // Default to medium (frigates, destroyers, etc.)
-  return 'medium';
+  return "medium";
 }
 
 /**
@@ -417,7 +434,7 @@ export function generateSlotPositions(
 
   for (const instance of instances) {
     const slot = moduleSlotsById[instance.module_slot_id];
-    const group = slot?.groups?.[0] ?? 'unknown';
+    const group = slot?.groups?.[0] ?? "unknown";
 
     if (!instancesByGroup.has(group)) {
       instancesByGroup.set(group, []);
@@ -429,18 +446,12 @@ export function generateSlotPositions(
   let groupIndex = 0;
 
   for (const [group, groupInstances] of instancesByGroup) {
-    const side: 'left' | 'right' = groupIndex % 2 === 0 ? 'left' : 'right';
-    const targetArray = side === 'left' ? leftSlots : rightSlots;
+    const side: "left" | "right" = groupIndex % 2 === 0 ? "left" : "right";
+    const targetArray = side === "left" ? leftSlots : rightSlots;
 
     for (let i = 0; i < groupInstances.length; i++) {
       const instance = groupInstances[i];
-      const { attachX, attachY } = calculateAttachmentPoint(
-        instance.id,
-        group,
-        i,
-        size,
-        side
-      );
+      const { attachX, attachY } = calculateAttachmentPoint(instance.id, group, i, size, side);
 
       targetArray.push({
         instanceId: instance.id,
@@ -455,8 +466,8 @@ export function generateSlotPositions(
   }
 
   // Assign marker positions for each side (sorted by attachment Y to prevent crossings)
-  const leftPositions = assignMarkerPositions(leftSlots, 'left');
-  const rightPositions = assignMarkerPositions(rightSlots, 'right');
+  const leftPositions = assignMarkerPositions(leftSlots, "left");
+  const rightPositions = assignMarkerPositions(rightSlots, "right");
 
   // Merge results
   const positions = new Map<string, SlotPosition>();

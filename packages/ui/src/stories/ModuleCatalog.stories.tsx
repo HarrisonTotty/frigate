@@ -1,18 +1,18 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { ModuleCatalog } from '../modules/ModuleCatalog';
+import type { Meta, StoryObj } from "@storybook/react";
+import { ModuleCatalog } from "../modules/ModuleCatalog";
+import type { ModuleSlot, ModuleVariant } from "@frigate/api-client";
 
 /**
  * Module Catalog Story
- * 
+ *
  * Dialog for selecting and configuring module variants within the Ship Design Workspace.
  * Players use this to choose specific implementations of module slots.
  */
 const meta: Meta<typeof ModuleCatalog> = {
-  title: 'Lobby/ModuleCatalog',
+  title: "Lobby/ModuleCatalog",
   component: ModuleCatalog,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -62,28 +62,28 @@ Follows hard sci-fi design:
   },
   argTypes: {
     isOpen: {
-      control: 'boolean',
-      description: 'Whether the catalog is visible',
+      control: "boolean",
+      description: "Whether the catalog is visible",
     },
     slotType: {
       control: false,
-      description: 'The module slot type being configured',
+      description: "The module slot type being configured",
     },
     variants: {
       control: false,
-      description: 'Array of available module variants',
+      description: "Array of available module variants",
     },
     selectedVariantId: {
-      control: 'text',
-      description: 'Currently selected variant ID',
+      control: "text",
+      description: "Currently selected variant ID",
     },
     onSelect: {
-      action: 'variant selected',
-      description: 'Callback when variant is selected',
+      action: "variant selected",
+      description: "Callback when variant is selected",
     },
     onClose: {
-      action: 'closed',
-      description: 'Callback when catalog is closed',
+      action: "closed",
+      description: "Callback when catalog is closed",
     },
   },
 };
@@ -98,33 +98,34 @@ type Story = StoryObj<typeof ModuleCatalog>;
 export const Default: Story = {
   args: {
     isOpen: true,
-    slotType: { id: 'slot-1', name: 'Power Core' } as any,
+    slotType: { id: "slot-1", name: "Power Core" } as unknown as ModuleSlot,
     variants: [
       {
-        id: 'core-1',
-        name: 'Mk I Fusion Core',
-        desc: 'Basic fusion-based power generation',
-        description: 'A reliable entry-level power core suitable for small vessels',
-      } as any,
+        id: "core-1",
+        name: "Mk I Fusion Core",
+        desc: "Basic fusion-based power generation",
+        description: "A reliable entry-level power core suitable for small vessels",
+      },
       {
-        id: 'core-2',
-        name: 'Mk II Fusion Core',
-        desc: 'Improved fusion core with higher output',
-        description: 'Enhanced fusion design with 30% improved power output',
-      } as any,
+        id: "core-2",
+        name: "Mk II Fusion Core",
+        desc: "Improved fusion core with higher output",
+        description: "Enhanced fusion design with 30% improved power output",
+      },
       {
-        id: 'core-3',
-        name: 'Quantum-State Reactor',
-        desc: 'Advanced quantum-stabilized power source',
-        description: 'Cutting-edge power generation using quantum state stabilization. 50% efficiency gain.',
-      } as any,
-    ],
+        id: "core-3",
+        name: "Quantum-State Reactor",
+        desc: "Advanced quantum-stabilized power source",
+        description:
+          "Cutting-edge power generation using quantum state stabilization. 50% efficiency gain.",
+      },
+    ] as unknown as ModuleVariant[],
     selectedVariantId: null,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a typical variant selection with three power core options.',
+        story: "Shows a typical variant selection with three power core options.",
       },
     },
   },
@@ -136,25 +137,25 @@ export const Default: Story = {
 export const WithSelection: Story = {
   args: {
     isOpen: true,
-    slotType: { id: 'slot-1', name: 'Power Core' } as any,
+    slotType: { id: "slot-1", name: "Power Core" } as unknown as ModuleSlot,
     variants: [
       {
-        id: 'core-1',
-        name: 'Mk I Fusion Core',
-        desc: 'Basic fusion-based power generation',
-      } as any,
+        id: "core-1",
+        name: "Mk I Fusion Core",
+        desc: "Basic fusion-based power generation",
+      },
       {
-        id: 'core-2',
-        name: 'Mk II Fusion Core',
-        desc: 'Improved fusion core with higher output',
-      } as any,
+        id: "core-2",
+        name: "Mk II Fusion Core",
+        desc: "Improved fusion core with higher output",
+      },
       {
-        id: 'core-3',
-        name: 'Quantum-State Reactor',
-        desc: 'Advanced quantum-stabilized power source',
-      } as any,
-    ],
-    selectedVariantId: 'core-2',
+        id: "core-3",
+        name: "Quantum-State Reactor",
+        desc: "Advanced quantum-stabilized power source",
+      },
+    ] as unknown as ModuleVariant[],
+    selectedVariantId: "core-2",
   },
   parameters: {
     docs: {
@@ -171,21 +172,21 @@ export const WithSelection: Story = {
 export const SingleVariant: Story = {
   args: {
     isOpen: true,
-    slotType: { id: 'slot-2', name: 'Navigation Suite' } as any,
+    slotType: { id: "slot-2", name: "Navigation Suite" } as unknown as ModuleSlot,
     variants: [
       {
-        id: 'nav-1',
-        name: 'Standard Navigation Suite',
-        desc: 'Complete navigation and helm controls',
-        description: 'Includes FTL navigation, stellar cartography, and course plotting systems.',
-      } as any,
-    ],
+        id: "nav-1",
+        name: "Standard Navigation Suite",
+        desc: "Complete navigation and helm controls",
+        description: "Includes FTL navigation, stellar cartography, and course plotting systems.",
+      },
+    ] as unknown as ModuleVariant[],
     selectedVariantId: null,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows catalog with only one variant available for the selected slot type.',
+        story: "Shows catalog with only one variant available for the selected slot type.",
       },
     },
   },
@@ -197,19 +198,19 @@ export const SingleVariant: Story = {
 export const ManyVariants: Story = {
   args: {
     isOpen: true,
-    slotType: { id: 'slot-3', name: 'Weapon System' } as any,
+    slotType: { id: "slot-3", name: "Weapon System" } as unknown as ModuleSlot,
     variants: Array.from({ length: 12 }, (_, i) => ({
       id: `weapon-${i + 1}`,
       name: `Weapon Variant ${String.fromCharCode(65 + i)}`,
       desc: `Weapon configuration type ${String.fromCharCode(65 + i)}`,
       description: `Technical specifications for variant ${String.fromCharCode(65 + i)}`,
-    })) as any,
+    })) as unknown as ModuleVariant[],
     selectedVariantId: null,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates the catalog with many variants, showing scrollable list behavior.',
+        story: "Demonstrates the catalog with many variants, showing scrollable list behavior.",
       },
     },
   },
@@ -221,14 +222,14 @@ export const ManyVariants: Story = {
 export const NoVariants: Story = {
   args: {
     isOpen: true,
-    slotType: { id: 'slot-4', name: 'Unknown System' } as any,
+    slotType: { id: "slot-4", name: "Unknown System" } as unknown as ModuleSlot,
     variants: [],
     selectedVariantId: null,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows catalog when no variants are available for the selected slot type.',
+        story: "Shows catalog when no variants are available for the selected slot type.",
       },
     },
   },
@@ -240,14 +241,14 @@ export const NoVariants: Story = {
 export const Loading: Story = {
   args: {
     isOpen: true,
-    slotType: { id: 'slot-1', name: 'Power Core' } as any,
+    slotType: { id: "slot-1", name: "Power Core" } as unknown as ModuleSlot,
     variants: null, // null indicates loading
     selectedVariantId: null,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows catalog while variants are being loaded from the API.',
+        story: "Shows catalog while variants are being loaded from the API.",
       },
     },
   },

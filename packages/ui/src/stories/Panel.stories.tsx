@@ -1,14 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
-import { Panel, type PanelProps } from '../layout';
+import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+import { Panel } from "../layout";
 
 const meta: Meta<typeof Panel> = {
-  title: 'Layout/Panel',
+  title: "Layout/Panel",
   component: Panel,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -22,7 +22,7 @@ export const Default: Story = {
 
 export const WithTitle: Story = {
   args: {
-    title: 'Helm Controls',
+    title: "Helm Controls",
     children: (
       <div>
         <p>Speed: 0.5c</p>
@@ -35,23 +35,23 @@ export const WithTitle: Story = {
 
 export const Raised: Story = {
   args: {
-    title: 'Engineering',
-    variant: 'raised',
+    title: "Engineering",
+    variant: "raised",
     children: <p>Raised panel variant with elevated background</p>,
   },
 };
 
 export const Muted: Story = {
   args: {
-    title: 'Status',
-    variant: 'muted',
+    title: "Status",
+    variant: "muted",
     children: <p>Muted panel variant blends with background</p>,
   },
 };
 
 export const Scrollable: Story = {
   args: {
-    title: 'Long List',
+    title: "Long List",
     scrollable: true,
     children: (
       <div>
@@ -63,7 +63,7 @@ export const Scrollable: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{ height: '300px' }}>
+      <div style={{ height: "300px" }}>
         <Story />
       </div>
     ),
@@ -72,13 +72,13 @@ export const Scrollable: Story = {
 
 export const FullHeight: Story = {
   args: {
-    title: 'Full Height Panel',
+    title: "Full Height Panel",
     fullHeight: true,
     children: <p>This panel stretches to fill its container height</p>,
   },
   decorators: [
     (Story) => (
-      <div style={{ height: '400px' }}>
+      <div style={{ height: "400px" }}>
         <Story />
       </div>
     ),

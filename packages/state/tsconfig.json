@@ -9,8 +9,5 @@
     "allowImportingTsExtensions": false
   },
   "include": ["src"],
-  "references": [
-    { "path": "../api-client" },
-    { "path": "../utils" }
-  ]
+  "references": [{ "path": "../api-client" }, { "path": "../utils" }]
 }

@@ -1,6 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import { createContext, useContext } from "react";
 
-export type KeyModifier = 'ctrl' | 'shift' | 'alt' | 'meta';
+export type KeyModifier = "ctrl" | "shift" | "alt" | "meta";
 
 export interface KeyboardShortcut {
   id: string;
@@ -21,12 +21,14 @@ export interface KeyboardShortcutContextValue {
   getContext: () => string | undefined;
 }
 
-export const KeyboardShortcutContext = createContext<KeyboardShortcutContextValue | undefined>(undefined);
+export const KeyboardShortcutContext = createContext<KeyboardShortcutContextValue | undefined>(
+  undefined
+);
 
 export function useKeyboardShortcuts(): KeyboardShortcutContextValue {
   const context = useContext(KeyboardShortcutContext);
   if (!context) {
-    throw new Error('useKeyboardShortcuts must be used within KeyboardShortcutProvider');
+    throw new Error("useKeyboardShortcuts must be used within KeyboardShortcutProvider");
   }
   return context;
 }

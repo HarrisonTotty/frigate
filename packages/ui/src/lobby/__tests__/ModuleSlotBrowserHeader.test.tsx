@@ -4,17 +4,13 @@ import { ModuleSlotBrowserHeader } from "../ModuleSlotBrowserHeader";
 
 describe("ModuleSlotBrowserHeader Component", () => {
   it("renders with correct title", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={100} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={100} buildPointsMax={250} />);
 
     expect(screen.getByText("MODULE SLOT BROWSER")).toBeInTheDocument();
   });
 
   it("displays build points correctly", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />);
 
     expect(screen.getByText("BUILD POINTS:")).toBeInTheDocument();
     // Component uses aria-label for the build points value
@@ -22,33 +18,25 @@ describe("ModuleSlotBrowserHeader Component", () => {
   });
 
   it("calculates percentage correctly for low usage", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={50} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={50} buildPointsMax={250} />);
 
     expect(screen.getByText("20.0%")).toBeInTheDocument();
   });
 
   it("calculates percentage correctly for mid usage", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={175} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={175} buildPointsMax={250} />);
 
     expect(screen.getByText("70.0%")).toBeInTheDocument();
   });
 
   it("calculates percentage correctly for high usage", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={225} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={225} buildPointsMax={250} />);
 
     expect(screen.getByText("90.0%")).toBeInTheDocument();
   });
 
   it("displays full keyboard hints", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={100} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={100} buildPointsMax={250} />);
 
     expect(screen.getByText(/↑.*↓.*Navigate/)).toBeInTheDocument();
     expect(screen.getByText(/ENTER.*Add/)).toBeInTheDocument();
@@ -62,75 +50,53 @@ describe("ModuleSlotBrowserHeader Component", () => {
 
     const header = container.querySelector("[role='region']");
     expect(header).toBeInTheDocument();
-    expect(header).toHaveAttribute(
-      "aria-label",
-      "Module slot browser header"
-    );
+    expect(header).toHaveAttribute("aria-label", "Module slot browser header");
   });
 
   it("has aria labels for build points display", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />);
 
-    const bpValue = screen.getByLabelText(
-      "Build points: 180 of 250"
-    );
+    const bpValue = screen.getByLabelText("Build points: 180 of 250");
     expect(bpValue).toBeInTheDocument();
   });
 
   it("displays percentage next to progress bar", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />);
 
     // Percentage is displayed as text next to the progress bar
     expect(screen.getByText("72.0%")).toBeInTheDocument();
   });
 
   it("renders when build points used is zero", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={0} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={0} buildPointsMax={250} />);
 
     expect(screen.getByLabelText("Build points: 0 of 250")).toBeInTheDocument();
     expect(screen.getByText("0.0%")).toBeInTheDocument();
   });
 
   it("renders when at maximum build points", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={250} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={250} buildPointsMax={250} />);
 
     expect(screen.getByLabelText("Build points: 250 of 250")).toBeInTheDocument();
     expect(screen.getByText("100.0%")).toBeInTheDocument();
   });
 
   it("renders when build points exceed maximum (edge case)", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={300} buildPointsMax={250} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={300} buildPointsMax={250} />);
 
     expect(screen.getByLabelText("Build points: 300 of 250")).toBeInTheDocument();
     expect(screen.getByText("120.0%")).toBeInTheDocument();
   });
 
   it("renders with small maximum build points", () => {
-    render(
-      <ModuleSlotBrowserHeader buildPointsUsed={5} buildPointsMax={10} />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={5} buildPointsMax={10} />);
 
     expect(screen.getByLabelText("Build points: 5 of 10")).toBeInTheDocument();
     expect(screen.getByText("50.0%")).toBeInTheDocument();
   });
 
   it("renders with large build points values", () => {
-    render(
-      <ModuleSlotBrowserHeader
-        buildPointsUsed={50000}
-        buildPointsMax={100000}
-      />
-    );
+    render(<ModuleSlotBrowserHeader buildPointsUsed={50000} buildPointsMax={100000} />);
 
     expect(screen.getByLabelText("Build points: 50000 of 100000")).toBeInTheDocument();
     expect(screen.getByText("50.0%")).toBeInTheDocument();

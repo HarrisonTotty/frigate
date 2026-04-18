@@ -1,10 +1,10 @@
-import React from 'react';
-import { ProgressBar, RadarChart } from '../components';
+import React from "react";
+import { ProgressBar, RadarChart } from "../components";
 
 /**
  * Validation state for the ship blueprint
  */
-export type ValidationState = 'valid' | 'incomplete' | 'conflict';
+export type ValidationState = "valid" | "incomplete" | "conflict";
 
 /**
  * Ship Profile Interface
@@ -83,9 +83,9 @@ function getValidationState(stats: ShipStats): ValidationState {
   const hasConflicts = (stats.warnings?.length ?? 0) > 0;
   const hasMissing = (stats.missingRequired?.length ?? 0) > 0;
 
-  if (hasConflicts) return 'conflict';
-  if (hasMissing) return 'incomplete';
-  return 'valid';
+  if (hasConflicts) return "conflict";
+  if (hasMissing) return "incomplete";
+  return "valid";
 }
 
 /**
@@ -93,12 +93,12 @@ function getValidationState(stats: ShipStats): ValidationState {
  */
 function getValidationColor(state: ValidationState): string {
   switch (state) {
-    case 'valid':
-      return 'var(--frigate-success, #22c55e)';
-    case 'incomplete':
-      return 'var(--frigate-warning, #f59e0b)';
-    case 'conflict':
-      return 'var(--frigate-danger, #ef4444)';
+    case "valid":
+      return "var(--frigate-success, #22c55e)";
+    case "incomplete":
+      return "var(--frigate-warning, #f59e0b)";
+    case "conflict":
+      return "var(--frigate-danger, #ef4444)";
   }
 }
 
@@ -109,28 +109,28 @@ function ShipStatsPanelHeader() {
   return (
     <div
       style={{
-        backgroundColor: 'var(--frigate-bg-base)',
-        padding: 'var(--frigate-space-2)',
-        borderBottom: '1px solid var(--frigate-border-base)',
+        backgroundColor: "var(--frigate-bg-base)",
+        padding: "var(--frigate-space-2)",
+        borderBottom: "1px solid var(--frigate-border-base)",
       }}
     >
       <div
         style={{
           fontWeight: 800,
-          fontSize: 'var(--frigate-font-heading)',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
+          fontSize: "var(--frigate-font-heading)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
         }}
       >
         SHIP STATISTICS
       </div>
       <div
         style={{
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginTop: 'var(--frigate-space-1)',
+          fontSize: "var(--frigate-font-small)",
+          color: "var(--frigate-text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginTop: "var(--frigate-space-1)",
         }}
       >
         BLUEPRINT ANALYSIS
@@ -146,18 +146,22 @@ function ShipStatsPanelFooter({ warningCount }: { warningCount: number }) {
   return (
     <div
       style={{
-        fontSize: 'var(--frigate-font-tiny)',
-        color: warningCount > 0 ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-        borderTop: '1px solid var(--frigate-border-base)',
-        letterSpacing: '0.05em',
-        display: 'flex',
-        justifyContent: 'space-between',
+        fontSize: "var(--frigate-font-tiny)",
+        color: warningCount > 0 ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
+        backgroundColor: "var(--frigate-bg-base)",
+        padding: "var(--frigate-space-1) var(--frigate-space-2)",
+        borderTop: "1px solid var(--frigate-border-base)",
+        letterSpacing: "0.05em",
+        display: "flex",
+        justifyContent: "space-between",
       }}
     >
-      <span>[STATUS: {warningCount > 0 ? 'WARNING' : 'NOMINAL'}]</span>
-      {warningCount > 0 && <span>[{warningCount} ISSUE{warningCount > 1 ? 'S' : ''}]</span>}
+      <span>[STATUS: {warningCount > 0 ? "WARNING" : "NOMINAL"}]</span>
+      {warningCount > 0 && (
+        <span>
+          [{warningCount} ISSUE{warningCount > 1 ? "S" : ""}]
+        </span>
+      )}
     </div>
   );
 }
@@ -165,63 +169,57 @@ function ShipStatsPanelFooter({ warningCount }: { warningCount: number }) {
 /**
  * Register Schematic Button
  */
-function RegisterSchematicButton({
-  stats,
-  onClick,
-}: {
-  stats: ShipStats;
-  onClick?: () => void;
-}) {
+function RegisterSchematicButton({ stats, onClick }: { stats: ShipStats; onClick?: () => void }) {
   const validationState = getValidationState(stats);
   const buttonColor = getValidationColor(validationState);
-  const isDisabled = validationState === 'conflict';
+  const isDisabled = validationState === "conflict";
 
   // Determine tooltip/status text
   const getStatusText = () => {
-    if (validationState === 'conflict') {
-      return 'Resolve conflicts before registering';
+    if (validationState === "conflict") {
+      return "Resolve conflicts before registering";
     }
-    if (validationState === 'incomplete') {
+    if (validationState === "incomplete") {
       const missing = stats.missingRequired ?? [];
-      return `Missing: ${missing.join(', ')}`;
+      return `Missing: ${missing.join(", ")}`;
     }
-    return 'Ready to register';
+    return "Ready to register";
   };
 
   return (
     <div
       style={{
-        padding: 'var(--frigate-space-2)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        borderTop: '1px solid var(--frigate-border-base)',
+        padding: "var(--frigate-space-2)",
+        backgroundColor: "var(--frigate-bg-base)",
+        borderTop: "1px solid var(--frigate-border-base)",
       }}
     >
       <button
         onClick={onClick}
         disabled={isDisabled}
         style={{
-          width: '100%',
-          padding: 'var(--frigate-space-2) var(--frigate-space-3)',
-          backgroundColor: 'transparent',
+          width: "100%",
+          padding: "var(--frigate-space-2) var(--frigate-space-3)",
+          backgroundColor: "transparent",
           border: `2px solid ${buttonColor}`,
           color: buttonColor,
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
+          fontFamily: "var(--frigate-font-mono)",
+          fontSize: "var(--frigate-font-small)",
           fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
+          textTransform: "uppercase",
+          letterSpacing: "0.1em",
+          cursor: isDisabled ? "not-allowed" : "pointer",
           opacity: isDisabled ? 0.5 : 1,
-          transition: 'all 0.15s ease',
+          transition: "all 0.15s ease",
         }}
         onMouseEnter={(e) => {
           if (!isDisabled) {
             e.currentTarget.style.backgroundColor = buttonColor;
-            e.currentTarget.style.color = 'var(--frigate-bg-base)';
+            e.currentTarget.style.color = "var(--frigate-bg-base)";
           }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.backgroundColor = "transparent";
           e.currentTarget.style.color = buttonColor;
         }}
         title={getStatusText()}
@@ -236,7 +234,12 @@ function RegisterSchematicButton({
 /**
  * Stat row component for consistent formatting
  */
-function StatRow({ label, value, unit = '', warning = false }: {
+function StatRow({
+  label,
+  value,
+  unit = "",
+  warning = false,
+}: {
   label: string;
   value: number | string;
   unit?: string;
@@ -245,31 +248,32 @@ function StatRow({ label, value, unit = '', warning = false }: {
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 'var(--frigate-space-1) 0',
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "var(--frigate-space-1) 0",
       }}
     >
       <span
         style={{
-          fontSize: 'var(--frigate-font-tiny)',
-          color: 'var(--frigate-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          fontSize: "var(--frigate-font-tiny)",
+          color: "var(--frigate-text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
         }}
       >
         {label}
       </span>
       <span
         style={{
-          fontSize: 'var(--frigate-font-small)',
-          color: warning ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
+          fontSize: "var(--frigate-font-small)",
+          color: warning ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
           fontWeight: 600,
-          fontFamily: 'var(--frigate-font-mono)',
+          fontFamily: "var(--frigate-font-mono)",
         }}
       >
-        {value}{unit}
+        {value}
+        {unit}
       </span>
     </div>
   );
@@ -296,38 +300,39 @@ function ConstraintBar({
 }) {
   const percent = max > 0 ? (value / max) * 100 : 0;
   const exceeded = value > max && max > 0;
-  const status = exceeded ? 'danger' : percent > 90 ? 'warning' : 'primary';
+  const status = exceeded ? "danger" : percent > 90 ? "warning" : "primary";
   const fmt = formatValue ?? ((v: number) => String(v));
 
   return (
-    <div style={{ marginBottom: 'var(--frigate-space-2)' }}>
+    <div style={{ marginBottom: "var(--frigate-space-2)" }}>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '2px',
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "2px",
         }}
       >
         <span
           style={{
-            fontSize: 'var(--frigate-font-tiny)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            fontSize: "var(--frigate-font-tiny)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
         >
           {label}
         </span>
         <span
           style={{
-            fontSize: 'var(--frigate-font-tiny)',
-            color: exceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            fontSize: "var(--frigate-font-tiny)",
+            color: exceeded ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
             fontWeight: exceeded ? 700 : 400,
           }}
         >
-          {fmt(value)}/{max > 0 ? fmt(max) : '—'}{unit}
-          {exceeded && showOverLimit && ' [!]'}
+          {fmt(value)}/{max > 0 ? fmt(max) : "—"}
+          {unit}
+          {exceeded && showOverLimit && " [!]"}
         </span>
       </div>
       <ProgressBar
@@ -348,7 +353,7 @@ function ConstraintBar({
  * Shows key performance indicators with progress bars for constrained resources.
  * Features warning indicators when limits are approached or exceeded.
  */
-export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsPanelProps) {
+export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsPanelProps) {
   const warningCount = stats.warnings?.length ?? 0;
 
   // Check for constraint violations
@@ -365,16 +370,16 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
     <div
       className={className}
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
-        background: 'var(--frigate-bg-base)',
-        color: 'var(--frigate-text-primary)',
-        border: '1px solid var(--frigate-border-base)',
+        fontFamily: "var(--frigate-font-mono)",
+        background: "var(--frigate-bg-base)",
+        color: "var(--frigate-text-primary)",
+        border: "1px solid var(--frigate-border-base)",
         borderRadius: 0,
-        boxShadow: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        height: '100%',
+        boxShadow: "none",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        height: "100%",
       }}
       aria-label="Ship Statistics"
       role="region"
@@ -386,13 +391,13 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
       <div
         style={{
           flex: 1,
-          padding: 'var(--frigate-space-2)',
-          overflow: 'auto',
-          backgroundColor: 'var(--frigate-bg-surface)',
+          padding: "var(--frigate-space-2)",
+          overflow: "auto",
+          backgroundColor: "var(--frigate-bg-surface)",
         }}
       >
         {/* Primary Stats */}
-        <div style={{ marginBottom: 'var(--frigate-space-3)' }}>
+        <div style={{ marginBottom: "var(--frigate-space-3)" }}>
           <StatRow
             label="COST"
             value={formatCredits(stats.creditCost)}
@@ -446,18 +451,18 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
         {warningCount > 0 && (
           <div
             style={{
-              marginTop: 'var(--frigate-space-3)',
-              paddingTop: 'var(--frigate-space-2)',
-              borderTop: '1px solid var(--frigate-border-base)',
+              marginTop: "var(--frigate-space-3)",
+              paddingTop: "var(--frigate-space-2)",
+              borderTop: "1px solid var(--frigate-border-base)",
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-danger)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: 'var(--frigate-space-1)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-danger)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "var(--frigate-space-1)",
                 fontWeight: 700,
               }}
             >
@@ -467,11 +472,11 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
               <div
                 key={idx}
                 style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-danger)',
-                  paddingLeft: 'var(--frigate-space-1)',
-                  borderLeft: '2px solid var(--frigate-danger)',
-                  marginBottom: '2px',
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-danger)",
+                  paddingLeft: "var(--frigate-space-1)",
+                  borderLeft: "2px solid var(--frigate-danger)",
+                  marginBottom: "2px",
                 }}
               >
                 {warning}
@@ -484,31 +489,31 @@ export function ShipStatsPanel({ stats, className = '', onRegister }: ShipStatsP
         {stats.profile && (
           <div
             style={{
-              marginTop: 'var(--frigate-space-3)',
-              paddingTop: 'var(--frigate-space-2)',
-              borderTop: '1px solid var(--frigate-border-base)',
+              marginTop: "var(--frigate-space-3)",
+              paddingTop: "var(--frigate-space-2)",
+              borderTop: "1px solid var(--frigate-border-base)",
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-text-secondary)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: 'var(--frigate-space-2)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-text-secondary)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "var(--frigate-space-2)",
                 fontWeight: 700,
-                textAlign: 'center',
+                textAlign: "center",
               }}
             >
               CAPABILITY PROFILE
             </div>
             <RadarChart
               axes={[
-                { id: 'D', label: 'Defense', value: stats.profile.defense },
-                { id: 'M', label: 'Mobility', value: stats.profile.mobility },
-                { id: 'O', label: 'Offense', value: stats.profile.offense },
-                { id: 'V', label: 'Versatility', value: stats.profile.versatility },
-                { id: 'U', label: 'Utility', value: stats.profile.utility },
+                { id: "D", label: "Defense", value: stats.profile.defense },
+                { id: "M", label: "Mobility", value: stats.profile.mobility },
+                { id: "O", label: "Offense", value: stats.profile.offense },
+                { id: "V", label: "Versatility", value: stats.profile.versatility },
+                { id: "U", label: "Utility", value: stats.profile.utility },
               ]}
               size={180}
             />

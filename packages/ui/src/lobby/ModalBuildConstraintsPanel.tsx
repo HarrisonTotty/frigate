@@ -1,8 +1,8 @@
 /**
  * ModalBuildConstraintsPanel - Build constraints panel for ship creation modal
  */
-import React from 'react';
-import { BuildConstraintsPanel } from '../shipclass';
+import React from "react";
+import { BuildConstraintsPanel } from "../shipclass";
 
 export interface ModalBuildConstraintsPanelProps {
   maxWeight: number;

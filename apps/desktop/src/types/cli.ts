@@ -27,16 +27,16 @@ export interface CliArgs {
  * Auto-setup progress steps
  */
 export type AutoSetupStep =
-  | 'idle'
-  | 'connecting'
-  | 'selecting-player'
-  | 'creating-player'
-  | 'selecting-team'
-  | 'creating-team'
-  | 'selecting-ship'
-  | 'creating-ship'
-  | 'complete'
-  | 'error';
+  | "idle"
+  | "connecting"
+  | "selecting-player"
+  | "creating-player"
+  | "selecting-team"
+  | "creating-team"
+  | "selecting-ship"
+  | "creating-ship"
+  | "complete"
+  | "error";
 
 /**
  * Auto-setup progress state
@@ -70,5 +70,5 @@ export interface AutoSetupState {
 export interface StepDisplayInfo {
   label: string;
   detail?: string;
-  status: 'pending' | 'active' | 'complete' | 'error';
+  status: "pending" | "active" | "complete" | "error";
 }

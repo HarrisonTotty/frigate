@@ -5,7 +5,7 @@ import {
   ensureQuaternion,
   ensureString,
   ensureVector3,
-  isRecord
+  isRecord,
 } from "./events";
 import type {
   AnalyzeResult,
@@ -29,7 +29,7 @@ import type {
   ThreatContact,
   UniverseSummary,
   AddModuleRequest,
-  UpdateModuleVariantRequest
+  UpdateModuleVariantRequest,
 } from "./types";
 
 function mapArray<T>(value: unknown, mapper: (item: unknown) => T | null | undefined): T[] {
@@ -53,7 +53,7 @@ function mapPlayer(payload: unknown): Player {
   return {
     id: ensureString(payload.id),
     name: ensureString(payload.name),
-    teamId: payload.team_id == null ? null : ensureString(payload.team_id)
+    teamId: payload.team_id == null ? null : ensureString(payload.team_id),
   };
 }
 
@@ -70,7 +70,7 @@ function mapTeam(payload: unknown): Team {
     name: ensureString(payload.name),
     faction: ensureString(payload.faction),
     members: mapArray(payload.members, (value) => ensureString(value)),
-    credits: typeof payload.credits === 'number' ? payload.credits : 0
+    credits: typeof payload.credits === "number" ? payload.credits : 0,
   };
 }
 
@@ -85,7 +85,7 @@ function mapBlueprintModule(payload: unknown): BlueprintModule {
   return {
     moduleId: ensureString(payload.module_id),
     position: ensureVector3(payload.position),
-    kind: payload.kind == null ? null : ensureString(payload.kind)
+    kind: payload.kind == null ? null : ensureString(payload.kind),
   };
 }
 
@@ -107,7 +107,9 @@ function mapBlueprint(payload: unknown): Blueprint {
     teamId: ensureString(payload.team_id ?? payload.teamId ?? ""),
     roles: rolesRecord,
     modules: mapArray(payload.modules, mapBlueprintModule),
-    readyPlayerIds: mapArray(payload.ready_players ?? payload.readyPlayerIds, (value) => ensureString(value))
+    readyPlayerIds: mapArray(payload.ready_players ?? payload.readyPlayerIds, (value) =>
+      ensureString(value)
+    ),
   };
 }
 
@@ -143,12 +145,17 @@ function mapShip(payload: unknown): Ship {
         moduleId: ensureString(modulePayload.module_id ?? modulePayload.moduleId ?? ""),
         health: ensureNumber(modulePayload.health),
         status: ensureString(modulePayload.status) as Ship["modules"][number]["status"],
-        powerAllocation: modulePayload.power_allocation == null ? undefined : ensureNumber(modulePayload.power_allocation),
+        powerAllocation:
+          modulePayload.power_allocation == null
+            ? undefined
+            : ensureNumber(modulePayload.power_allocation),
         coolingAllocation:
-          modulePayload.cooling_allocation == null ? undefined : ensureNumber(modulePayload.cooling_allocation),
-        tags: mapArray(modulePayload.tags, (tag) => ensureString(tag))
+          modulePayload.cooling_allocation == null
+            ? undefined
+            : ensureNumber(modulePayload.cooling_allocation),
+        tags: mapArray(modulePayload.tags, (tag) => ensureString(tag)),
       };
-    })
+    }),
   };
 }
 
@@ -166,7 +173,7 @@ function mapStation(payload: unknown): Station {
     position: ensureVector3(payload.position),
     faction: ensureString(payload.faction),
     services: mapArray(payload.services, (service) => ensureString(service)),
-    size: ensureString(payload.size) as Station["size"]
+    size: ensureString(payload.size) as Station["size"],
   };
 }
 
@@ -183,7 +190,7 @@ function mapHelmStatus(payload: unknown): HelmStatus {
     rotationRate: ensureVector3(payload.rotation_rate ?? payload.rotationRate),
     warpActive: ensureBoolean(payload.warp_active ?? payload.warpActive),
     dockingMode: ensureBoolean(payload.docking_mode ?? payload.dockingMode),
-    effectiveWeight: ensureNumber(payload.effective_weight ?? payload.effectiveWeight)
+    effectiveWeight: ensureNumber(payload.effective_weight ?? payload.effectiveWeight),
   };
 }
 
@@ -196,8 +203,12 @@ function mapEngineeringStatus(payload: unknown): EngineeringStatus {
     shieldStrength: ensureNumber(payload.shield_strength ?? payload.shieldStrength),
     powerLevel: ensureNumber(payload.power_level ?? payload.powerLevel),
     heatLevel: ensureNumber(payload.heat_level ?? payload.heatLevel),
-    damagedModules: mapArray(payload.damaged_modules ?? payload.damagedModules, (value) => ensureString(value)),
-    statusEffects: mapArray(payload.status_effects ?? payload.statusEffects, (value) => ensureString(value))
+    damagedModules: mapArray(payload.damaged_modules ?? payload.damagedModules, (value) =>
+      ensureString(value)
+    ),
+    statusEffects: mapArray(payload.status_effects ?? payload.statusEffects, (value) =>
+      ensureString(value)
+    ),
   };
 }
 
@@ -211,7 +222,7 @@ function mapModuleStatus(payload: unknown): ModuleStatus {
     efficiency: ensureNumber(payload.efficiency),
     powerAllocation: ensureNumber(payload.power_allocation ?? payload.powerAllocation),
     coolingAllocation: ensureNumber(payload.cooling_allocation ?? payload.coolingAllocation),
-    status: ensureString(payload.status) as ModuleStatus["status"]
+    status: ensureString(payload.status) as ModuleStatus["status"],
   };
 }
 
@@ -235,10 +246,10 @@ function mapEnergyWeaponStatus(payload: unknown): EnergyWeaponStatus {
         heat: ensureNumber(weaponPayload.heat),
         ready: ensureBoolean(weaponPayload.ready),
         autoFire: ensureBoolean(weaponPayload.auto_fire ?? weaponPayload.autoFire),
-        tags: mapArray(weaponPayload.tags, (tag) => ensureString(tag))
+        tags: mapArray(weaponPayload.tags, (tag) => ensureString(tag)),
       };
     }),
-    currentTarget: payload.current_target == null ? null : ensureString(payload.current_target)
+    currentTarget: payload.current_target == null ? null : ensureString(payload.current_target),
   };
 }
 
@@ -257,10 +268,10 @@ function mapKineticWeaponStatus(payload: unknown): KineticWeaponStatus {
         ammoType: weaponPayload.ammo_type == null ? null : ensureString(weaponPayload.ammo_type),
         ammoCount: weaponPayload.ammo_count == null ? null : ensureNumber(weaponPayload.ammo_count),
         ready: ensureBoolean(weaponPayload.ready),
-        autoFire: ensureBoolean(weaponPayload.auto_fire ?? weaponPayload.autoFire)
+        autoFire: ensureBoolean(weaponPayload.auto_fire ?? weaponPayload.autoFire),
       };
     }),
-    currentTarget: payload.current_target == null ? null : ensureString(payload.current_target)
+    currentTarget: payload.current_target == null ? null : ensureString(payload.current_target),
   };
 }
 
@@ -275,15 +286,17 @@ function mapMissileWeaponStatus(payload: unknown): MissileWeaponStatus {
       }
       return {
         id: ensureString(weaponPayload.id),
-        ordnanceType: weaponPayload.ordnance_type == null ? null : ensureString(weaponPayload.ordnance_type),
+        ordnanceType:
+          weaponPayload.ordnance_type == null ? null : ensureString(weaponPayload.ordnance_type),
         loaded: ensureBoolean(weaponPayload.loaded),
         ammoCount: weaponPayload.ammo_count == null ? null : ensureNumber(weaponPayload.ammo_count),
         ready: ensureBoolean(weaponPayload.ready),
-        lockQuality: weaponPayload.lock_quality == null ? null : ensureNumber(weaponPayload.lock_quality),
-        autoFire: ensureBoolean(weaponPayload.auto_fire ?? weaponPayload.autoFire)
+        lockQuality:
+          weaponPayload.lock_quality == null ? null : ensureNumber(weaponPayload.lock_quality),
+        autoFire: ensureBoolean(weaponPayload.auto_fire ?? weaponPayload.autoFire),
       };
     }),
-    currentTarget: payload.current_target == null ? null : ensureString(payload.current_target)
+    currentTarget: payload.current_target == null ? null : ensureString(payload.current_target),
   };
 }
 
@@ -298,10 +311,10 @@ function mapScienceContact(payload: unknown): ScienceContact {
     bearing: isRecord(payload.bearing)
       ? {
           azimuth: ensureNumber(payload.bearing.azimuth),
-          elevation: ensureNumber(payload.bearing.elevation)
+          elevation: ensureNumber(payload.bearing.elevation),
         }
       : { azimuth: 0, elevation: 0 },
-    velocity: ensureVector3(payload.velocity)
+    velocity: ensureVector3(payload.velocity),
   };
 }
 
@@ -314,7 +327,7 @@ function mapThreatContact(payload: unknown): ThreatContact {
     type: ensureString(payload.type) as ThreatContact["type"],
     distance: ensureNumber(payload.distance),
     etaSeconds: ensureNumber(payload.eta ?? payload.etaSeconds),
-    status: ensureString(payload.status) as ThreatContact["status"]
+    status: ensureString(payload.status) as ThreatContact["status"],
   };
 }
 
@@ -326,7 +339,7 @@ function mapNavigationSolution(payload: unknown): NavigationSolution {
   const interceptCourse = isRecord(interceptRaw)
     ? {
         pitch: ensureNumber(interceptRaw.pitch),
-        yaw: ensureNumber(interceptRaw.yaw)
+        yaw: ensureNumber(interceptRaw.yaw),
       }
     : { pitch: 0, yaw: 0 };
   return {
@@ -334,7 +347,7 @@ function mapNavigationSolution(payload: unknown): NavigationSolution {
     distance: ensureNumber(payload.distance),
     heading: ensureVector3(payload.heading),
     etaSeconds: ensureNumber(payload.eta ?? payload.etaSeconds),
-    interceptCourse
+    interceptCourse,
   };
 }
 
@@ -347,8 +360,12 @@ function mapScanResult(payload: unknown): ScanResult {
     classification: ensureString(payload.classification),
     hullIntegrity: ensureNumber(payload.hull_integrity ?? payload.hullIntegrity),
     shieldStrength: ensureNumber(payload.shield_strength ?? payload.shieldStrength),
-    weaponSystems: mapArray(payload.weapon_systems ?? payload.weaponSystems, (value) => ensureString(value)),
-    threatLevel: ensureString(payload.threat_level ?? payload.threatLevel) as ScanResult["threatLevel"]
+    weaponSystems: mapArray(payload.weapon_systems ?? payload.weaponSystems, (value) =>
+      ensureString(value)
+    ),
+    threatLevel: ensureString(
+      payload.threat_level ?? payload.threatLevel
+    ) as ScanResult["threatLevel"],
   };
 }
 
@@ -363,7 +380,7 @@ function mapAnalyzeResult(payload: unknown): AnalyzeResult {
   return {
     targetId: ensureString(payload.target_id ?? payload.targetId ?? ""),
     analysisType: ensureString(payload.analysis_type ?? payload.analysisType),
-    details
+    details,
   };
 }
 
@@ -374,7 +391,7 @@ function mapDockingStatus(payload: unknown): DockingStatus {
   return {
     stationId: ensureString(payload.station_id ?? payload.stationId ?? ""),
     shipId: ensureString(payload.ship_id ?? payload.shipId ?? ""),
-    status: ensureString(payload.status) as DockingStatus["status"]
+    status: ensureString(payload.status) as DockingStatus["status"],
   };
 }
 
@@ -385,7 +402,7 @@ function mapUniverseSummary(payload: unknown): UniverseSummary {
   return {
     generatedAt: ensureString(payload.generated_at ?? payload.generatedAt ?? ""),
     starCount: ensureNumber(payload.star_count ?? payload.starCount),
-    factionCount: ensureNumber(payload.faction_count ?? payload.factionCount)
+    factionCount: ensureNumber(payload.faction_count ?? payload.factionCount),
   };
 }
 
@@ -530,8 +547,16 @@ export class BlueprintsResource {
    * @param moduleInstanceId Module instance ID
    * @param request UpdateModuleVariantRequest
    */
-  public updateModuleVariant(blueprintId: string, moduleInstanceId: string, request: UpdateModuleVariantRequest): Promise<void> {
-    return this.http.patch(`/v1/blueprints/${blueprintId}/modules/${moduleInstanceId}`, request, () => undefined);
+  public updateModuleVariant(
+    blueprintId: string,
+    moduleInstanceId: string,
+    request: UpdateModuleVariantRequest
+  ): Promise<void> {
+    return this.http.patch(
+      `/v1/blueprints/${blueprintId}/modules/${moduleInstanceId}`,
+      request,
+      () => undefined
+    );
   }
 
   /**
@@ -540,11 +565,18 @@ export class BlueprintsResource {
    * @param moduleInstanceId Module instance ID
    */
   public removeModule(blueprintId: string, moduleInstanceId: string): Promise<void> {
-    return this.http.delete(`/v1/blueprints/${blueprintId}/modules/${moduleInstanceId}`, () => undefined);
+    return this.http.delete(
+      `/v1/blueprints/${blueprintId}/modules/${moduleInstanceId}`,
+      () => undefined
+    );
   }
 
   public markReady(blueprintId: string, playerId: string): Promise<void> {
-    return this.http.post(`/v1/blueprints/${blueprintId}/ready`, { player_id: playerId }, () => undefined);
+    return this.http.post(
+      `/v1/blueprints/${blueprintId}/ready`,
+      { player_id: playerId },
+      () => undefined
+    );
   }
 
   public unmarkReady(blueprintId: string, playerId: string): Promise<void> {
@@ -603,7 +635,10 @@ export class HelmResource {
     return this.http.post(`/v1/ships/${shipId}/helm/thrust`, { thrust }, () => undefined);
   }
 
-  public rotate(shipId: string, rotation: { pitch: number; yaw: number; roll: number }): Promise<void> {
+  public rotate(
+    shipId: string,
+    rotation: { pitch: number; yaw: number; roll: number }
+  ): Promise<void> {
     return this.http.post(`/v1/ships/${shipId}/helm/rotate`, rotation, () => undefined);
   }
 
@@ -611,8 +646,16 @@ export class HelmResource {
     return this.http.post(`/v1/ships/${shipId}/helm/stop`, undefined, () => undefined);
   }
 
-  public warp(shipId: string, warpFactor: number, heading: { x: number; y: number; z: number }): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/helm/warp`, { warp_factor: warpFactor, heading }, () => undefined);
+  public warp(
+    shipId: string,
+    warpFactor: number,
+    heading: { x: number; y: number; z: number }
+  ): Promise<void> {
+    return this.http.post(
+      `/v1/ships/${shipId}/helm/warp`,
+      { warp_factor: warpFactor, heading },
+      () => undefined
+    );
   }
 
   public jump(shipId: string, destination: { x: number; y: number; z: number }): Promise<void> {
@@ -620,7 +663,11 @@ export class HelmResource {
   }
 
   public dock(shipId: string, stationId: string): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/helm/dock`, { station_id: stationId }, () => undefined);
+    return this.http.post(
+      `/v1/ships/${shipId}/helm/dock`,
+      { station_id: stationId },
+      () => undefined
+    );
   }
 }
 
@@ -656,7 +703,11 @@ export class EnergyWeaponsResource {
   }
 
   public setTarget(shipId: string, targetId: string): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/energy-weapons/target`, { target_id: targetId }, () => undefined);
+    return this.http.post(
+      `/v1/ships/${shipId}/energy-weapons/target`,
+      { target_id: targetId },
+      () => undefined
+    );
   }
 
   public fire(shipId: string, weaponId: string): Promise<Record<string, unknown>> {
@@ -676,11 +727,23 @@ export class KineticWeaponsResource {
   }
 
   public setTarget(shipId: string, targetId: string): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/kinetic-weapons/target`, { target_id: targetId }, () => undefined);
+    return this.http.post(
+      `/v1/ships/${shipId}/kinetic-weapons/target`,
+      { target_id: targetId },
+      () => undefined
+    );
   }
 
-  public configure(shipId: string, weaponId: string, payload: Record<string, unknown>): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/kinetic-weapons/${weaponId}/configure`, payload, () => undefined);
+  public configure(
+    shipId: string,
+    weaponId: string,
+    payload: Record<string, unknown>
+  ): Promise<void> {
+    return this.http.post(
+      `/v1/ships/${shipId}/kinetic-weapons/${weaponId}/configure`,
+      payload,
+      () => undefined
+    );
   }
 }
 
@@ -692,7 +755,11 @@ export class MissileWeaponsResource {
   }
 
   public setTarget(shipId: string, targetId: string): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/missile-weapons/target`, { target_id: targetId }, () => undefined);
+    return this.http.post(
+      `/v1/ships/${shipId}/missile-weapons/target`,
+      { target_id: targetId },
+      () => undefined
+    );
   }
 }
 
@@ -700,11 +767,15 @@ export class ScienceResource {
   public constructor(private readonly http: HttpClient) {}
 
   public contacts(shipId: string): Promise<ScienceContact[]> {
-    return this.http.get(`/v1/ships/${shipId}/contacts`, (payload) => mapArray(payload, mapScienceContact));
+    return this.http.get(`/v1/ships/${shipId}/contacts`, (payload) =>
+      mapArray(payload, mapScienceContact)
+    );
   }
 
   public threats(shipId: string): Promise<ThreatContact[]> {
-    return this.http.get(`/v1/ships/${shipId}/threats`, (payload) => mapArray(payload, mapThreatContact));
+    return this.http.get(`/v1/ships/${shipId}/threats`, (payload) =>
+      mapArray(payload, mapThreatContact)
+    );
   }
 
   public scan(shipId: string, request: ScanRequest): Promise<ScanResult> {
@@ -724,19 +795,27 @@ export class CommunicationsResource {
   public constructor(private readonly http: HttpClient) {}
 
   public hail(shipId: string, message: CommunicationsMessage): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/hail`, {
-      target_id: message.targetId,
-      message: message.message,
-      tone: message.tone
-    }, () => undefined);
+    return this.http.post(
+      `/v1/ships/${shipId}/hail`,
+      {
+        target_id: message.targetId,
+        message: message.message,
+        tone: message.tone,
+      },
+      () => undefined
+    );
   }
 
   public respond(shipId: string, message: CommunicationsMessage): Promise<void> {
-    return this.http.post(`/v1/ships/${shipId}/respond`, {
-      target_id: message.targetId,
-      message: message.message,
-      tone: message.tone
-    }, () => undefined);
+    return this.http.post(
+      `/v1/ships/${shipId}/respond`,
+      {
+        target_id: message.targetId,
+        message: message.message,
+        tone: message.tone,
+      },
+      () => undefined
+    );
   }
 
   public jam(shipId: string, targetId: string): Promise<void> {
@@ -744,7 +823,11 @@ export class CommunicationsResource {
   }
 
   public requestDocking(shipId: string, stationId: string): Promise<DockingStatus> {
-    return this.http.post(`/v1/ships/${shipId}/dock-request`, { station_id: stationId }, mapDockingStatus);
+    return this.http.post(
+      `/v1/ships/${shipId}/dock-request`,
+      { station_id: stationId },
+      mapDockingStatus
+    );
   }
 
   public undock(shipId: string): Promise<void> {

@@ -1,18 +1,17 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { StatsGrid } from '../lobby/StatsGrid';
+import type { Meta, StoryObj } from "@storybook/react";
+import { StatsGrid } from "../lobby/StatsGrid";
 
 /**
  * Stats Grid Story
- * 
+ *
  * Reusable grid component for displaying statistics in various layouts.
  * Used for ship statistics, module stats, and constraint displays.
  */
 const meta: Meta<typeof StatsGrid> = {
-  title: 'Lobby/StatsGrid',
+  title: "Lobby/StatsGrid",
   component: StatsGrid,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component: `
@@ -81,15 +80,15 @@ Default 2-column grid:
   argTypes: {
     items: {
       control: false,
-      description: 'Array of stat items to display',
+      description: "Array of stat items to display",
     },
     columns: {
-      control: { type: 'number', min: 1, max: 4 },
-      description: 'Number of columns in the grid (default: 2)',
+      control: { type: "number", min: 1, max: 4 },
+      description: "Number of columns in the grid (default: 2)",
     },
     gap: {
-      control: { type: 'number', min: 0, max: 32 },
-      description: 'Gap between grid items in pixels',
+      control: { type: "number", min: 0, max: 32 },
+      description: "Gap between grid items in pixels",
     },
   },
 };
@@ -103,10 +102,10 @@ type Story = StoryObj<typeof StatsGrid>;
 export const Default: Story = {
   args: {
     items: [
-      { label: 'TOTAL COST', value: '1200', unit: 'BP' },
-      { label: 'HULL HP', value: '500', unit: 'PTS' },
-      { label: 'WEIGHT', value: '4500', unit: 'kg' },
-      { label: 'CREW', value: '12', unit: 'personnel' },
+      { label: "TOTAL COST", value: "1200", unit: "BP" },
+      { label: "HULL HP", value: "500", unit: "PTS" },
+      { label: "WEIGHT", value: "4500", unit: "kg" },
+      { label: "CREW", value: "12", unit: "personnel" },
     ],
     columns: 2,
     gap: 3,
@@ -114,7 +113,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Default two-column grid with text-based statistics.',
+        story: "Default two-column grid with text-based statistics.",
       },
     },
   },
@@ -126,10 +125,38 @@ export const Default: Story = {
 export const WithProgress: Story = {
   args: {
     items: [
-      { label: 'BUILD POINTS', value: '1200', unit: 'BP', max: 1500, current: 1200, type: 'progress' as const },
-      { label: 'POWER USAGE', value: '80', unit: '%', max: 100, current: 80, type: 'progress' as const },
-      { label: 'HEAT GENERATION', value: '65', unit: '%', max: 100, current: 65, type: 'progress' as const },
-      { label: 'WEIGHT', value: '4500', unit: 'kg', max: 5000, current: 4500, type: 'progress' as const },
+      {
+        label: "BUILD POINTS",
+        value: "1200",
+        unit: "BP",
+        max: 1500,
+        current: 1200,
+        type: "progress" as const,
+      },
+      {
+        label: "POWER USAGE",
+        value: "80",
+        unit: "%",
+        max: 100,
+        current: 80,
+        type: "progress" as const,
+      },
+      {
+        label: "HEAT GENERATION",
+        value: "65",
+        unit: "%",
+        max: 100,
+        current: 65,
+        type: "progress" as const,
+      },
+      {
+        label: "WEIGHT",
+        value: "4500",
+        unit: "kg",
+        max: 5000,
+        current: 4500,
+        type: "progress" as const,
+      },
     ],
     columns: 2,
     gap: 3,
@@ -137,7 +164,7 @@ export const WithProgress: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Grid with progress bar indicators showing resource usage percentages.',
+        story: "Grid with progress bar indicators showing resource usage percentages.",
       },
     },
   },
@@ -149,12 +176,12 @@ export const WithProgress: Story = {
 export const SingleColumn: Story = {
   args: {
     items: [
-      { label: 'SHIP CLASS', value: 'Sovereign-class Explorer' },
-      { label: 'TOTAL COST', value: '3500 BP' },
-      { label: 'TOTAL WEIGHT', value: '45,000 kg' },
-      { label: 'POWER GENERATION', value: '850 MW' },
-      { label: 'HEAT DISSIPATION', value: '500 kW' },
-      { label: 'MAX CREW', value: '500 personnel' },
+      { label: "SHIP CLASS", value: "Sovereign-class Explorer" },
+      { label: "TOTAL COST", value: "3500 BP" },
+      { label: "TOTAL WEIGHT", value: "45,000 kg" },
+      { label: "POWER GENERATION", value: "850 MW" },
+      { label: "HEAT DISSIPATION", value: "500 kW" },
+      { label: "MAX CREW", value: "500 personnel" },
     ],
     columns: 1,
     gap: 2,
@@ -162,7 +189,7 @@ export const SingleColumn: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Single-column layout for detailed ship specifications.',
+        story: "Single-column layout for detailed ship specifications.",
       },
     },
   },
@@ -174,14 +201,14 @@ export const SingleColumn: Story = {
 export const FourColumn: Story = {
   args: {
     items: [
-      { label: 'HP', value: '500' },
-      { label: 'PWR', value: '850' },
-      { label: 'HEAT', value: '450' },
-      { label: 'WEIGHT', value: '45k' },
-      { label: 'COST', value: '3500' },
-      { label: 'MODULES', value: '12' },
-      { label: 'CREW', value: '500' },
-      { label: 'STATUS', value: 'ONLINE' },
+      { label: "HP", value: "500" },
+      { label: "PWR", value: "850" },
+      { label: "HEAT", value: "450" },
+      { label: "WEIGHT", value: "45k" },
+      { label: "COST", value: "3500" },
+      { label: "MODULES", value: "12" },
+      { label: "CREW", value: "500" },
+      { label: "STATUS", value: "ONLINE" },
     ],
     columns: 4,
     gap: 2,
@@ -189,7 +216,7 @@ export const FourColumn: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Four-column compact layout for dashboard-style displays.',
+        story: "Four-column compact layout for dashboard-style displays.",
       },
     },
   },
@@ -201,10 +228,38 @@ export const FourColumn: Story = {
 export const ConstraintWarnings: Story = {
   args: {
     items: [
-      { label: 'BUILD POINTS', value: '1600', unit: 'BP', max: 1500, current: 1600, type: 'progress' as const },
-      { label: 'POWER USAGE', value: '120', unit: '%', max: 100, current: 120, type: 'progress' as const },
-      { label: 'HEAT GENERATION', value: '95', unit: '%', max: 100, current: 95, type: 'progress' as const },
-      { label: 'WEIGHT', value: '5100', unit: 'kg', max: 5000, current: 5100, type: 'progress' as const },
+      {
+        label: "BUILD POINTS",
+        value: "1600",
+        unit: "BP",
+        max: 1500,
+        current: 1600,
+        type: "progress" as const,
+      },
+      {
+        label: "POWER USAGE",
+        value: "120",
+        unit: "%",
+        max: 100,
+        current: 120,
+        type: "progress" as const,
+      },
+      {
+        label: "HEAT GENERATION",
+        value: "95",
+        unit: "%",
+        max: 100,
+        current: 95,
+        type: "progress" as const,
+      },
+      {
+        label: "WEIGHT",
+        value: "5100",
+        unit: "kg",
+        max: 5000,
+        current: 5100,
+        type: "progress" as const,
+      },
     ],
     columns: 2,
     gap: 3,
@@ -212,7 +267,7 @@ export const ConstraintWarnings: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows constraint violations with progress bars exceeding their limits (>100%).',
+        story: "Shows constraint violations with progress bars exceeding their limits (>100%).",
       },
     },
   },
@@ -224,12 +279,19 @@ export const ConstraintWarnings: Story = {
 export const ModuleStats: Story = {
   args: {
     items: [
-      { label: 'MODULE', value: 'Mk II Fusion Core' },
-      { label: 'STATUS', value: 'ONLINE' },
-      { label: 'POWER OUTPUT', value: '120', unit: 'MW' },
-      { label: 'HEAT GENERATION', value: '45', unit: 'kW' },
-      { label: 'WEIGHT', value: '850', unit: 'kg' },
-      { label: 'EFFICIENCY', value: '92', unit: '%', max: 100, current: 92, type: 'progress' as const },
+      { label: "MODULE", value: "Mk II Fusion Core" },
+      { label: "STATUS", value: "ONLINE" },
+      { label: "POWER OUTPUT", value: "120", unit: "MW" },
+      { label: "HEAT GENERATION", value: "45", unit: "kW" },
+      { label: "WEIGHT", value: "850", unit: "kg" },
+      {
+        label: "EFFICIENCY",
+        value: "92",
+        unit: "%",
+        max: 100,
+        current: 92,
+        type: "progress" as const,
+      },
     ],
     columns: 2,
     gap: 3,
@@ -237,7 +299,7 @@ export const ModuleStats: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Statistics for an individual module instance showing operational metrics.',
+        story: "Statistics for an individual module instance showing operational metrics.",
       },
     },
   },
@@ -249,10 +311,10 @@ export const ModuleStats: Story = {
 export const CompactStatus: Story = {
   args: {
     items: [
-      { label: 'MODULES', value: '12' },
-      { label: 'STATUS', value: 'ONLINE' },
-      { label: 'WARNINGS', value: '0' },
-      { label: 'ERRORS', value: '0' },
+      { label: "MODULES", value: "12" },
+      { label: "STATUS", value: "ONLINE" },
+      { label: "WARNINGS", value: "0" },
+      { label: "ERRORS", value: "0" },
     ],
     columns: 4,
     gap: 2,
@@ -260,7 +322,7 @@ export const CompactStatus: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Compact status indicators for system overview.',
+        story: "Compact status indicators for system overview.",
       },
     },
   },
@@ -274,8 +336,8 @@ export const LargeGrid: Story = {
     items: Array.from({ length: 12 }, (_, i) => ({
       label: `STAT ${String.fromCharCode(65 + i)}`,
       value: `${1000 + i * 100}`,
-      unit: i % 3 === 0 ? 'MW' : i % 3 === 1 ? 'kg' : '%',
-      ...(i % 2 === 0 && { max: 100, current: 50 + i * 5, type: 'progress' as const }),
+      unit: i % 3 === 0 ? "MW" : i % 3 === 1 ? "kg" : "%",
+      ...(i % 2 === 0 && { max: 100, current: 50 + i * 5, type: "progress" as const }),
     })),
     columns: 3,
     gap: 3,
@@ -283,7 +345,7 @@ export const LargeGrid: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Large grid with 12 items showing mixed text and progress bar displays.',
+        story: "Large grid with 12 items showing mixed text and progress bar displays.",
       },
     },
   },
@@ -295,10 +357,24 @@ export const LargeGrid: Story = {
 export const SpacedLayout: Story = {
   args: {
     items: [
-      { label: 'COST', value: '1200', unit: 'BP' },
-      { label: 'WEIGHT', value: '4500', unit: 'kg', max: 5000, current: 4500, type: 'progress' as const },
-      { label: 'POWER', value: '850', unit: 'MW' },
-      { label: 'HEAT', value: '450', unit: 'kW', max: 500, current: 450, type: 'progress' as const },
+      { label: "COST", value: "1200", unit: "BP" },
+      {
+        label: "WEIGHT",
+        value: "4500",
+        unit: "kg",
+        max: 5000,
+        current: 4500,
+        type: "progress" as const,
+      },
+      { label: "POWER", value: "850", unit: "MW" },
+      {
+        label: "HEAT",
+        value: "450",
+        unit: "kW",
+        max: 500,
+        current: 450,
+        type: "progress" as const,
+      },
     ],
     columns: 2,
     gap: 6,
@@ -306,7 +382,7 @@ export const SpacedLayout: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Grid with larger gap between items for more spacious layout.',
+        story: "Grid with larger gap between items for more spacious layout.",
       },
     },
   },

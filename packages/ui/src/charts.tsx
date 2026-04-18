@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import { CONTACT_SYMBOLS, formatValue } from './constants';
+import React from "react";
+import clsx from "clsx";
+import { CONTACT_SYMBOLS } from "./constants";
 
 /**
  * RadarChart Component
- * 
+ *
  * Minimalist tactical radar display with ASCII grid overlay.
  * Technical aesthetic with precise coordinate system.
  */
@@ -12,7 +12,7 @@ export interface RadarContact {
   id: string;
   x: number; // -1 to 1 (normalized coordinates)
   y: number; // -1 to 1 (normalized coordinates)
-  type?: 'friendly' | 'hostile' | 'neutral' | 'unknown';
+  type?: "friendly" | "hostile" | "neutral" | "unknown";
   label?: string;
 }
 
@@ -48,7 +48,7 @@ export function RadarChart({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
@@ -65,13 +65,13 @@ export function RadarChart({
 
     // Draw background
     ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--frigate-bg-base')
+      .getPropertyValue("--frigate-bg-base")
       .trim();
     ctx.fillRect(0, 0, size, size);
 
     // Draw border frame
     ctx.strokeStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--frigate-border-base')
+      .getPropertyValue("--frigate-border-base")
       .trim();
     ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, size - 20, size - 20);
@@ -79,7 +79,7 @@ export function RadarChart({
     // Draw range rings (minimal, technical)
     if (showRings) {
       ctx.strokeStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue('--frigate-border-muted')
+        .getPropertyValue("--frigate-border-muted")
         .trim();
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 2]); // Dashed lines for grid
@@ -95,11 +95,11 @@ export function RadarChart({
 
       // Draw range labels with technical formatting
       ctx.fillStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue('--frigate-text-tertiary')
+        .getPropertyValue("--frigate-text-tertiary")
         .trim();
-      ctx.font = '9px monospace';
-      ctx.textAlign = 'right';
-      
+      ctx.font = "9px monospace";
+      ctx.textAlign = "right";
+
       for (let i = 1; i <= ringCount; i++) {
         const ringRadius = (radius / ringCount) * i;
         const rangeKm = (range / ringCount) * i;
@@ -109,7 +109,7 @@ export function RadarChart({
 
     // Draw crosshairs (minimal, precise)
     ctx.strokeStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--frigate-border-light')
+      .getPropertyValue("--frigate-border-light")
       .trim();
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -123,54 +123,62 @@ export function RadarChart({
 
     // Draw cardinal direction markers
     ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--frigate-text-secondary')
+      .getPropertyValue("--frigate-text-secondary")
       .trim();
-    ctx.font = 'bold 10px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('N', centerX, centerY - radius - 8);
-    ctx.fillText('S', centerX, centerY + radius + 15);
-    ctx.textAlign = 'right';
-    ctx.fillText('W', centerX - radius - 8, centerY + 4);
-    ctx.textAlign = 'left';
-    ctx.fillText('E', centerX + radius + 8, centerY + 4);
+    ctx.font = "bold 10px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("N", centerX, centerY - radius - 8);
+    ctx.fillText("S", centerX, centerY + radius + 15);
+    ctx.textAlign = "right";
+    ctx.fillText("W", centerX - radius - 8, centerY + 4);
+    ctx.textAlign = "left";
+    ctx.fillText("E", centerX + radius + 8, centerY + 4);
 
     // Draw contacts with symbols
     const colorMap = {
-      friendly: getComputedStyle(document.documentElement).getPropertyValue('--frigate-success').trim(),
-      hostile: getComputedStyle(document.documentElement).getPropertyValue('--frigate-danger').trim(),
-      neutral: getComputedStyle(document.documentElement).getPropertyValue('--frigate-warning').trim(),
-      unknown: getComputedStyle(document.documentElement).getPropertyValue('--frigate-text-secondary').trim(),
+      friendly: getComputedStyle(document.documentElement)
+        .getPropertyValue("--frigate-success")
+        .trim(),
+      hostile: getComputedStyle(document.documentElement)
+        .getPropertyValue("--frigate-danger")
+        .trim(),
+      neutral: getComputedStyle(document.documentElement)
+        .getPropertyValue("--frigate-warning")
+        .trim(),
+      unknown: getComputedStyle(document.documentElement)
+        .getPropertyValue("--frigate-text-secondary")
+        .trim(),
     };
 
     const symbolMap = {
       friendly: CONTACT_SYMBOLS.FRIENDLY,
       hostile: CONTACT_SYMBOLS.HOSTILE,
       neutral: CONTACT_SYMBOLS.NEUTRAL,
-      unknown: '?',
+      unknown: "?",
     };
 
     contacts.forEach((contact) => {
       const x = centerX + contact.x * radius;
       const y = centerY - contact.y * radius; // Invert Y for screen coordinates
 
-      ctx.fillStyle = colorMap[contact.type || 'unknown'];
-      ctx.font = 'bold 12px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(symbolMap[contact.type || 'unknown'], x, y + 4);
+      ctx.fillStyle = colorMap[contact.type || "unknown"];
+      ctx.font = "bold 12px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(symbolMap[contact.type || "unknown"], x, y + 4);
 
       if (contact.label) {
-        ctx.font = '9px monospace';
-        ctx.textAlign = 'left';
+        ctx.font = "9px monospace";
+        ctx.textAlign = "left";
         ctx.fillText(contact.label, x + 8, y + 4);
       }
     });
 
     // Draw center marker (own ship)
     ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--frigate-primary')
+      .getPropertyValue("--frigate-primary")
       .trim();
-    ctx.font = 'bold 14px monospace';
-    ctx.textAlign = 'center';
+    ctx.font = "bold 14px monospace";
+    ctx.textAlign = "center";
     ctx.fillText(CONTACT_SYMBOLS.PLAYER, centerX, centerY + 5);
   }, [contacts, range, showRings, ringCount, size]);
 
@@ -204,12 +212,12 @@ export function RadarChart({
   return (
     <canvas
       ref={canvasRef}
-      className={clsx('frigate-radar', className)}
+      className={clsx("frigate-radar", className)}
       style={{
         width: `${size}px`,
         height: `${size}px`,
-        cursor: onContactClick ? 'pointer' : 'default',
-        backgroundColor: 'var(--frigate-bg-base)',
+        cursor: onContactClick ? "pointer" : "default",
+        backgroundColor: "var(--frigate-bg-base)",
       }}
       onClick={handleCanvasClick}
     />
@@ -218,7 +226,7 @@ export function RadarChart({
 
 /**
  * BarChart Component
- * 
+ *
  * Minimal bar chart with technical labels and precise values.
  * No rounded corners, uses flat rectangles and monospace typography.
  */
@@ -244,54 +252,54 @@ export function BarChart({ data, max, showValues = true, height = 200, className
   const maxValue = max || Math.max(...data.map((d) => d.value));
 
   return (
-    <div className={clsx('frigate-bar-chart', className)}>
+    <div className={clsx("frigate-bar-chart", className)}>
       <div
         style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          gap: '1px',
+          display: "flex",
+          alignItems: "flex-end",
+          gap: "1px",
           height: `${height}px`,
-          borderBottom: '1px solid var(--frigate-border-base)',
-          backgroundColor: 'var(--frigate-bg-base)',
+          borderBottom: "1px solid var(--frigate-border-base)",
+          backgroundColor: "var(--frigate-bg-base)",
         }}
       >
         {data.map((item, index) => {
           const barHeight = maxValue > 0 ? (item.value / maxValue) * (height - 20) : 0;
-          const color = item.color || 'var(--frigate-primary)';
+          const color = item.color || "var(--frigate-primary)";
 
           return (
             <div
               key={index}
               style={{
                 flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                minWidth: '40px',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "4px",
+                minWidth: "40px",
               }}
             >
               <div
                 style={{
-                  width: '100%',
+                  width: "100%",
                   height: `${barHeight}px`,
                   backgroundColor: color,
                   borderRadius: 0,
-                  transition: 'height 100ms ease',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  justifyContent: 'center',
-                  paddingTop: barHeight > 18 ? '4px' : '0',
+                  transition: "height 100ms ease",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  paddingTop: barHeight > 18 ? "4px" : "0",
                   border: `1px solid ${color}`,
-                  boxSizing: 'border-box',
+                  boxSizing: "border-box",
                 }}
               >
                 {showValues && barHeight > 18 && (
                   <span
                     style={{
-                      fontSize: 'var(--frigate-font-tiny)',
-                      fontFamily: 'var(--frigate-font-mono)',
-                      color: 'var(--frigate-text-primary)',
+                      fontSize: "var(--frigate-font-tiny)",
+                      fontFamily: "var(--frigate-font-mono)",
+                      color: "var(--frigate-text-primary)",
                       fontWeight: 700,
                     }}
                   >
@@ -301,13 +309,13 @@ export function BarChart({ data, max, showValues = true, height = 200, className
               </div>
               <span
                 style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  fontFamily: 'var(--frigate-font-mono)',
-                  color: 'var(--frigate-text-secondary)',
-                  textAlign: 'center',
-                  wordBreak: 'break-word',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  fontSize: "var(--frigate-font-tiny)",
+                  fontFamily: "var(--frigate-font-mono)",
+                  color: "var(--frigate-text-secondary)",
+                  textAlign: "center",
+                  wordBreak: "break-word",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
                   fontWeight: 600,
                 }}
               >
@@ -323,7 +331,7 @@ export function BarChart({ data, max, showValues = true, height = 200, className
 
 /**
  * LineChart Component
- * 
+ *
  * Minimal time-series line chart with technical grid overlay.
  * Flat design, precise rendering, no gradients.
  */
@@ -348,7 +356,7 @@ export interface LineChartProps {
 
 export function LineChart({
   data,
-  color = 'var(--frigate-primary)',
+  color = "var(--frigate-primary)",
   height = 100,
   width = 300,
   showPoints = false,
@@ -362,7 +370,7 @@ export function LineChart({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
@@ -374,7 +382,7 @@ export function LineChart({
 
     // Draw border frame
     ctx.strokeStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--frigate-border-base')
+      .getPropertyValue("--frigate-border-base")
       .trim();
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, width, height);
@@ -382,7 +390,7 @@ export function LineChart({
     // Draw grid lines
     if (showGrid) {
       ctx.strokeStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue('--frigate-border-muted')
+        .getPropertyValue("--frigate-border-muted")
         .trim();
       ctx.lineWidth = 1;
       ctx.setLineDash([1, 2]);
@@ -420,13 +428,13 @@ export function LineChart({
     // Draw filled area
     if (filled) {
       const resolvedColor = getComputedStyle(document.documentElement)
-        .getPropertyValue(color.startsWith('var') ? color.slice(4, -1) : color)
+        .getPropertyValue(color.startsWith("var") ? color.slice(4, -1) : color)
         .trim();
-      
-      ctx.fillStyle = resolvedColor.includes('rgb') 
-        ? resolvedColor.replace(')', ', 0.15)').replace('rgb', 'rgba')
-        : resolvedColor + '26'; // Add alpha as hex
-      
+
+      ctx.fillStyle = resolvedColor.includes("rgb")
+        ? resolvedColor.replace(")", ", 0.15)").replace("rgb", "rgba")
+        : resolvedColor + "26"; // Add alpha as hex
+
       ctx.beginPath();
       ctx.moveTo(0, height);
       data.forEach((value, index) => {
@@ -440,10 +448,11 @@ export function LineChart({
     }
 
     // Draw line
-    const lineColor = getComputedStyle(document.documentElement)
-      .getPropertyValue(color.startsWith('var') ? color.slice(4, -1) : color)
-      .trim() || color;
-    
+    const lineColor =
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(color.startsWith("var") ? color.slice(4, -1) : color)
+        .trim() || color;
+
     ctx.strokeStyle = lineColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -474,11 +483,11 @@ export function LineChart({
   return (
     <canvas
       ref={canvasRef}
-      className={clsx('frigate-line-chart', className)}
+      className={clsx("frigate-line-chart", className)}
       style={{
         width: `${width}px`,
         height: `${height}px`,
-        backgroundColor: 'var(--frigate-bg-base)',
+        backgroundColor: "var(--frigate-bg-base)",
       }}
     />
   );

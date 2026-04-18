@@ -50,18 +50,14 @@ describe("ModuleInstanceRow Component", () => {
       />
     );
 
-    expect(screen.getByText(/PWR:.*50/)).toBeInTheDocument();
-    expect(screen.getByText(/HEAT:.*30/)).toBeInTheDocument();
-    expect(screen.getByText(/WEIGHT:.*25/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Power draw: 50")).toBeInTheDocument();
+    expect(screen.getByLabelText("Heat generation: 30")).toBeInTheDocument();
+    expect(screen.getByLabelText("Weight: 25")).toBeInTheDocument();
   });
 
   it("displays unconfigured badge when variant info is missing", () => {
     render(
-      <ModuleInstanceRow
-        instance={mockInstance}
-        onEdit={mockOnEdit}
-        onRemove={mockOnRemove}
-      />
+      <ModuleInstanceRow instance={mockInstance} onEdit={mockOnEdit} onRemove={mockOnRemove} />
     );
 
     expect(screen.getByText("[UNCONFIGURED]")).toBeInTheDocument();
@@ -147,10 +143,7 @@ describe("ModuleInstanceRow Component", () => {
 
     const row = screen.getByTestId("module-instance-row-inst-test-001");
     expect(row).toHaveAttribute("role", "listitem");
-    expect(row).toHaveAttribute(
-      "aria-label",
-      "Module instance: Standard Impulse Drive in eng-001"
-    );
+    expect(row).toHaveAttribute("aria-label", "Module instance: Standard Impulse Drive in eng-001");
   });
 
   it("handles missing instance properties gracefully", () => {
@@ -187,8 +180,8 @@ describe("ModuleInstanceRow Component", () => {
       />
     );
 
-    expect(screen.getByText(/PWR:.*0/)).toBeInTheDocument();
-    expect(screen.getByText(/HEAT:.*0/)).toBeInTheDocument();
-    expect(screen.getByText(/WEIGHT:.*0/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Power draw: 0")).toBeInTheDocument();
+    expect(screen.getByLabelText("Heat generation: 0")).toBeInTheDocument();
+    expect(screen.getByLabelText("Weight: 0")).toBeInTheDocument();
   });
 });

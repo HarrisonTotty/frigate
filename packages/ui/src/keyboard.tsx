@@ -1,4 +1,3 @@
-
 /**
  * Keyboard shortcut management system
  *
@@ -7,12 +6,12 @@
  */
 
 // Types and context
-export * from './keyboard/context';
+export * from "./keyboard/context";
 // Provider component
-export * from './keyboard/KeyboardShortcutProvider';
+export * from "./keyboard/KeyboardShortcutProvider";
 // Hook for registering shortcuts
-export * from './keyboard/hooks';
+export * from "./keyboard/hooks";
 // Utility functions
-export * from './keyboard/utils';
+export * from "./keyboard/utils";
 // Shortcut hint component
-export * from './keyboard/KeyboardShortcutHint';
+export * from "./keyboard/KeyboardShortcutHint";

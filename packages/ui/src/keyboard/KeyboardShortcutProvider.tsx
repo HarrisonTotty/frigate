@@ -1,6 +1,6 @@
-import React, { useRef, useCallback, useEffect } from 'react';
-import { KeyboardShortcut, KeyboardShortcutContext } from './context';
-import { matchesShortcut } from './utils';
+import React, { useRef, useCallback, useEffect } from "react";
+import { KeyboardShortcut, KeyboardShortcutContext } from "./context";
+import { matchesShortcut } from "./utils";
 
 export function KeyboardShortcutProvider({ children }: { children: React.ReactNode }) {
   const shortcutsRef = useRef<Map<string, KeyboardShortcut>>(new Map());
@@ -29,11 +29,7 @@ export function KeyboardShortcutProvider({ children }: { children: React.ReactNo
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
         return;
       }
       const currentContext = contextRef.current;
@@ -50,8 +46,8 @@ export function KeyboardShortcutProvider({ children }: { children: React.ReactNo
         }
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const value = {
@@ -63,8 +59,6 @@ export function KeyboardShortcutProvider({ children }: { children: React.ReactNo
   };
 
   return (
-    <KeyboardShortcutContext.Provider value={value}>
-      {children}
-    </KeyboardShortcutContext.Provider>
+    <KeyboardShortcutContext.Provider value={value}>{children}</KeyboardShortcutContext.Provider>
   );
 }

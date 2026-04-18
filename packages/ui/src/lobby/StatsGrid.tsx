@@ -57,7 +57,8 @@ const componentStyles: Record<string, React.CSSProperties> = {
   gaugeBar: {
     flex: 1,
     height: "100%",
-    background: "linear-gradient(90deg, var(--frigate-success), var(--frigate-warning), var(--frigate-danger))",
+    background:
+      "linear-gradient(90deg, var(--frigate-success), var(--frigate-warning), var(--frigate-danger))",
     border: "1px solid var(--frigate-primary)",
     borderRadius: "var(--frigate-radius-none)",
     transition: "width 0.15s ease",
@@ -129,11 +130,7 @@ interface StatsGridProps {
  * />
  * ```
  */
-export const StatsGrid: React.FC<StatsGridProps> = ({
-  items,
-  columns = 2,
-  gap = 3,
-}) => {
+export const StatsGrid: React.FC<StatsGridProps> = ({ items, columns = 2, gap = 3 }) => {
   const gridStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: `repeat(${columns}, 1fr)`,

@@ -1,15 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
-import { Badge, ProgressBar, Gauge } from '../components';
-import { Stack } from '../layout';
+import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+import { Badge, ProgressBar, Gauge } from "../components";
+import { Stack } from "../layout";
 
 const BadgeMeta: Meta<typeof Badge> = {
-  title: 'Components/Badge',
+  title: "Components/Badge",
   component: Badge,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default BadgeMeta;
@@ -17,43 +17,43 @@ type BadgeStory = StoryObj<typeof Badge>;
 
 export const Default: BadgeStory = {
   args: {
-    variant: 'neutral',
-    children: 'STATUS',
+    variant: "neutral",
+    children: "STATUS",
   },
 };
 
 export const Primary: BadgeStory = {
   args: {
-    variant: 'primary',
-    children: 'ONLINE',
+    variant: "primary",
+    children: "ONLINE",
   },
 };
 
 export const Success: BadgeStory = {
   args: {
-    variant: 'success',
-    children: 'READY',
+    variant: "success",
+    children: "READY",
   },
 };
 
 export const Warning: BadgeStory = {
   args: {
-    variant: 'warning',
-    children: 'CAUTION',
+    variant: "warning",
+    children: "CAUTION",
   },
 };
 
 export const Danger: BadgeStory = {
   args: {
-    variant: 'danger',
-    children: 'ALERT',
+    variant: "danger",
+    children: "ALERT",
   },
 };
 
 export const Info: BadgeStory = {
   args: {
-    variant: 'info',
-    children: 'INFO',
+    variant: "info",
+    children: "INFO",
   },
 };
 
@@ -75,12 +75,12 @@ export const AllVariants: BadgeStory = {
 
 // ProgressBar Stories
 const ProgressMeta: Meta<typeof ProgressBar> = {
-  title: 'Components/ProgressBar',
+  title: "Components/ProgressBar",
   component: ProgressBar,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export { ProgressMeta };
@@ -91,7 +91,7 @@ export const ProgressDefault: StoryObj<typeof ProgressBar> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -105,7 +105,7 @@ export const ProgressWithLabel: StoryObj<typeof ProgressBar> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -115,12 +115,12 @@ export const ProgressWithLabel: StoryObj<typeof ProgressBar> = {
 export const ProgressSuccess: StoryObj<typeof ProgressBar> = {
   args: {
     value: 100,
-    variant: 'success',
+    variant: "success",
     showLabel: true,
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -130,12 +130,12 @@ export const ProgressSuccess: StoryObj<typeof ProgressBar> = {
 export const ProgressWarning: StoryObj<typeof ProgressBar> = {
   args: {
     value: 50,
-    variant: 'warning',
+    variant: "warning",
     showLabel: true,
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -145,12 +145,12 @@ export const ProgressWarning: StoryObj<typeof ProgressBar> = {
 export const ProgressDanger: StoryObj<typeof ProgressBar> = {
   args: {
     value: 20,
-    variant: 'danger',
+    variant: "danger",
     showLabel: true,
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -161,19 +161,37 @@ export const ResourceBars: StoryObj<typeof ProgressBar> = {
   render: () => (
     <Stack direction="column" gap={3}>
       <div>
-        <div style={{ marginBottom: 'var(--frigate-space-2)', color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-small)' }}>
+        <div
+          style={{
+            marginBottom: "var(--frigate-space-2)",
+            color: "var(--frigate-text-secondary)",
+            fontSize: "var(--frigate-font-small)",
+          }}
+        >
           HULL INTEGRITY
         </div>
         <ProgressBar value={85} variant="success" showLabel />
       </div>
       <div>
-        <div style={{ marginBottom: 'var(--frigate-space-2)', color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-small)' }}>
+        <div
+          style={{
+            marginBottom: "var(--frigate-space-2)",
+            color: "var(--frigate-text-secondary)",
+            fontSize: "var(--frigate-font-small)",
+          }}
+        >
           SHIELD STRENGTH
         </div>
         <ProgressBar value={45} variant="primary" showLabel />
       </div>
       <div>
-        <div style={{ marginBottom: 'var(--frigate-space-2)', color: 'var(--frigate-text-secondary)', fontSize: 'var(--frigate-font-small)' }}>
+        <div
+          style={{
+            marginBottom: "var(--frigate-space-2)",
+            color: "var(--frigate-text-secondary)",
+            fontSize: "var(--frigate-font-small)",
+          }}
+        >
           POWER RESERVES
         </div>
         <ProgressBar value={62} variant="warning" showLabel />
@@ -182,7 +200,7 @@ export const ResourceBars: StoryObj<typeof ProgressBar> = {
   ),
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -191,62 +209,68 @@ export const ResourceBars: StoryObj<typeof ProgressBar> = {
 
 // Gauge Stories
 const GaugeMeta: Meta<typeof Gauge> = {
-  title: 'Components/Gauge',
+  title: "Components/Gauge",
   component: Gauge,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export { GaugeMeta };
 
 export const GaugeDefault: StoryObj<typeof Gauge> = {
   args: {
-    label: 'Speed',
-    value: '0.5',
-    unit: 'c',
+    label: "Speed",
+    value: "0.5",
+    unit: "c",
   },
 };
 
 export const GaugePrimary: StoryObj<typeof Gauge> = {
   args: {
-    label: 'Heading',
+    label: "Heading",
     value: 45,
-    unit: '°',
-    variant: 'primary',
+    unit: "°",
+    variant: "primary",
   },
 };
 
 export const GaugeSuccess: StoryObj<typeof Gauge> = {
   args: {
-    label: 'Hull',
+    label: "Hull",
     value: 98,
-    unit: '%',
-    variant: 'success',
+    unit: "%",
+    variant: "success",
   },
 };
 
 export const GaugeWarning: StoryObj<typeof Gauge> = {
   args: {
-    label: 'Temperature',
+    label: "Temperature",
     value: 350,
-    unit: 'K',
-    variant: 'warning',
+    unit: "K",
+    variant: "warning",
   },
 };
 
 export const GaugeDanger: StoryObj<typeof Gauge> = {
   args: {
-    label: 'Radiation',
-    value: 'HIGH',
-    variant: 'danger',
+    label: "Radiation",
+    value: "HIGH",
+    variant: "danger",
   },
 };
 
 export const GaugePanel: StoryObj<typeof Gauge> = {
   render: () => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--frigate-space-4)' }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "var(--frigate-space-4)",
+      }}
+    >
       <Gauge label="Speed" value="0.5" unit="c" variant="primary" />
       <Gauge label="Heading" value={45} unit="°" />
       <Gauge label="Altitude" value={1250} unit="m" />

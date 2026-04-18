@@ -5,10 +5,10 @@
  * Handles: connect → find/create player → find/create team → find/create ship
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { useLobbyWorkflowStore } from '@frigate/ui';
-import type { CliArgs, AutoSetupState, AutoSetupStep } from '../types/cli';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { useLobbyWorkflowStore } from "@frigate/ui";
+import type { CliArgs, AutoSetupState, AutoSetupStep } from "../types/cli";
 
 /** API response types */
 interface Player {
@@ -74,7 +74,7 @@ export interface UseAutoSetupReturn {
 }
 
 const initialState: AutoSetupState = {
-  step: 'idle',
+  step: "idle",
   error: null,
   progress: {
     connected: false,
@@ -103,11 +103,11 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
   useEffect(() => {
     const fetchCliArgs = async () => {
       try {
-        const args = await invoke<CliArgs>('get_cli_args');
-        console.log('[useAutoSetup] CLI args:', args);
+        const args = await invoke<CliArgs>("get_cli_args");
+        console.log("[useAutoSetup] CLI args:", args);
         setCliArgs(args);
       } catch (error) {
-        console.error('[useAutoSetup] Failed to get CLI args:', error);
+        console.error("[useAutoSetup] Failed to get CLI args:", error);
         // Not in Tauri environment, that's OK
         setCliArgs({
           connect: null,
@@ -138,18 +138,24 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
   }, []);
 
   /** Set error state */
-  const setError = useCallback((error: string) => {
-    updateState({ step: 'error', error });
-    onError?.(error);
-  }, [updateState, onError]);
+  const setError = useCallback(
+    (error: string) => {
+      updateState({ step: "error", error });
+      onError?.(error);
+    },
+    [updateState, onError]
+  );
 
   /** Update step */
-  const setStep = useCallback((step: AutoSetupStep) => {
-    updateState({ step, error: null });
-  }, [updateState]);
+  const setStep = useCallback(
+    (step: AutoSetupStep) => {
+      updateState({ step, error: null });
+    },
+    [updateState]
+  );
 
   /** Fetch with error handling */
-  const fetchJson = async <T,>(url: string, options?: RequestInit): Promise<T> => {
+  const fetchJson = async <T>(url: string, options?: RequestInit): Promise<T> => {
     const response = await fetch(url, options);
     if (!response.ok) {
       const errorText = await response.text();
@@ -163,17 +169,17 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
     for (let i = 0; i < maxRetries; i++) {
       try {
         const response = await fetch(`${url}/health`, {
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(5000),
         });
         if (response.ok) {
-          const data = await response.json() as HealthResponse;
+          const data = (await response.json()) as HealthResponse;
           // Server returns "ok" not "healthy"
-          return data.status === 'ok' || data.status === 'healthy';
+          return data.status === "ok" || data.status === "healthy";
         }
       } catch {
         // Retry on failure
         if (i < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+          await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
         }
       }
     }
@@ -183,23 +189,23 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
   /** Find or create player */
   const findOrCreatePlayer = async (url: string, userName: string): Promise<string> => {
     // Try to find existing player
-    setStep('selecting-player');
+    setStep("selecting-player");
     const playersResponse = await fetchJson<PlayersResponse>(`${url}/v1/players`);
     const existingPlayer = playersResponse.players.find(
-      p => p.name.toLowerCase() === userName.toLowerCase()
+      (p) => p.name.toLowerCase() === userName.toLowerCase()
     );
 
     if (existingPlayer) {
-      console.log('[useAutoSetup] Found existing player:', existingPlayer.id);
+      console.log("[useAutoSetup] Found existing player:", existingPlayer.id);
       return existingPlayer.id;
     }
 
     // Create new player
-    setStep('creating-player');
-    console.log('[useAutoSetup] Creating new player:', userName);
+    setStep("creating-player");
+    console.log("[useAutoSetup] Creating new player:", userName);
     const newPlayer = await fetchJson<Player>(`${url}/v1/players`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: userName }),
     });
 
@@ -214,21 +220,21 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
     playerId: string
   ): Promise<string> => {
     // Try to find existing team
-    setStep('selecting-team');
+    setStep("selecting-team");
     const teamsResponse = await fetchJson<TeamsResponse>(`${url}/v1/teams`);
     const existingTeam = teamsResponse.teams.find(
-      t => t.name.toLowerCase() === teamName.toLowerCase()
+      (t) => t.name.toLowerCase() === teamName.toLowerCase()
     );
 
     if (existingTeam) {
-      console.log('[useAutoSetup] Found existing team:', existingTeam.id);
+      console.log("[useAutoSetup] Found existing team:", existingTeam.id);
 
       // Add player to team if not already a member
       if (!existingTeam.members.includes(playerId)) {
-        console.log('[useAutoSetup] Adding player to team');
+        console.log("[useAutoSetup] Adding player to team");
         await fetchJson(`${url}/v1/teams/${existingTeam.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ player_id: playerId }),
         });
       }
@@ -242,18 +248,18 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
     }
 
     // Create new team
-    setStep('creating-team');
-    console.log('[useAutoSetup] Creating new team:', teamName);
+    setStep("creating-team");
+    console.log("[useAutoSetup] Creating new team:", teamName);
     const newTeam = await fetchJson<Team>(`${url}/v1/teams`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: teamName, faction: factionId }),
     });
 
     // Add player to new team
     await fetchJson(`${url}/v1/teams/${newTeam.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ player_id: playerId }),
     });
 
@@ -268,15 +274,15 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
     teamId: string
   ): Promise<string> => {
     // Try to find existing blueprint for this team
-    setStep('selecting-ship');
+    setStep("selecting-ship");
     const blueprintsResponse = await fetchJson<BlueprintsResponse>(`${url}/v1/blueprints`);
     // Filter by team_id client-side (API doesn't support team_id filtering)
     const existingBlueprint = blueprintsResponse.blueprints.find(
-      b => b.name.toLowerCase() === shipName.toLowerCase() && b.team_id === teamId
+      (b) => b.name.toLowerCase() === shipName.toLowerCase() && b.team_id === teamId
     );
 
     if (existingBlueprint) {
-      console.log('[useAutoSetup] Found existing ship:', existingBlueprint.id);
+      console.log("[useAutoSetup] Found existing ship:", existingBlueprint.id);
       return existingBlueprint.id;
     }
 
@@ -286,11 +292,11 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
     }
 
     // Create new blueprint
-    setStep('creating-ship');
-    console.log('[useAutoSetup] Creating new ship:', shipName);
+    setStep("creating-ship");
+    console.log("[useAutoSetup] Creating new ship:", shipName);
     const newBlueprint = await fetchJson<Blueprint>(`${url}/v1/blueprints`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: shipName,
         ship_class: shipClass,
@@ -314,8 +320,8 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
 
     try {
       // Step 1: Connect to server
-      setStep('connecting');
-      console.log('[useAutoSetup] Connecting to:', url);
+      setStep("connecting");
+      console.log("[useAutoSetup] Connecting to:", url);
 
       const isHealthy = await checkHealth(url);
       if (!isHealthy) {
@@ -327,7 +333,7 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
         progress: { connected: true, playerId: null, teamId: null, blueprintId: null },
       });
       onConnect?.(url);
-      console.log('[useAutoSetup] Connected successfully');
+      console.log("[useAutoSetup] Connected successfully");
 
       // Step 2: Find/create player (if --user provided)
       let playerId: string | null = null;
@@ -335,7 +341,7 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
         playerId = await findOrCreatePlayer(url, cliArgs.user);
         updateState({ progress: { connected: true, playerId, teamId: null, blueprintId: null } });
         setPlayer(playerId);
-        console.log('[useAutoSetup] Player ready:', playerId);
+        console.log("[useAutoSetup] Player ready:", playerId);
       }
 
       // Step 3: Find/create team (if --team provided)
@@ -344,7 +350,7 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
         teamId = await findOrCreateTeam(url, cliArgs.team, cliArgs.faction, playerId);
         updateState({ progress: { connected: true, playerId, teamId, blueprintId: null } });
         setTeam(teamId);
-        console.log('[useAutoSetup] Team ready:', teamId);
+        console.log("[useAutoSetup] Team ready:", teamId);
       }
 
       // Step 4: Find/create ship (if --ship provided)
@@ -353,23 +359,33 @@ export function useAutoSetup(options: UseAutoSetupOptions = {}): UseAutoSetupRet
         blueprintId = await findOrCreateShip(url, cliArgs.ship, cliArgs.ship_class, teamId);
         updateState({ progress: { connected: true, playerId, teamId, blueprintId } });
         setBlueprint(blueprintId);
-        console.log('[useAutoSetup] Ship ready:', blueprintId);
+        console.log("[useAutoSetup] Ship ready:", blueprintId);
       }
 
       // Complete
-      setStep('complete');
+      setStep("complete");
       onComplete?.();
-      console.log('[useAutoSetup] Auto-setup complete');
+      console.log("[useAutoSetup] Auto-setup complete");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('[useAutoSetup] Error:', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("[useAutoSetup] Error:", errorMessage);
       setError(errorMessage);
     }
-  }, [cliArgs, onConnect, onComplete, setPlayer, setTeam, setBlueprint, setError, setStep, updateState]);
+  }, [
+    cliArgs,
+    onConnect,
+    onComplete,
+    setPlayer,
+    setTeam,
+    setBlueprint,
+    setError,
+    setStep,
+    updateState,
+  ]);
 
   /** Continue manually after error */
   const continueManually = useCallback(() => {
-    setStep('complete');
+    setStep("complete");
   }, [setStep]);
 
   // Auto-run when CLI args are loaded

@@ -13,11 +13,14 @@ describe("HttpClient", () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ value: 42 }), {
         status: 200,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       })
     );
 
-  const client = new HttpClient({ baseUrl: "https://example.com/api/", fetchImplementation: fetchMock as unknown as FetchImplementation });
+    const client = new HttpClient({
+      baseUrl: "https://example.com/api/",
+      fetchImplementation: fetchMock as unknown as FetchImplementation,
+    });
     const result = await client.get(
       "/resource",
       (payload) => (payload as { value: number }).value,
@@ -26,7 +29,7 @@ describe("HttpClient", () => {
 
     expect(result).toBe(42);
     expect(fetchMock).toHaveBeenCalledTimes(1);
-  const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("https://example.com/api/resource?page=2");
     expect((init?.headers as Record<string, string>).Accept).toBe("application/json");
     expect(init?.method).toBe("GET");
@@ -36,14 +39,16 @@ describe("HttpClient", () => {
     fetchMock.mockResolvedValue(
       new Response("not-json", {
         status: 200,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       })
     );
 
-  const client = new HttpClient({ baseUrl: "https://example.com", fetchImplementation: fetchMock as unknown as FetchImplementation });
+    const client = new HttpClient({
+      baseUrl: "https://example.com",
+      fetchImplementation: fetchMock as unknown as FetchImplementation,
+    });
 
-    await expect(client.get("/broken"))
-      .rejects.toBeInstanceOf(ApiError);
+    await expect(client.get("/broken")).rejects.toBeInstanceOf(ApiError);
   });
 
   it("aborts requests that exceed the configured timeout", async () => {
@@ -59,7 +64,11 @@ describe("HttpClient", () => {
       });
     });
 
-    const client = new HttpClient({ baseUrl: "https://example.com", fetchImplementation: fetchMock as unknown as FetchImplementation, timeoutMs: 25 });
+    const client = new HttpClient({
+      baseUrl: "https://example.com",
+      fetchImplementation: fetchMock as unknown as FetchImplementation,
+      timeoutMs: 25,
+    });
     const pendingRequest = client.get("/slow");
 
     vi.advanceTimersByTime(30);

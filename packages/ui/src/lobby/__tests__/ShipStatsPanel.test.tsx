@@ -1,9 +1,9 @@
-import React from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { ShipStatsPanel, type ShipStats } from '../ShipStatsPanel';
+import React from "react";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { ShipStatsPanel, type ShipStats } from "../ShipStatsPanel";
 
-describe('ShipStatsPanel', () => {
+describe("ShipStatsPanel", () => {
   const mockStats: ShipStats = {
     cost: 1500,
     creditCost: 150000,
@@ -21,70 +21,68 @@ describe('ShipStatsPanel', () => {
     warnings: [],
   };
 
-  describe('rendering', () => {
-    it('renders the component with header', () => {
+  describe("rendering", () => {
+    it("renders the component with header", () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      expect(screen.getByText('SHIP STATISTICS')).toBeDefined();
+      expect(screen.getByText("SHIP STATISTICS")).toBeDefined();
     });
 
-    it('displays primary statistics', () => {
+    it("displays primary statistics", () => {
       render(<ShipStatsPanel stats={mockStats} />);
       // Cost is displayed with formatted creditCost, HP is displayed with StatRow
-      expect(screen.getByText('150,000 CR')).toBeDefined();
-      expect(screen.getByText('450 HP')).toBeDefined();
+      expect(screen.getByText("150,000 CR")).toBeDefined();
+      expect(screen.getByText("450 HP")).toBeDefined();
     });
 
-    it('displays constraint bars', () => {
+    it("displays constraint bars", () => {
       render(<ShipStatsPanel stats={mockStats} />);
       // Constraint bars show label and value/max format
-      expect(screen.getByText('BUILD POINTS')).toBeDefined();
-      expect(screen.getByText('75/100 BP')).toBeDefined();
-      expect(screen.getByText('WEIGHT')).toBeDefined();
-      expect(screen.getByText('850/1000 t')).toBeDefined();
-      expect(screen.getByText('POWER')).toBeDefined();
-      expect(screen.getByText('280/500 MW')).toBeDefined();
-      expect(screen.getByText('COOLING')).toBeDefined();
-      expect(screen.getByText('320/600 K')).toBeDefined();
+      expect(screen.getByText("BUILD POINTS")).toBeDefined();
+      expect(screen.getByText("75/100 BP")).toBeDefined();
+      expect(screen.getByText("WEIGHT")).toBeDefined();
+      expect(screen.getByText("850/1000 t")).toBeDefined();
+      expect(screen.getByText("POWER")).toBeDefined();
+      expect(screen.getByText("280/500 MW")).toBeDefined();
+      expect(screen.getByText("COOLING")).toBeDefined();
+      expect(screen.getByText("320/600 K")).toBeDefined();
     });
 
-    it('displays warnings when present', () => {
+    it("displays warnings when present", () => {
       const statsWithWarnings: ShipStats = {
         ...mockStats,
-        warnings: ['Build points exceeded', 'Weight limit exceeded'],
+        warnings: ["Build points exceeded", "Weight limit exceeded"],
       };
       render(<ShipStatsPanel stats={statsWithWarnings} />);
-      expect(screen.getByText('WARNINGS')).toBeDefined();
-      expect(screen.getByText('Build points exceeded')).toBeDefined();
-      expect(screen.getByText('Weight limit exceeded')).toBeDefined();
+      expect(screen.getByText("WARNINGS")).toBeDefined();
+      expect(screen.getByText("Build points exceeded")).toBeDefined();
+      expect(screen.getByText("Weight limit exceeded")).toBeDefined();
     });
 
-    it('does not display warnings section when no warnings', () => {
+    it("does not display warnings section when no warnings", () => {
       render(<ShipStatsPanel stats={mockStats} />);
       // There should be no WARNINGS header when warnings array is empty
-      const warningsElement = screen.queryByText('WARNINGS');
+      const warningsElement = screen.queryByText("WARNINGS");
       expect(warningsElement).toBeNull();
     });
   });
 
-  describe('styling', () => {
-    it('applies correct CSS classes and styles', () => {
+  describe("styling", () => {
+    it("applies correct CSS classes and styles", () => {
       const { container } = render(<ShipStatsPanel stats={mockStats} />);
       const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper.style.fontFamily).toBe('var(--frigate-font-mono)');
-      expect(wrapper.style.borderRadius).toBe('0');
+      expect(wrapper.style.fontFamily).toBe("var(--frigate-font-mono)");
+      expect(wrapper.style.borderRadius).toBe("0");
     });
 
-    it('applies custom className', () => {
-      const { container } = render(
-        <ShipStatsPanel stats={mockStats} className="custom-class" />
-      );
+    it("applies custom className", () => {
+      const { container } = render(<ShipStatsPanel stats={mockStats} className="custom-class" />);
       const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper.className).toBe('custom-class');
+      expect(wrapper.className).toBe("custom-class");
     });
   });
 
-  describe('stats aggregation', () => {
-    it('handles zero values correctly', () => {
+  describe("stats aggregation", () => {
+    it("handles zero values correctly", () => {
       const emptyStats: ShipStats = {
         cost: 0,
         creditCost: 0,
@@ -102,11 +100,11 @@ describe('ShipStatsPanel', () => {
         warnings: [],
       };
       render(<ShipStatsPanel stats={emptyStats} />);
-      expect(screen.getByText('0 CR')).toBeDefined();
-      expect(screen.getByText('0/100 BP')).toBeDefined();
+      expect(screen.getByText("0 CR")).toBeDefined();
+      expect(screen.getByText("0/100 BP")).toBeDefined();
     });
 
-    it('handles large credit values correctly', () => {
+    it("handles large credit values correctly", () => {
       const largeStats: ShipStats = {
         ...mockStats,
         creditCost: 999999,
@@ -120,19 +118,19 @@ describe('ShipStatsPanel', () => {
       };
       render(<ShipStatsPanel stats={largeStats} />);
       // creditCost is formatted with thousand separators
-      expect(screen.getByText('999,999 CR')).toBeDefined();
+      expect(screen.getByText("999,999 CR")).toBeDefined();
       // Weight doesn't use thousand separators
-      expect(screen.getByText('50000/60000 t')).toBeDefined();
+      expect(screen.getByText("50000/60000 t")).toBeDefined();
     });
 
-    it('displays credit constraint bar when budget is set', () => {
+    it("displays credit constraint bar when budget is set", () => {
       render(<ShipStatsPanel stats={mockStats} />);
       // Credit constraint bar should be shown when creditBudget > 0
-      expect(screen.getByText('CREDITS')).toBeDefined();
-      expect(screen.getByText('150,000/1,000,000 CR')).toBeDefined();
+      expect(screen.getByText("CREDITS")).toBeDefined();
+      expect(screen.getByText("150,000/1,000,000 CR")).toBeDefined();
     });
 
-    it('shows credit warning when cost exceeds budget', () => {
+    it("shows credit warning when cost exceeds budget", () => {
       const overBudgetStats: ShipStats = {
         ...mockStats,
         creditCost: 1500000,
@@ -140,42 +138,42 @@ describe('ShipStatsPanel', () => {
       };
       render(<ShipStatsPanel stats={overBudgetStats} />);
       // Over-limit shows with [!] indicator
-      expect(screen.getByText('1,500,000/1,000,000 CR [!]')).toBeDefined();
+      expect(screen.getByText("1,500,000/1,000,000 CR [!]")).toBeDefined();
     });
 
-    it('handles build points exceeding max', () => {
+    it("handles build points exceeding max", () => {
       const overStats: ShipStats = {
         ...mockStats,
         buildPointsUsed: 120,
         buildPointsMax: 100,
       };
       render(<ShipStatsPanel stats={overStats} />);
-      expect(screen.getByText('120/100 BP [!]')).toBeDefined();
+      expect(screen.getByText("120/100 BP [!]")).toBeDefined();
     });
   });
 
-  describe('accessibility', () => {
-    it('has proper text hierarchy', () => {
+  describe("accessibility", () => {
+    it("has proper text hierarchy", () => {
       const { container } = render(<ShipStatsPanel stats={mockStats} />);
       const header = container.querySelector('[style*="font-weight: 800"]');
       expect(header).toBeDefined();
     });
 
-    it('uses semantic HTML structure', () => {
+    it("uses semantic HTML structure", () => {
       const { container } = render(<ShipStatsPanel stats={mockStats} />);
-      const divs = container.querySelectorAll('div');
+      const divs = container.querySelectorAll("div");
       expect(divs.length > 0).toBe(true);
     });
 
-    it('has aria-label for the panel', () => {
+    it("has aria-label for the panel", () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      const panel = screen.getByRole('region', { name: 'Ship Statistics' });
+      const panel = screen.getByRole("region", { name: "Ship Statistics" });
       expect(panel).toBeDefined();
     });
   });
 
-  describe('radar chart', () => {
-    it('displays radar chart when profile is provided', () => {
+  describe("radar chart", () => {
+    it("displays radar chart when profile is provided", () => {
       const statsWithProfile: ShipStats = {
         ...mockStats,
         profile: {
@@ -187,15 +185,15 @@ describe('ShipStatsPanel', () => {
         },
       };
       render(<ShipStatsPanel stats={statsWithProfile} />);
-      expect(screen.getByText('CAPABILITY PROFILE')).toBeDefined();
+      expect(screen.getByText("CAPABILITY PROFILE")).toBeDefined();
       // RadarChart should be rendered (SVG element)
       const { container } = render(<ShipStatsPanel stats={statsWithProfile} />);
-      expect(container.querySelector('svg')).toBeDefined();
+      expect(container.querySelector("svg")).toBeDefined();
     });
 
-    it('does not display radar chart when profile is not provided', () => {
+    it("does not display radar chart when profile is not provided", () => {
       render(<ShipStatsPanel stats={mockStats} />);
-      const profileHeader = screen.queryByText('CAPABILITY PROFILE');
+      const profileHeader = screen.queryByText("CAPABILITY PROFILE");
       expect(profileHeader).toBeNull();
     });
   });

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Stack, Panel } from '../layout';
-import { Button, Badge } from '../components';
-import { LoadingText } from '../loading';
-import type { Blueprint } from './BlueprintList';
-import type { ShipClassSummary } from '../types/shipClass';
+import React from "react";
+import { Stack, Panel } from "../layout";
+import { Button, Badge } from "../components";
+import { LoadingText } from "../loading";
+import type { Blueprint } from "./BlueprintList";
+import type { ShipClassSummary } from "../types/shipClass";
 
 export interface ShipListProps {
   ships: Blueprint[];
@@ -15,7 +15,10 @@ export interface ShipListProps {
 function generateAbbreviation(name: string): string {
   const words = name.toUpperCase().split(/\s+/);
   if (words.length === 1) return words[0].substring(0, 6);
-  return words.map((w) => w[0]).join('').substring(0, 6);
+  return words
+    .map((w) => w[0])
+    .join("")
+    .substring(0, 6);
 }
 
 /**
@@ -25,19 +28,17 @@ function EmptyState(): React.ReactElement {
   return (
     <div
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
-        fontSize: 'var(--frigate-font-small)',
-        color: 'var(--frigate-text-muted)',
-        textAlign: 'center',
-        padding: 'var(--frigate-space-6) var(--frigate-space-4)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
+        fontFamily: "var(--frigate-font-mono)",
+        fontSize: "var(--frigate-font-small)",
+        color: "var(--frigate-text-muted)",
+        textAlign: "center",
+        padding: "var(--frigate-space-6) var(--frigate-space-4)",
+        textTransform: "uppercase",
+        letterSpacing: "0.05em",
       }}
     >
-      <div style={{ marginBottom: 'var(--frigate-space-2)' }}>
-        [ NO SHIPS AVAILABLE ]
-      </div>
-      <div style={{ fontSize: 'var(--frigate-font-tiny)', opacity: 0.7 }}>
+      <div style={{ marginBottom: "var(--frigate-space-2)" }}>[ NO SHIPS AVAILABLE ]</div>
+      <div style={{ fontSize: "var(--frigate-font-tiny)", opacity: 0.7 }}>
         CREATE OR JOIN A SHIP TO BEGIN
       </div>
     </div>
@@ -64,28 +65,28 @@ function ShipRow({
   return (
     <div
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
-        fontSize: 'var(--frigate-font-small)',
-        padding: 'var(--frigate-space-2) var(--frigate-space-3)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: '1px solid var(--frigate-border-base)',
+        fontFamily: "var(--frigate-font-mono)",
+        fontSize: "var(--frigate-font-small)",
+        padding: "var(--frigate-space-2) var(--frigate-space-3)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottom: "1px solid var(--frigate-border-base)",
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--frigate-space-2)',
+            display: "flex",
+            alignItems: "center",
+            gap: "var(--frigate-space-2)",
           }}
         >
           <span
             style={{
-              color: 'var(--frigate-text-primary)',
+              color: "var(--frigate-text-primary)",
               fontWeight: 600,
-              textTransform: 'uppercase',
+              textTransform: "uppercase",
             }}
           >
             {ship.name}
@@ -98,8 +99,8 @@ function ShipRow({
         </div>
         <div
           style={{
-            color: 'var(--frigate-text-secondary)',
-            marginTop: 'var(--frigate-space-1)',
+            color: "var(--frigate-text-secondary)",
+            marginTop: "var(--frigate-space-1)",
           }}
         >
           {classAbbrev} / CREW: {crewCount}/{maxCrew}

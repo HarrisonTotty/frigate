@@ -1,24 +1,30 @@
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { ShipDesignWorkspace } from '../lobby/ShipDesignWorkspace';
-import { AlertProvider } from '../alerts';
+import React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { ShipDesignWorkspace } from "../lobby/ShipDesignWorkspace";
+import { AlertProvider } from "../alerts";
 
 /**
  * Ship Design Workspace Story
- * 
+ *
  * Demonstrates the complete Ship Blueprint Design Workspace with all three columns:
  * - Module Slot Browser (left)
  * - Installed Modules List (center)
  * - Ship Statistics Panel (right)
- * 
+ *
  * This is the main interface for designing and customizing spaceships.
  */
 const meta: Meta<typeof ShipDesignWorkspace> = {
-  title: 'Lobby/ShipDesignWorkspace',
+  title: "Lobby/ShipDesignWorkspace",
   component: ShipDesignWorkspace,
-  decorators: [(Story) => <AlertProvider><Story /></AlertProvider>],
+  decorators: [
+    (Story) => (
+      <AlertProvider>
+        <Story />
+      </AlertProvider>
+    ),
+  ],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
         component: `
@@ -76,39 +82,39 @@ The workspace follows hard sci-fi design aesthetics:
   },
   argTypes: {
     apiUrl: {
-      control: 'text',
-      description: 'Base URL for the API server',
-      table: { category: 'API' },
+      control: "text",
+      description: "Base URL for the API server",
+      table: { category: "API" },
     },
     blueprintId: {
-      control: 'text',
-      description: 'Unique identifier for the blueprint being edited',
-      table: { category: 'API' },
+      control: "text",
+      description: "Unique identifier for the blueprint being edited",
+      table: { category: "API" },
     },
     className: {
-      control: 'text',
-      description: 'Optional CSS class name for the root element',
-      table: { category: 'Styling' },
+      control: "text",
+      description: "Optional CSS class name for the root element",
+      table: { category: "Styling" },
     },
     player: {
       control: false,
-      description: 'Optional player context object',
-      table: { category: 'Context' },
+      description: "Optional player context object",
+      table: { category: "Context" },
     },
     team: {
       control: false,
-      description: 'Optional team context object',
-      table: { category: 'Context' },
+      description: "Optional team context object",
+      table: { category: "Context" },
     },
     onBack: {
-      action: 'back clicked',
-      description: 'Callback when user clicks [BACK] button',
-      table: { category: 'Callbacks' },
+      action: "back clicked",
+      description: "Callback when user clicks [BACK] button",
+      table: { category: "Callbacks" },
     },
     onDisconnect: {
-      action: 'disconnected',
-      description: 'Callback when connection is lost',
-      table: { category: 'Callbacks' },
+      action: "disconnected",
+      description: "Callback when connection is lost",
+      table: { category: "Callbacks" },
     },
   },
 };
@@ -122,13 +128,14 @@ type Story = StoryObj<typeof ShipDesignWorkspace>;
  */
 export const Default: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'b1',
+    apiUrl: "http://localhost:3000",
+    blueprintId: "b1",
   },
   parameters: {
     docs: {
       description: {
-        story: 'A typical Ship Design Workspace showing a blueprint with multiple modules installed and configured.',
+        story:
+          "A typical Ship Design Workspace showing a blueprint with multiple modules installed and configured.",
       },
     },
   },
@@ -139,13 +146,14 @@ export const Default: Story = {
  */
 export const HighBuildPointUsage: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'blueprint-high-bp',
+    apiUrl: "http://localhost:3000",
+    blueprintId: "blueprint-high-bp",
   },
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates the workspace when Build Points are nearly exhausted (80%+ usage). The progress bar shows warning color and [ADD] buttons are disabled.',
+        story:
+          "Demonstrates the workspace when Build Points are nearly exhausted (80%+ usage). The progress bar shows warning color and [ADD] buttons are disabled.",
       },
     },
   },
@@ -156,13 +164,14 @@ export const HighBuildPointUsage: Story = {
  */
 export const ConstraintViolations: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'blueprint-overloaded',
+    apiUrl: "http://localhost:3000",
+    blueprintId: "blueprint-overloaded",
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows a blueprint that exceeds one or more constraints (power, heat, weight, or build points). Warning and error indicators are displayed in the Ship Statistics panel.',
+        story:
+          "Shows a blueprint that exceeds one or more constraints (power, heat, weight, or build points). Warning and error indicators are displayed in the Ship Statistics panel.",
       },
     },
   },
@@ -173,13 +182,14 @@ export const ConstraintViolations: Story = {
  */
 export const EmptyBlueprint: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'blueprint-empty',
+    apiUrl: "http://localhost:3000",
+    blueprintId: "blueprint-empty",
   },
   parameters: {
     docs: {
       description: {
-        story: 'A fresh blueprint with no modules installed. The center column shows empty state, and all slots in the browser are available for configuration.',
+        story:
+          "A fresh blueprint with no modules installed. The center column shows empty state, and all slots in the browser are available for configuration.",
       },
     },
   },
@@ -190,8 +200,8 @@ export const EmptyBlueprint: Story = {
  */
 export const KeyboardNavigation: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'blueprint-default',
+    apiUrl: "http://localhost:3000",
+    blueprintId: "blueprint-default",
   },
   parameters: {
     docs: {
@@ -218,15 +228,16 @@ Try using Tab to move focus through the three columns, then use Arrow keys withi
  */
 export const WithContext: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'blueprint-team-design',
-    player: { id: 'player-1', name: 'Captain Anderson' },
-    team: { id: 'team-1', name: 'Alpha Squadron' },
+    apiUrl: "http://localhost:3000",
+    blueprintId: "blueprint-team-design",
+    player: { id: "player-1", name: "Captain Anderson" },
+    team: { id: "team-1", name: "Alpha Squadron" },
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the workspace with player and team context, which may enable multiplayer features or team-based restrictions.',
+        story:
+          "Shows the workspace with player and team context, which may enable multiplayer features or team-based restrictions.",
       },
     },
   },
@@ -237,16 +248,17 @@ export const WithContext: Story = {
  */
 export const ResponsiveLayout: Story = {
   args: {
-    apiUrl: 'http://localhost:3000',
-    blueprintId: 'blueprint-default',
+    apiUrl: "http://localhost:3000",
+    blueprintId: "blueprint-default",
   },
   parameters: {
     viewport: {
-      defaultViewport: 'ipad',
+      defaultViewport: "ipad",
     },
     docs: {
       description: {
-        story: 'Demonstrates how the three-column layout adapts to tablet/mobile screen sizes. The columns may be reordered or stacked based on viewport width.',
+        story:
+          "Demonstrates how the three-column layout adapts to tablet/mobile screen sizes. The columns may be reordered or stacked based on viewport width.",
       },
     },
   },

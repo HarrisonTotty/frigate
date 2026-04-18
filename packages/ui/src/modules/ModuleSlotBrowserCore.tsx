@@ -1,17 +1,17 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import type { ModuleSlot, ModuleInstance } from '@frigate/api-client';
-import { ModuleSlotCard } from '../lobby/ModuleSlotCard';
-import { ModuleSlotCategoryTabs } from '../lobby/ModuleSlotCategoryTabs';
-import { useCatalog } from '../hooks/useCatalog';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import type { ModuleSlot, ModuleInstance } from "@frigate/api-client";
+import { ModuleSlotCard } from "../lobby/ModuleSlotCard";
+import { ModuleSlotCategoryTabs } from "../lobby/ModuleSlotCategoryTabs";
+import { useCatalog } from "../hooks/useCatalog";
 
 /** Sort options for the module slot browser */
-export type ModuleSlotSortOption = 'name' | 'cost' | 'required';
+export type ModuleSlotSortOption = "name" | "cost" | "required";
 
 /** Sort labels for display */
 const SORT_LABELS: Record<ModuleSlotSortOption, string> = {
-  name: 'NAME',
-  cost: 'COST',
-  required: 'REQUIRED',
+  name: "NAME",
+  cost: "COST",
+  required: "REQUIRED",
 };
 
 /**
@@ -64,21 +64,21 @@ export interface ModuleSlotBrowserCoreProps {
  */
 export function ModuleSlotBrowserCore({
   apiUrl,
-  blueprintId,
+  blueprintId: _blueprintId,
   installedModules = [],
   moduleSlots: propModuleSlots,
   buildPointsUsed = 0,
   maxBuildPoints = 100,
   onModuleAdded,
-  className = '',
+  className = "",
 }: ModuleSlotBrowserCoreProps) {
   const catalog = useCatalog(apiUrl);
   const [slots, setSlots] = useState<ModuleSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<ModuleSlotSortOption>('name');
+  const [sortBy, setSortBy] = useState<ModuleSlotSortOption>("name");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Use a ref to track if we've already attempted to load slots
@@ -93,9 +93,7 @@ export function ModuleSlotBrowserCore({
       setError(null);
       // Set initial category if not already set
       if (!selectedCategory) {
-        const allGroups = Array.from(
-          new Set(propModuleSlots.flatMap((slot) => slot.groups || []))
-        );
+        const allGroups = Array.from(new Set(propModuleSlots.flatMap((slot) => slot.groups || [])));
         if (allGroups.length > 0) {
           setSelectedCategory(allGroups[0]);
         }
@@ -125,16 +123,14 @@ export function ModuleSlotBrowserCore({
 
         // Set initial category to first available group if exists
         if (loadedSlots && loadedSlots.length > 0) {
-          const allGroups = Array.from(
-            new Set(loadedSlots.flatMap((slot) => slot.groups || []))
-          );
+          const allGroups = Array.from(new Set(loadedSlots.flatMap((slot) => slot.groups || [])));
           if (allGroups.length > 0) {
             setSelectedCategory(allGroups[0]);
           }
         }
       } catch (err) {
-        console.error('Failed to load module slots:', err);
-        setError('Failed to load module slots');
+        console.error("Failed to load module slots:", err);
+        setError("Failed to load module slots");
       } finally {
         setLoading(false);
       }
@@ -145,9 +141,7 @@ export function ModuleSlotBrowserCore({
 
   // Extract all unique categories from loaded slots
   const categories = useMemo(() => {
-    const allGroups = Array.from(
-      new Set(slots.flatMap((slot) => slot.groups || []))
-    );
+    const allGroups = Array.from(new Set(slots.flatMap((slot) => slot.groups || [])));
     return allGroups.sort();
   }, [slots]);
 
@@ -157,9 +151,9 @@ export function ModuleSlotBrowserCore({
       // Filter by search term
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
-        searchTerm === '' ||
+        searchTerm === "" ||
         slot.name.toLowerCase().includes(searchLower) ||
-        (slot.description || '').toLowerCase().includes(searchLower);
+        (slot.description || "").toLowerCase().includes(searchLower);
 
       if (!matchesSearch) return false;
 
@@ -174,11 +168,11 @@ export function ModuleSlotBrowserCore({
     // Sort the filtered results
     return filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'name':
+        case "name":
           return a.name.localeCompare(b.name);
-        case 'cost':
+        case "cost":
           return (a.base_cost ?? 0) - (b.base_cost ?? 0);
-        case 'required':
+        case "required":
           // Required slots first, then by name
           if (a.required === b.required) {
             return a.name.localeCompare(b.name);
@@ -216,12 +210,9 @@ export function ModuleSlotBrowserCore({
   }, []);
 
   // Handle search input
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(e.currentTarget.value);
-    },
-    []
-  );
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.currentTarget.value);
+  }, []);
 
   // Handle sort change
   const handleSortChange = useCallback((option: ModuleSlotSortOption) => {
@@ -230,74 +221,77 @@ export function ModuleSlotBrowserCore({
 
   // Cycle through sort options
   const cycleSortOption = useCallback(() => {
-    const options: ModuleSlotSortOption[] = ['name', 'cost', 'required'];
+    const options: ModuleSlotSortOption[] = ["name", "cost", "required"];
     const currentIndex = options.indexOf(sortBy);
     const nextIndex = (currentIndex + 1) % options.length;
     setSortBy(options[nextIndex]);
   }, [sortBy]);
 
   // Handle keyboard shortcuts
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    // "/" to focus search
-    if (e.key === '/' && document.activeElement !== searchInputRef.current) {
-      e.preventDefault();
-      searchInputRef.current?.focus();
-    }
-    // "s" to cycle sort (when not in search input)
-    if (e.key === 's' && document.activeElement !== searchInputRef.current) {
-      e.preventDefault();
-      cycleSortOption();
-    }
-  }, [cycleSortOption]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      // "/" to focus search
+      if (e.key === "/" && document.activeElement !== searchInputRef.current) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      // "s" to cycle sort (when not in search input)
+      if (e.key === "s" && document.activeElement !== searchInputRef.current) {
+        e.preventDefault();
+        cycleSortOption();
+      }
+    },
+    [cycleSortOption]
+  );
 
   const containerStyles: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--frigate-space-2)',
-    padding: 'var(--frigate-space-2)',
-    backgroundColor: 'var(--frigate-bg-base)',
-    fontFamily: 'var(--frigate-font-mono)',
-    color: 'var(--frigate-text-primary)',
-    height: '100%',
-    overflow: 'hidden',
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--frigate-space-2)",
+    padding: "var(--frigate-space-2)",
+    backgroundColor: "var(--frigate-bg-base)",
+    fontFamily: "var(--frigate-font-mono)",
+    color: "var(--frigate-text-primary)",
+    height: "100%",
+    overflow: "hidden",
   };
 
   const searchInputStyles: React.CSSProperties = {
-    fontFamily: 'var(--frigate-font-mono)',
-    fontSize: 'var(--frigate-font-body)',
-    padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-    backgroundColor: 'var(--frigate-bg-surface)',
-    color: 'var(--frigate-text-primary)',
-    border: '1px solid var(--frigate-border-base)',
-    borderRadius: 'var(--frigate-radius-none)',
-    outline: 'none',
-    width: '100%',
-    boxSizing: 'border-box',
+    fontFamily: "var(--frigate-font-mono)",
+    fontSize: "var(--frigate-font-body)",
+    padding: "var(--frigate-space-1) var(--frigate-space-2)",
+    backgroundColor: "var(--frigate-bg-surface)",
+    color: "var(--frigate-text-primary)",
+    border: "1px solid var(--frigate-border-base)",
+    borderRadius: "var(--frigate-radius-none)",
+    outline: "none",
+    width: "100%",
+    boxSizing: "border-box",
   };
 
   const scrollableAreaStyles: React.CSSProperties = {
     flex: 1,
-    overflowY: 'auto',
-    overflowX: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--frigate-space-1)',
-    paddingRight: 'var(--frigate-space-2)',
+    overflowY: "auto",
+    overflowX: "auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--frigate-space-1)",
+    paddingRight: "var(--frigate-space-2)",
     minWidth: 0,
   };
 
   const emptyStateStyles: React.CSSProperties = {
-    padding: 'var(--frigate-space-4)',
-    textAlign: 'center',
-    color: 'var(--frigate-text-muted)',
-    fontSize: 'var(--frigate-font-small)',
+    padding: "var(--frigate-space-4)",
+    textAlign: "center",
+    color: "var(--frigate-text-muted)",
+    fontSize: "var(--frigate-font-small)",
   };
 
   if (loading) {
     return (
       <div style={containerStyles}>
         <div style={emptyStateStyles}>
-          <div style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>
             [LOADING MODULE SLOTS...]
           </div>
         </div>
@@ -308,8 +302,8 @@ export function ModuleSlotBrowserCore({
   if (error) {
     return (
       <div style={containerStyles}>
-        <div style={{ ...emptyStateStyles, color: 'var(--frigate-danger)' }}>
-          <div style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ ...emptyStateStyles, color: "var(--frigate-danger)" }}>
+          <div style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>
             [ERROR: {error}]
           </div>
         </div>
@@ -318,20 +312,20 @@ export function ModuleSlotBrowserCore({
   }
 
   const sortButtonStyles: React.CSSProperties = {
-    background: 'none',
-    border: 'none',
-    color: 'var(--frigate-text-secondary)',
-    fontFamily: 'var(--frigate-font-mono)',
-    fontSize: 'var(--frigate-font-tiny)',
-    padding: '2px 4px',
-    cursor: 'pointer',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    background: "none",
+    border: "none",
+    color: "var(--frigate-text-secondary)",
+    fontFamily: "var(--frigate-font-mono)",
+    fontSize: "var(--frigate-font-tiny)",
+    padding: "2px 4px",
+    cursor: "pointer",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
   };
 
   const activeSortButtonStyles: React.CSSProperties = {
     ...sortButtonStyles,
-    color: 'var(--frigate-primary)',
+    color: "var(--frigate-primary)",
     fontWeight: 700,
   };
 
@@ -349,15 +343,17 @@ export function ModuleSlotBrowserCore({
       />
 
       {/* Sort Options */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 'var(--frigate-space-1)',
-        fontSize: 'var(--frigate-font-tiny)',
-        color: 'var(--frigate-text-muted)',
-      }}>
-        <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>SORT:</span>
-        {(['name', 'cost', 'required'] as ModuleSlotSortOption[]).map((option) => (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--frigate-space-1)",
+          fontSize: "var(--frigate-font-tiny)",
+          color: "var(--frigate-text-muted)",
+        }}
+      >
+        <span style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>SORT:</span>
+        {(["name", "cost", "required"] as ModuleSlotSortOption[]).map((option) => (
           <button
             key={option}
             onClick={() => handleSortChange(option)}
@@ -383,7 +379,7 @@ export function ModuleSlotBrowserCore({
       <div style={scrollableAreaStyles}>
         {filteredSlots.length === 0 ? (
           <div style={emptyStateStyles}>
-            <div style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>
               [NO MODULES FOUND]
             </div>
           </div>

@@ -7,22 +7,22 @@
  *
  * Workflow position: Ship Design → [REGISTER SCHEMATIC] → Inventory Workspace
  */
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import type { Ammunition, ModuleInstance, ModuleVariant } from '@frigate/api-client';
-import { useAmmunition } from '../hooks/useAmmunition';
-import { useInventoryStore } from '../stores/inventoryStore';
-import { useLobbyWorkflowStore } from './lobbyWorkflowStore';
-import { useUiBlueprint } from '../hooks/useUiBlueprint';
-import { useCatalog } from '../hooks/useCatalog';
-import { AmmunitionBrowser } from './AmmunitionBrowser';
-import { LoadedInventoryPanel } from './LoadedInventoryPanel';
-import { InventoryConstraintsPanel, type InventoryStats } from './InventoryConstraintsPanel';
-import { AmmunitionDetailModal } from './AmmunitionDetailModal';
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import type { Ammunition, ModuleInstance, ModuleVariant } from "@frigate/api-client";
+import { useAmmunition } from "../hooks/useAmmunition";
+import { useInventoryStore } from "../stores/inventoryStore";
+import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
+import { useUiBlueprint } from "../hooks/useUiBlueprint";
+import { useCatalog } from "../hooks/useCatalog";
+import { AmmunitionBrowser } from "./AmmunitionBrowser";
+import { LoadedInventoryPanel } from "./LoadedInventoryPanel";
+import { InventoryConstraintsPanel, type InventoryStats } from "./InventoryConstraintsPanel";
+import { AmmunitionDetailModal } from "./AmmunitionDetailModal";
 import {
   extractWeaponCompatibility,
   getIncompatibilityReason,
   getCompatibleWeapons,
-} from './utils/ammoCompatibility';
+} from "./utils/ammoCompatibility";
 
 /**
  * Player information
@@ -80,38 +80,42 @@ interface WorkspaceHeaderProps {
   onBack?: () => void;
 }
 
-function WorkspaceHeader({ shipName = 'SHIP INVENTORY', blueprintId, onBack }: WorkspaceHeaderProps) {
+function WorkspaceHeader({
+  shipName = "SHIP INVENTORY",
+  blueprintId,
+  onBack,
+}: WorkspaceHeaderProps) {
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 'var(--frigate-space-3)',
-        borderBottom: '1px solid var(--frigate-border-base)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        marginBottom: 'var(--frigate-space-3)',
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "var(--frigate-space-3)",
+        borderBottom: "1px solid var(--frigate-border-base)",
+        backgroundColor: "var(--frigate-bg-base)",
+        marginBottom: "var(--frigate-space-3)",
       }}
     >
       <div>
         <div
           style={{
             fontWeight: 800,
-            fontSize: 'var(--frigate-font-display)',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--frigate-text-primary)',
+            fontSize: "var(--frigate-font-display)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "var(--frigate-text-primary)",
           }}
         >
           {shipName}
         </div>
         <div
           style={{
-            fontSize: 'var(--frigate-font-tiny)',
-            color: 'var(--frigate-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            marginTop: 'var(--frigate-space-1)',
+            fontSize: "var(--frigate-font-tiny)",
+            color: "var(--frigate-text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            marginTop: "var(--frigate-space-1)",
           }}
         >
           BLUEPRINT: {blueprintId}
@@ -121,15 +125,15 @@ function WorkspaceHeader({ shipName = 'SHIP INVENTORY', blueprintId, onBack }: W
         <button
           onClick={onBack}
           style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--frigate-text-secondary)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            cursor: 'pointer',
-            textDecoration: 'underline',
+            background: "none",
+            border: "none",
+            color: "var(--frigate-text-secondary)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            cursor: "pointer",
+            textDecoration: "underline",
           }}
           aria-label="Go back to ship design"
         >
@@ -147,22 +151,18 @@ function WorkspaceFooter() {
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: 'var(--frigate-space-2) var(--frigate-space-3)',
-        borderTop: '1px solid var(--frigate-border-base)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        marginTop: 'var(--frigate-space-3)',
-        fontSize: 'var(--frigate-font-tiny)',
-        color: 'var(--frigate-text-muted)',
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "var(--frigate-space-2) var(--frigate-space-3)",
+        borderTop: "1px solid var(--frigate-border-base)",
+        backgroundColor: "var(--frigate-bg-base)",
+        marginTop: "var(--frigate-space-3)",
+        fontSize: "var(--frigate-font-tiny)",
+        color: "var(--frigate-text-muted)",
       }}
     >
-      <div style={{ letterSpacing: '0.05em' }}>
-        [WORKSPACE: INVENTORY PHASE | STATUS: ACTIVE]
-      </div>
-      <div style={{ letterSpacing: '0.05em' }}>
-        [/] SEARCH  [F] FILTER  [+/-] QTY  [ENTER] ADD
-      </div>
+      <div style={{ letterSpacing: "0.05em" }}>[WORKSPACE: INVENTORY PHASE | STATUS: ACTIVE]</div>
+      <div style={{ letterSpacing: "0.05em" }}>[/] SEARCH [F] FILTER [+/-] QTY [ENTER] ADD</div>
     </div>
   );
 }
@@ -192,7 +192,7 @@ function WorkspaceFooter() {
  */
 export function InventoryWorkspace({
   apiUrl,
-  player,
+  player: _player,
   team,
   blueprintId,
   availableWeight: availableWeightProp,
@@ -201,7 +201,7 @@ export function InventoryWorkspace({
   shipDesignCost = 0,
   onBack,
   onRegisterCargo,
-  className = '',
+  className = "",
 }: InventoryWorkspaceProps): React.ReactElement {
   // Fetch ammunition catalog
   const { ammunition, loading, error, refetch } = useAmmunition(apiUrl);
@@ -210,7 +210,11 @@ export function InventoryWorkspace({
   const { blueprint, ensureOpen } = useUiBlueprint({ blueprintId, apiBase: apiUrl });
 
   // Fetch module catalog (for variant data with ammo_type/ammo_size)
-  const { variantsById: catalogVariantsById, getModuleVariants, getModuleSlots } = useCatalog(apiUrl);
+  const {
+    variantsById: catalogVariantsById,
+    getModuleVariants,
+    getModuleSlots,
+  } = useCatalog(apiUrl);
 
   // Track whether we've already loaded data to prevent infinite loops
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -238,7 +242,7 @@ export function InventoryWorkspace({
         await getModuleSlots();
 
         // Then load variants for each unique slot type in the blueprint
-        const slotTypes = new Set(instances.map(inst => inst.module_slot_id));
+        const slotTypes = new Set(instances.map((inst) => inst.module_slot_id));
 
         for (const slotType of slotTypes) {
           try {
@@ -250,7 +254,7 @@ export function InventoryWorkspace({
 
         setDataLoaded(true);
       } catch (err) {
-        console.error('[InventoryWorkspace] Failed to load module data:', err);
+        console.error("[InventoryWorkspace] Failed to load module data:", err);
       }
     };
 
@@ -261,7 +265,8 @@ export function InventoryWorkspace({
   }, [blueprint?.instances, installedModulesProp, variantsByIdProp]);
 
   // Use props if provided, otherwise use data from hooks
-  const installedModules = installedModulesProp ?? (blueprint?.instances ? Array.from(blueprint.instances) : []);
+  const installedModules =
+    installedModulesProp ?? (blueprint?.instances ? Array.from(blueprint.instances) : []);
   const variantsById = variantsByIdProp ?? catalogVariantsById;
 
   // Calculate available weight from blueprint if not provided via props
@@ -276,7 +281,6 @@ export function InventoryWorkspace({
     addAmmo,
     removeAmmo,
     setAmmoQuantity,
-    clearInventory,
     getTotalWeight,
     getTotalCost,
     getInventoryItems,
@@ -300,7 +304,8 @@ export function InventoryWorkspace({
 
   // Extract weapon compatibility from installed modules
   const weaponCompatibility = useMemo(
-    () => extractWeaponCompatibility(installedModules, variantsById as Record<string, ModuleVariant>),
+    () =>
+      extractWeaponCompatibility(installedModules, variantsById as Record<string, ModuleVariant>),
     [installedModules, variantsById]
   );
 
@@ -319,7 +324,7 @@ export function InventoryWorkspace({
   // Set compatibility info - use primitive dependencies to avoid infinite loops
   // Convert Set to sorted string for stable dependency comparison
   const kineticAmmoTypesKey = useMemo(
-    () => Array.from(weaponCompatibility.kineticAmmoTypes).sort().join(','),
+    () => Array.from(weaponCompatibility.kineticAmmoTypes).sort().join(","),
     [weaponCompatibility.kineticAmmoTypes]
   );
 
@@ -335,7 +340,15 @@ export function InventoryWorkspace({
       setCompatibilityReady(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using kineticAmmoTypesKey as stable proxy for Set
-  }, [kineticAmmoTypesKey, weaponCompatibility.hasMissileLaunchers, weaponCompatibility.hasTorpedoTubes, setCompatibility, installedModulesProp, variantsByIdProp, dataLoaded]);
+  }, [
+    kineticAmmoTypesKey,
+    weaponCompatibility.hasMissileLaunchers,
+    weaponCompatibility.hasTorpedoTubes,
+    setCompatibility,
+    installedModulesProp,
+    variantsByIdProp,
+    dataLoaded,
+  ]);
 
   // Handle back button
   const handleBack = useCallback(() => {
@@ -460,34 +473,30 @@ export function InventoryWorkspace({
     <div
       className={className}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        backgroundColor: 'var(--frigate-bg-base)',
-        color: 'var(--frigate-text-primary)',
-        fontFamily: 'var(--frigate-font-mono)',
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        backgroundColor: "var(--frigate-bg-base)",
+        color: "var(--frigate-text-primary)",
+        fontFamily: "var(--frigate-font-mono)",
       }}
     >
       {/* Header */}
-      <WorkspaceHeader
-        shipName="SHIP INVENTORY"
-        blueprintId={blueprintId}
-        onBack={handleBack}
-      />
+      <WorkspaceHeader shipName="SHIP INVENTORY" blueprintId={blueprintId} onBack={handleBack} />
 
       {/* Error Banner */}
       {error && (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 'var(--frigate-space-2) var(--frigate-space-3)',
-            backgroundColor: 'rgba(220, 38, 38, 0.1)',
-            borderBottom: '1px solid var(--frigate-danger)',
-            color: 'var(--frigate-danger)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "var(--frigate-space-2) var(--frigate-space-3)",
+            backgroundColor: "rgba(220, 38, 38, 0.1)",
+            borderBottom: "1px solid var(--frigate-danger)",
+            color: "var(--frigate-danger)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
           }}
           role="alert"
         >
@@ -496,19 +505,19 @@ export function InventoryWorkspace({
             onClick={refetch}
             disabled={loading}
             style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--frigate-danger)',
-              fontFamily: 'var(--frigate-font-mono)',
-              fontSize: 'var(--frigate-font-small)',
+              background: "none",
+              border: "none",
+              color: "var(--frigate-danger)",
+              fontFamily: "var(--frigate-font-mono)",
+              fontSize: "var(--frigate-font-small)",
               fontWeight: 700,
-              cursor: loading ? 'wait' : 'pointer',
-              textDecoration: 'underline',
+              cursor: loading ? "wait" : "pointer",
+              textDecoration: "underline",
               opacity: loading ? 0.5 : 1,
             }}
             aria-label="Retry loading ammunition"
           >
-            {loading ? '[RETRYING...]' : '[RETRY]'}
+            {loading ? "[RETRYING...]" : "[RETRY]"}
           </button>
         </div>
       )}
@@ -516,17 +525,17 @@ export function InventoryWorkspace({
       {/* Main Content Area - Three Column Layout */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: 'var(--frigate-space-3)',
-          padding: 'var(--frigate-space-3)',
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "var(--frigate-space-3)",
+          padding: "var(--frigate-space-3)",
           flex: 1,
           minHeight: 0,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         {/* Left Column: Ammunition Browser */}
-        <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <AmmunitionBrowser
             ammunition={ammunition}
             loading={loading}
@@ -543,7 +552,7 @@ export function InventoryWorkspace({
         </div>
 
         {/* Center Column: Loaded Inventory */}
-        <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <LoadedInventoryPanel
             inventory={inventoryItems}
             ammoCatalog={ammoCatalog}
@@ -556,7 +565,7 @@ export function InventoryWorkspace({
         </div>
 
         {/* Right Column: Constraints Panel */}
-        <div style={{ minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <InventoryConstraintsPanel
             stats={inventoryStats}
             onRegisterCargo={onRegisterCargo}
@@ -577,7 +586,9 @@ export function InventoryWorkspace({
         canAdd={selectedAmmo ? canAddAmmo(selectedAmmo.id) : false}
         canAddQuantity={canAddQuantity}
         isCompatible={selectedAmmo ? isAmmoCompatible(selectedAmmo.id) : true}
-        incompatibilityReason={selectedAmmo ? getIncompatibilityReasonForAmmo(selectedAmmo) : undefined}
+        incompatibilityReason={
+          selectedAmmo ? getIncompatibilityReasonForAmmo(selectedAmmo) : undefined
+        }
         compatibleWeapons={selectedAmmo ? getCompatibleWeaponsForAmmo(selectedAmmo) : undefined}
       />
     </div>

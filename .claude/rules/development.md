@@ -4,15 +4,15 @@ Modern TypeScript development practices for the Frigate frontend application.
 
 ## Code Style & Naming
 
-| Item | Convention | Example |
-|------|------------|---------|
-| Component files | `PascalCase.tsx` | `ShipCard.tsx` |
-| Utility files | `camelCase.ts` | `formatDate.ts` |
-| Components | `PascalCase` | `ShipStatusPanel` |
-| Functions, hooks | `camelCase` | `useShipStatus` |
-| Variables | `camelCase` | `isLoading` |
-| Constants | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| Types, Interfaces | `PascalCase` | `ShipStatus` |
+| Item              | Convention             | Example           |
+| ----------------- | ---------------------- | ----------------- |
+| Component files   | `PascalCase.tsx`       | `ShipCard.tsx`    |
+| Utility files     | `camelCase.ts`         | `formatDate.ts`   |
+| Components        | `PascalCase`           | `ShipStatusPanel` |
+| Functions, hooks  | `camelCase`            | `useShipStatus`   |
+| Variables         | `camelCase`            | `isLoading`       |
+| Constants         | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Types, Interfaces | `PascalCase`           | `ShipStatus`      |
 
 ### Naming Prefixes
 

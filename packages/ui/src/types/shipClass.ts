@@ -1,30 +1,30 @@
 /**
  * Ship class type definitions
- * 
+ *
  * Matches the HYPERION API ship class schema from Phase 2.6
  */
 
 /**
  * Ship size categories
  */
-export type ShipSize = 'Small' | 'Medium' | 'Large';
+export type ShipSize = "Small" | "Medium" | "Large";
 
 /**
  * Ship role categories
  */
-export type ShipRole = 
-  | 'Versatile'
-  | 'Combat'
-  | 'Support'
-  | 'Transport'
-  | 'Exploration'
-  | 'Offense'
-  | 'Defense';
+export type ShipRole =
+  | "Versatile"
+  | "Combat"
+  | "Support"
+  | "Transport"
+  | "Exploration"
+  | "Offense"
+  | "Defense";
 
 /**
  * Bonus category for grouping related bonuses
  */
-export type BonusCategory = 'combat' | 'defense' | 'mobility' | 'utility' | 'efficiency';
+export type BonusCategory = "combat" | "defense" | "mobility" | "utility" | "efficiency";
 
 /**
  * Formatted bonus information from the API
@@ -84,13 +84,13 @@ export interface TechnicalSpecs {
   /** Cargo capacity in cubic meters */
   Cargo?: string;
   /** Maximum acceleration */
-  'Max Acceleration'?: string;
+  "Max Acceleration"?: string;
   /** Turn rate */
-  'Turn Rate'?: string;
+  "Turn Rate"?: string;
   /** Maximum warp speed */
-  'Max Warp'?: string;
+  "Max Warp"?: string;
   /** Sensor range */
-  'Sensor Range'?: string;
+  "Sensor Range"?: string;
   /** Operational range */
   Range?: string;
   /** Additional dynamic specs */
@@ -135,7 +135,7 @@ export interface ShipClassDetails {
   size: ShipSize;
   /** Ship role category */
   role: ShipRole;
-  
+
   // Build constraints
   /** Maximum weight in kg the ship can support */
   max_weight: number;
@@ -153,19 +153,19 @@ export interface ShipClassDetails {
   max_power?: number;
   /** Maximum heat dissipation capacity in kilowatts thermal (optional - may not be set for all ship classes) */
   max_heat?: number;
-  
+
   // Bonuses grouped by category
   /** Bonuses provided by this ship class, grouped by category */
   bonuses: Record<BonusCategory, ShipClassBonus[]>;
-  
+
   // Technical specifications
   /** Technical specs with formatted values and units */
   technical_specs: TechnicalSpecs;
-  
+
   // Faction-specific manufacturers
   /** Manufacturer information by faction ID */
   manufacturers: Record<string, ManufacturerInfo>;
-  
+
   // Lore and flavor
   /** Historical background and design notes */
   lore: string | null;
@@ -197,7 +197,7 @@ export interface OperationalMetadata {
   /** Build cost in credits or resources */
   cost: number;
   /** Availability tier (common/uncommon/rare) */
-  availability: 'common' | 'uncommon' | 'rare';
+  availability: "common" | "uncommon" | "rare";
   /** Construction time in days */
   buildTime?: number;
   /** Maintenance cost per day */
@@ -223,15 +223,9 @@ export interface ShipClassFilter {
 /**
  * Helper type for ship class sorting
  */
-export type ShipClassSortBy = 
-  | 'name'
-  | 'size'
-  | 'role'
-  | 'buildPoints'
-  | 'maxWeight'
-  | 'maxModules';
+export type ShipClassSortBy = "name" | "size" | "role" | "buildPoints" | "maxWeight" | "maxModules";
 
-export type SortOrder = 'asc' | 'desc';
+export type SortOrder = "asc" | "desc";
 
 /**
  * Ship class comparison data for side-by-side view
@@ -241,7 +235,7 @@ export interface ShipClassComparison {
   classes: ShipClassDetails[];
   /** Differences highlighted by category */
   differences: {
-    specs: Record<string, any>;
+    specs: Record<string, unknown>;
     bonuses: Record<BonusCategory, ShipClassBonus[]>;
   };
 }

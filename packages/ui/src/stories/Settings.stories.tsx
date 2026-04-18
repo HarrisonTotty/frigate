@@ -1,24 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
-import { Settings } from '../mainmenu/Settings';
-import { AlertProvider } from '../alerts';
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { Settings } from "../mainmenu/Settings";
+import { AlertProvider } from "../alerts";
 
 const meta: Meta<typeof Settings> = {
-  title: 'MainMenu/Settings',
+  title: "MainMenu/Settings",
   component: Settings,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   decorators: [
     (Story) => (
       <AlertProvider>
-        <div style={{ width: '600px', height: '500px' }}>
+        <div style={{ width: "600px", height: "500px" }}>
           <Story />
         </div>
       </AlertProvider>
     ),
   ],
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -47,23 +47,26 @@ export const DefaultSettings: Story = {
  */
 export const CustomSettings: Story = {
   render: () => {
-    const [visible, setVisible] = useState(true);
-    
-    return (
-      <Settings
-        visible={visible}
-        onClose={() => setVisible(false)}
-        settings={{
-          theme: 'dark-blue',
-          audioVolume: 75,
-          soundEffects: false,
-          backgroundMusic: true,
-          fpsLimit: 120,
-          graphicsQuality: 'high',
-          vsync: true,
-        }}
-      />
-    );
+    const Demo = () => {
+      const [visible, setVisible] = useState(true);
+
+      return (
+        <Settings
+          visible={visible}
+          onClose={() => setVisible(false)}
+          settings={{
+            theme: "dark-blue",
+            audioVolume: 75,
+            soundEffects: false,
+            backgroundMusic: true,
+            fpsLimit: 120,
+            graphicsQuality: "high",
+            vsync: true,
+          }}
+        />
+      );
+    };
+    return <Demo />;
   },
 };
 
@@ -72,23 +75,26 @@ export const CustomSettings: Story = {
  */
 export const InteractiveDemo: Story = {
   render: () => {
-    const [visible, setVisible] = useState(true);
-    
-    return (
-      <>
-        <button onClick={() => setVisible(true)}>Open Settings</button>
-        <Settings
-          visible={visible}
-          onClose={() => {
-            console.log('Settings closed');
-            setVisible(false);
-          }}
-          onSave={(settings) => {
-            console.log('Settings saved:', settings);
-            setVisible(false);
-          }}
-        />
-      </>
-    );
+    const Demo = () => {
+      const [visible, setVisible] = useState(true);
+
+      return (
+        <>
+          <button onClick={() => setVisible(true)}>Open Settings</button>
+          <Settings
+            visible={visible}
+            onClose={() => {
+              console.log("Settings closed");
+              setVisible(false);
+            }}
+            onSave={(settings) => {
+              console.log("Settings saved:", settings);
+              setVisible(false);
+            }}
+          />
+        </>
+      );
+    };
+    return <Demo />;
   },
 };

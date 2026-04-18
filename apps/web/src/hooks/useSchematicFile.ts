@@ -5,7 +5,7 @@
  * Uses download links for saving and file input for loading.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 /**
  * A module slot assignment in a schematic
@@ -54,7 +54,7 @@ export interface UseSchematicFileReturn {
  * For production use, consider using a proper YAML library.
  */
 function parseSchematicYaml(yaml: string): SchematicFile {
-  const lines = yaml.split('\n');
+  const lines = yaml.split("\n");
   const schematic: Partial<SchematicFile> = {
     modules: [],
   };
@@ -66,18 +66,18 @@ function parseSchematicYaml(yaml: string): SchematicFile {
     const trimmed = line.trim();
 
     // Skip empty lines and comments
-    if (!trimmed || trimmed.startsWith('#')) continue;
+    if (!trimmed || trimmed.startsWith("#")) continue;
 
     // Check for key-value pairs
-    if (trimmed.startsWith('version:')) {
-      schematic.version = parseInt(trimmed.split(':')[1].trim(), 10);
-    } else if (trimmed.startsWith('name:')) {
-      schematic.name = trimmed.split(':').slice(1).join(':').trim();
-    } else if (trimmed.startsWith('ship_class:')) {
-      schematic.ship_class = trimmed.split(':').slice(1).join(':').trim();
-    } else if (trimmed === 'modules:') {
+    if (trimmed.startsWith("version:")) {
+      schematic.version = parseInt(trimmed.split(":")[1].trim(), 10);
+    } else if (trimmed.startsWith("name:")) {
+      schematic.name = trimmed.split(":").slice(1).join(":").trim();
+    } else if (trimmed.startsWith("ship_class:")) {
+      schematic.ship_class = trimmed.split(":").slice(1).join(":").trim();
+    } else if (trimmed === "modules:") {
       inModules = true;
-    } else if (inModules && trimmed.startsWith('- slot:')) {
+    } else if (inModules && trimmed.startsWith("- slot:")) {
       // New module entry
       if (currentModule && currentModule.slot) {
         schematic.modules!.push({
@@ -86,12 +86,12 @@ function parseSchematicYaml(yaml: string): SchematicFile {
         });
       }
       currentModule = {
-        slot: trimmed.replace('- slot:', '').trim(),
+        slot: trimmed.replace("- slot:", "").trim(),
         module: null,
       };
-    } else if (inModules && currentModule && trimmed.startsWith('module:')) {
-      const value = trimmed.split(':').slice(1).join(':').trim();
-      currentModule.module = value === 'null' || value === '' ? null : value;
+    } else if (inModules && currentModule && trimmed.startsWith("module:")) {
+      const value = trimmed.split(":").slice(1).join(":").trim();
+      currentModule.module = value === "null" || value === "" ? null : value;
     }
   }
 
@@ -104,9 +104,9 @@ function parseSchematicYaml(yaml: string): SchematicFile {
   }
 
   // Validate required fields
-  if (schematic.version === undefined) throw new Error('Missing version field');
-  if (!schematic.name) throw new Error('Missing name field');
-  if (!schematic.ship_class) throw new Error('Missing ship_class field');
+  if (schematic.version === undefined) throw new Error("Missing version field");
+  if (!schematic.name) throw new Error("Missing name field");
+  if (!schematic.ship_class) throw new Error("Missing ship_class field");
 
   return schematic as SchematicFile;
 }
@@ -119,15 +119,15 @@ function serializeSchematicYaml(schematic: SchematicFile): string {
     `version: ${schematic.version}`,
     `name: ${schematic.name}`,
     `ship_class: ${schematic.ship_class}`,
-    'modules:',
+    "modules:",
   ];
 
   for (const mod of schematic.modules) {
     lines.push(`  - slot: ${mod.slot}`);
-    lines.push(`    module: ${mod.module ?? 'null'}`);
+    lines.push(`    module: ${mod.module ?? "null"}`);
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
@@ -151,10 +151,10 @@ export function useSchematicFile(): UseSchematicFileReturn {
 
     try {
       const yaml = serializeSchematicYaml(schematic);
-      const blob = new Blob([yaml], { type: 'application/x-yaml' });
+      const blob = new Blob([yaml], { type: "application/x-yaml" });
       const url = URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `${schematic.name}.yaml`;
       document.body.appendChild(a);
@@ -165,7 +165,7 @@ export function useSchematicFile(): UseSchematicFileReturn {
       return true;
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      console.error('[useSchematicFile] Save error:', message);
+      console.error("[useSchematicFile] Save error:", message);
       setError(message);
       return false;
     } finally {
@@ -182,9 +182,9 @@ export function useSchematicFile(): UseSchematicFileReturn {
     setError(null);
 
     return new Promise((resolve) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.yaml,.yml';
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".yaml,.yml";
 
       input.onchange = async (event) => {
         const file = (event.target as HTMLInputElement).files?.[0];
@@ -201,7 +201,7 @@ export function useSchematicFile(): UseSchematicFileReturn {
           resolve(schematic);
         } catch (parseError) {
           const message = parseError instanceof Error ? parseError.message : String(parseError);
-          console.error('[useSchematicFile] Parse error:', message);
+          console.error("[useSchematicFile] Parse error:", message);
           setError(`Failed to parse schematic: ${message}`);
           setLoading(false);
           resolve(null);

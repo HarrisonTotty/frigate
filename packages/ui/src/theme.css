@@ -84,34 +84,34 @@
   --frigate-border-emphasis: #555555;
 
   /* Typography */
-  --frigate-font-mono: 'Roboto Mono', 'Courier New', 'Consolas', monospace;
+  --frigate-font-mono: "Roboto Mono", "Courier New", "Consolas", monospace;
   --frigate-font-sans: var(--frigate-font-mono); /* Enforce monospace everywhere */
 
-  --frigate-font-display: 1.5rem;      /* 24px - Ship names, major sections */
-  --frigate-font-heading: 1.125rem;    /* 18px - Panel headers, station names */
-  --frigate-font-body: 0.875rem;       /* 14px - Standard data displays */
-  --frigate-font-small: 0.75rem;       /* 12px - Labels, metadata */
-  --frigate-font-tiny: 0.625rem;       /* 10px - Secondary information */
+  --frigate-font-display: 1.5rem; /* 24px - Ship names, major sections */
+  --frigate-font-heading: 1.125rem; /* 18px - Panel headers, station names */
+  --frigate-font-body: 0.875rem; /* 14px - Standard data displays */
+  --frigate-font-small: 0.75rem; /* 12px - Labels, metadata */
+  --frigate-font-tiny: 0.625rem; /* 10px - Secondary information */
 
   /* Semantic Data Type Colors - Professional and muted */
-  --frigate-data-power: #4d7ba8;       /* Muted blue for power/energy */
-  --frigate-data-status: #909090;      /* Gray for status/state */
-  --frigate-data-thermal: #b89548;     /* Muted yellow for temperature/heat */
-  --frigate-data-structural: #3d8a52;  /* Muted green for hull/shields */
-  --frigate-data-combat: #b04540;      /* Muted red for weapons/damage */
+  --frigate-data-power: #4d7ba8; /* Muted blue for power/energy */
+  --frigate-data-status: #909090; /* Gray for status/state */
+  --frigate-data-thermal: #b89548; /* Muted yellow for temperature/heat */
+  --frigate-data-structural: #3d8a52; /* Muted green for hull/shields */
+  --frigate-data-combat: #b04540; /* Muted red for weapons/damage */
 
   /* Spacing Scale (based on 4px grid) */
   --frigate-space-0: 0;
-  --frigate-space-1: 0.25rem;  /* 4px */
-  --frigate-space-2: 0.5rem;   /* 8px */
-  --frigate-space-3: 0.75rem;  /* 12px */
-  --frigate-space-4: 1rem;     /* 16px */
-  --frigate-space-5: 1.25rem;  /* 20px */
-  --frigate-space-6: 1.5rem;   /* 24px */
-  --frigate-space-8: 2rem;     /* 32px */
-  --frigate-space-10: 2.5rem;  /* 40px */
-  --frigate-space-12: 3rem;    /* 48px */
-  --frigate-space-16: 4rem;    /* 64px */
+  --frigate-space-1: 0.25rem; /* 4px */
+  --frigate-space-2: 0.5rem; /* 8px */
+  --frigate-space-3: 0.75rem; /* 12px */
+  --frigate-space-4: 1rem; /* 16px */
+  --frigate-space-5: 1.25rem; /* 20px */
+  --frigate-space-6: 1.5rem; /* 24px */
+  --frigate-space-8: 2rem; /* 32px */
+  --frigate-space-10: 2.5rem; /* 40px */
+  --frigate-space-12: 3rem; /* 48px */
+  --frigate-space-16: 4rem; /* 64px */
 
   /* Radius - All set to 0 for flat design */
   --frigate-radius-none: 0;
@@ -122,10 +122,10 @@
   /* Transitions - Minimal for TUI aesthetic */
   /* Only essential feedback: text fade (100ms), border state (50ms), alerts (150ms) */
   --frigate-transition-instant: 0ms;
-  --frigate-transition-state: 50ms ease;     /* Border/color state changes */
-  --frigate-transition-text: 100ms ease;     /* Text fade-in for new data */
-  --frigate-transition-alert: 150ms ease;    /* Alert banner slide-down */
-  
+  --frigate-transition-state: 50ms ease; /* Border/color state changes */
+  --frigate-transition-text: 100ms ease; /* Text fade-in for new data */
+  --frigate-transition-alert: 150ms ease; /* Alert banner slide-down */
+
   /* Legacy support - map to minimal values */
   --frigate-transition-fast: 50ms ease;
   --frigate-transition-base: 100ms ease;
@@ -140,19 +140,19 @@
   --frigate-z-toast: 500;
 
   /* ASCII Box-Drawing Characters */
-  --frigate-ascii-corner-tl: '┌';
-  --frigate-ascii-corner-tr: '┐';
-  --frigate-ascii-corner-bl: '└';
-  --frigate-ascii-corner-br: '┘';
-  --frigate-ascii-h-line: '─';
-  --frigate-ascii-v-line: '│';
-  
-  --frigate-ascii-corner-tl-heavy: '╔';
-  --frigate-ascii-corner-tr-heavy: '╗';
-  --frigate-ascii-corner-bl-heavy: '╚';
-  --frigate-ascii-corner-br-heavy: '╝';
-  --frigate-ascii-h-line-heavy: '═';
-  --frigate-ascii-v-line-heavy: '║';
+  --frigate-ascii-corner-tl: "┌";
+  --frigate-ascii-corner-tr: "┐";
+  --frigate-ascii-corner-bl: "└";
+  --frigate-ascii-corner-br: "┘";
+  --frigate-ascii-h-line: "─";
+  --frigate-ascii-v-line: "│";
+
+  --frigate-ascii-corner-tl-heavy: "╔";
+  --frigate-ascii-corner-tr-heavy: "╗";
+  --frigate-ascii-corner-bl-heavy: "╚";
+  --frigate-ascii-corner-br-heavy: "╝";
+  --frigate-ascii-h-line-heavy: "═";
+  --frigate-ascii-v-line-heavy: "║";
 }
 
 /* High-Contrast Mode */
@@ -195,11 +195,11 @@
 /* Colorblind-Friendly Alternative (can be toggled via class) */
 .frigate-colorblind-mode {
   /* Use shape/pattern differentiation over color */
-  --frigate-success: #0077bb;      /* Blue instead of green */
-  --frigate-warning: #ee7733;      /* Orange instead of yellow */
-  --frigate-danger: #cc3311;       /* Red (unchanged) */
-  --frigate-info: #009988;         /* Teal instead of blue */
-  --frigate-primary: #33bbee;      /* Cyan instead of blue */
+  --frigate-success: #0077bb; /* Blue instead of green */
+  --frigate-warning: #ee7733; /* Orange instead of yellow */
+  --frigate-danger: #cc3311; /* Red (unchanged) */
+  --frigate-info: #009988; /* Teal instead of blue */
+  --frigate-primary: #33bbee; /* Cyan instead of blue */
 
   /* Status indicators use patterns */
   --frigate-status-hull: #0077bb;
@@ -320,31 +320,31 @@ textarea,
 
 /* Technical Status Abbreviations */
 .frigate-status-online::before {
-  content: '[ONLN]';
+  content: "[ONLN]";
 }
 
 .frigate-status-offline::before {
-  content: '[OFFL]';
+  content: "[OFFL]";
 }
 
 .frigate-status-ready::before {
-  content: '[RDY]';
+  content: "[RDY]";
 }
 
 .frigate-status-active::before {
-  content: '[ACTV]';
+  content: "[ACTV]";
 }
 
 .frigate-status-standby::before {
-  content: '[STBY]';
+  content: "[STBY]";
 }
 
 .frigate-status-critical::before {
-  content: '[CRIT]';
+  content: "[CRIT]";
 }
 
 .frigate-status-warning::before {
-  content: '[WARN]';
+  content: "[WARN]";
 }
 
 /* Progress Bar with Block Characters */
@@ -448,21 +448,25 @@ textarea,
 
 /* Loading text indicator (no spinners) */
 .frigate-loading::after {
-  content: '...';
+  content: "...";
   animation: frigate-loading-dots 1.5s steps(4, end) infinite;
 }
 
 @keyframes frigate-loading-dots {
-  0%, 25% {
-    content: '';
+  0%,
+  25% {
+    content: "";
   }
-  25%, 50% {
-    content: '.';
+  25%,
+  50% {
+    content: ".";
   }
-  50%, 75% {
-    content: '..';
+  50%,
+  75% {
+    content: "..";
   }
-  75%, 100% {
-    content: '...';
+  75%,
+  100% {
+    content: "...";
   }
 }

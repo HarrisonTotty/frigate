@@ -1,25 +1,25 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
-import { Select } from '../components';
-import { Stack } from '../layout';
+import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+import { Select } from "../components";
+import { Stack } from "../layout";
 
 const meta: Meta<typeof Select> = {
-  title: 'Components/Select',
+  title: "Components/Select",
   component: Select,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
+      control: "select",
+      options: ["sm", "md", "lg"],
     },
     fullWidth: {
-      control: 'boolean',
+      control: "boolean",
     },
     disabled: {
-      control: 'boolean',
+      control: "boolean",
     },
   },
 };
@@ -40,7 +40,7 @@ export const Default: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -49,7 +49,7 @@ export const Default: Story = {
 
 export const Small: Story = {
   args: {
-    size: 'sm',
+    size: "sm",
     children: (
       <>
         <option value="">SELECT OPTION</option>
@@ -61,7 +61,7 @@ export const Small: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '250px' }}>
+      <div style={{ width: "250px" }}>
         <Story />
       </div>
     ),
@@ -70,7 +70,7 @@ export const Small: Story = {
 
 export const Large: Story = {
   args: {
-    size: 'lg',
+    size: "lg",
     children: (
       <>
         <option value="">SELECT OPTION</option>
@@ -82,7 +82,7 @@ export const Large: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '350px' }}>
+      <div style={{ width: "350px" }}>
         <Story />
       </div>
     ),
@@ -103,7 +103,7 @@ export const FullWidth: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '500px' }}>
+      <div style={{ width: "500px" }}>
         <Story />
       </div>
     ),
@@ -124,7 +124,7 @@ export const Disabled: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
@@ -138,13 +138,13 @@ export const FactionSelector: Story = {
         <label
           htmlFor="faction-select"
           style={{
-            display: 'block',
-            marginBottom: 'var(--frigate-space-2)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            display: "block",
+            marginBottom: "var(--frigate-space-2)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
         >
           FACTION:
@@ -162,7 +162,7 @@ export const FactionSelector: Story = {
   ),
   decorators: [
     (Story) => (
-      <div style={{ width: '400px' }}>
+      <div style={{ width: "400px" }}>
         <Story />
       </div>
     ),
@@ -176,13 +176,13 @@ export const ShipClassSelector: Story = {
         <label
           htmlFor="ship-class-select"
           style={{
-            display: 'block',
-            marginBottom: 'var(--frigate-space-2)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            display: "block",
+            marginBottom: "var(--frigate-space-2)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
         >
           SHIP CLASS:
@@ -200,7 +200,7 @@ export const ShipClassSelector: Story = {
   ),
   decorators: [
     (Story) => (
-      <div style={{ width: '400px' }}>
+      <div style={{ width: "400px" }}>
         <Story />
       </div>
     ),
@@ -213,12 +213,12 @@ export const MultipleSelects: Story = {
       <div>
         <label
           style={{
-            display: 'block',
-            marginBottom: 'var(--frigate-space-2)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
+            display: "block",
+            marginBottom: "var(--frigate-space-2)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
           }}
         >
           POWER ALLOCATION:
@@ -233,12 +233,12 @@ export const MultipleSelects: Story = {
       <div>
         <label
           style={{
-            display: 'block',
-            marginBottom: 'var(--frigate-space-2)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
+            display: "block",
+            marginBottom: "var(--frigate-space-2)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
           }}
         >
           ALERT STATUS:
@@ -252,12 +252,12 @@ export const MultipleSelects: Story = {
       <div>
         <label
           style={{
-            display: 'block',
-            marginBottom: 'var(--frigate-space-2)',
-            fontFamily: 'var(--frigate-font-mono)',
-            fontSize: 'var(--frigate-font-small)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
+            display: "block",
+            marginBottom: "var(--frigate-space-2)",
+            fontFamily: "var(--frigate-font-mono)",
+            fontSize: "var(--frigate-font-small)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
           }}
         >
           SCANNER MODE:
@@ -273,7 +273,7 @@ export const MultipleSelects: Story = {
   ),
   decorators: [
     (Story) => (
-      <div style={{ width: '350px' }}>
+      <div style={{ width: "350px" }}>
         <Story />
       </div>
     ),

@@ -12,4 +12,4 @@ export {
   filterCompatibleAmmo,
   type WeaponCompatibility,
   type CompatibilityResult,
-} from './ammoCompatibility';
+} from "./ammoCompatibility";

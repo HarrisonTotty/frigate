@@ -24,13 +24,28 @@ module.exports = {
     }
   },
   rules: {
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+        destructuredArrayIgnorePattern: "^_"
+      }
+    ]
   },
   overrides: [
     {
       files: ["*.ts", "*.tsx"],
       parserOptions: {
         project: null
+      }
+    },
+    {
+      files: ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**"],
+      rules: {
+        "@typescript-eslint/no-explicit-any": "off"
       }
     }
   ]

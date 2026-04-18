@@ -17,21 +17,21 @@ import {
   retryWithBackoff,
   useLobbyWorkflowStore,
 } from "@frigate/ui";
-import type { SchematicData, SchematicModule } from "@frigate/ui";
+import type { Player, Team, SchematicData, SchematicModule } from "@frigate/ui";
 import { invoke } from "@tauri-apps/api/core";
 import { useAutoSetup } from "./hooks/useAutoSetup";
 import { AutoSetupOverlay } from "./components/AutoSetupOverlay";
 import { useSchematicFile } from "./hooks/useSchematicFile";
 
-type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
+type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("disconnected");
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [recentServers, setRecentServers] = useState<string[]>(getRecentServers());
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const [serverUrl, setServerUrl] = useState<string>('');
+  const [serverUrl, setServerUrl] = useState<string>("");
 
   // Auto-setup from CLI arguments
   const {
@@ -42,18 +42,18 @@ function App() {
     serverUrl: autoSetupServerUrl,
   } = useAutoSetup({
     onConnect: (url) => {
-      console.log('[App] Auto-setup connected to:', url);
+      console.log("[App] Auto-setup connected to:", url);
       setServerUrl(url);
-      setConnectionStatus('connected');
+      setConnectionStatus("connected");
       addRecentServer(url);
       setRecentServers(getRecentServers());
     },
     onComplete: () => {
-      console.log('[App] Auto-setup complete');
+      console.log("[App] Auto-setup complete");
       setIsConnected(true);
     },
     onError: (error) => {
-      console.error('[App] Auto-setup error:', error);
+      console.error("[App] Auto-setup error:", error);
     },
   });
 
@@ -69,63 +69,67 @@ function App() {
   const handleConnect = useCallback(async (url: string) => {
     const validation = validateServerUrl(url);
     if (!validation.valid) {
-      setConnectionStatus('error');
+      setConnectionStatus("error");
       setErrorMessage(validation.error);
       return;
     }
 
-    setConnectionStatus('connecting');
+    setConnectionStatus("connecting");
     setErrorMessage(undefined);
     setServerUrl(url);
 
     try {
       // Use retry logic for connecting to server
       const health = await retryWithBackoff(() => checkServerHealth(url));
-      
-      if (health.status === 'healthy') {
-        setConnectionStatus('connected');
+
+      if (health.status === "healthy") {
+        setConnectionStatus("connected");
         setIsConnected(true);
         addRecentServer(url);
         setRecentServers(getRecentServers());
-        
+
         // Auto-resume: validate persisted lobby workflow state
         const workflowStore = useLobbyWorkflowStore.getState();
-        if (workflowStore.selectedPlayerId || workflowStore.selectedTeamId || workflowStore.selectedBlueprintId) {
-          console.log('Validating persisted lobby workflow state...');
+        if (
+          workflowStore.selectedPlayerId ||
+          workflowStore.selectedTeamId ||
+          workflowStore.selectedBlueprintId
+        ) {
+          console.log("Validating persisted lobby workflow state...");
           const isValid = await workflowStore.validatePersistedState(url);
           if (!isValid) {
-            console.log('Persisted state was invalid and has been reset');
+            console.log("Persisted state was invalid and has been reset");
           } else {
-            console.log('Persisted state validated, resuming workflow');
+            console.log("Persisted state validated, resuming workflow");
           }
         }
       } else {
-        setConnectionStatus('error');
-        setErrorMessage('Server is not healthy');
+        setConnectionStatus("error");
+        setErrorMessage("Server is not healthy");
       }
     } catch (error) {
-      setConnectionStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Connection failed');
+      setConnectionStatus("error");
+      setErrorMessage(error instanceof Error ? error.message : "Connection failed");
     }
   }, []);
 
   const handleQuit = useCallback(async () => {
     try {
-      await invoke('close_application');
+      await invoke("close_application");
     } catch (error) {
-      console.error('Failed to close application:', error);
+      console.error("Failed to close application:", error);
       // Fallback to window close
       window.close();
     }
   }, []);
 
   // Show auto-setup overlay during CLI-driven setup
-  if (hasAutoSetup && autoSetupState.step !== 'idle' && autoSetupState.step !== 'complete') {
+  if (hasAutoSetup && autoSetupState.step !== "idle" && autoSetupState.step !== "complete") {
     return (
       <AutoSetupOverlay
         state={autoSetupState}
         cliArgs={cliArgs}
-        onContinueManually={autoSetupState.step === 'error' ? handleContinueManually : undefined}
+        onContinueManually={autoSetupState.step === "error" ? handleContinueManually : undefined}
       />
     );
   }
@@ -144,10 +148,7 @@ function App() {
             onSettings={() => setSettingsVisible(true)}
             onQuit={handleQuit}
           />
-          <Settings
-            visible={settingsVisible}
-            onClose={() => setSettingsVisible(false)}
-          />
+          <Settings visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
           <AlertManager />
         </FrigateShell>
       </AlertProvider>
@@ -162,7 +163,7 @@ function App() {
           apiUrl={serverUrl}
           onDisconnect={() => {
             setIsConnected(false);
-            setConnectionStatus('disconnected');
+            setConnectionStatus("disconnected");
           }}
         />
         <AlertManager />
@@ -175,9 +176,10 @@ function App() {
  * Lobby workflow component that routes between player/team/ship/design views
  */
 function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect: () => void }) {
-  const { currentStep, selectedPlayerId, selectedTeamId, selectedBlueprintId, reset } = useLobbyWorkflowStore();
-  const [players, setPlayers] = useState<any[]>([]);
-  const [teams, setTeams] = useState<any[]>([]);
+  const { currentStep, selectedPlayerId, selectedTeamId, selectedBlueprintId, reset } =
+    useLobbyWorkflowStore();
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(false);
   const [loadingPlayers, setLoadingPlayers] = useState(false);
 
@@ -185,17 +187,20 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
   const { saveSchematic, loadSchematic, loading: schematicLoading } = useSchematicFile();
 
   // Schematic save handler - converts SchematicData to SchematicFile format
-  const handleSaveSchematic = useCallback(async (schematic: SchematicData): Promise<boolean> => {
-    return saveSchematic({
-      version: schematic.version,
-      name: schematic.name,
-      ship_class: schematic.ship_class,
-      modules: schematic.modules.map((m: SchematicModule) => ({
-        slot: m.slot,
-        module: m.module,
-      })),
-    });
-  }, [saveSchematic]);
+  const handleSaveSchematic = useCallback(
+    async (schematic: SchematicData): Promise<boolean> => {
+      return saveSchematic({
+        version: schematic.version,
+        name: schematic.name,
+        ship_class: schematic.ship_class,
+        modules: schematic.modules.map((m: SchematicModule) => ({
+          slot: m.slot,
+          module: m.module,
+        })),
+      });
+    },
+    [saveSchematic]
+  );
 
   // Schematic load handler - converts SchematicFile to SchematicData format
   const handleLoadSchematic = useCallback(async (): Promise<SchematicData | null> => {
@@ -205,14 +210,21 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
       version: file.version,
       name: file.name,
       ship_class: file.ship_class,
-      modules: file.modules.map((m): SchematicModule => ({
-        slot: m.slot,
-        module: m.module,
-      })),
+      modules: file.modules.map(
+        (m): SchematicModule => ({
+          slot: m.slot,
+          module: m.module,
+        })
+      ),
     };
   }, [loadSchematic]);
 
-  console.log('[LobbyWorkflow] Rendering with currentStep:', currentStep, 'selectedTeamId:', selectedTeamId);
+  console.log(
+    "[LobbyWorkflow] Rendering with currentStep:",
+    currentStep,
+    "selectedTeamId:",
+    selectedTeamId
+  );
 
   // Load players to get the current player data
   useEffect(() => {
@@ -227,7 +239,7 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
           }
         }
       } catch (error) {
-        console.error('Error loading players:', error);
+        console.error("Error loading players:", error);
       } finally {
         setLoadingPlayers(false);
       }
@@ -241,19 +253,19 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
   // Load teams to get the current team data
   useEffect(() => {
     const loadTeams = async () => {
-      console.log('[LobbyWorkflow] Loading teams for selectedTeamId:', selectedTeamId);
+      console.log("[LobbyWorkflow] Loading teams for selectedTeamId:", selectedTeamId);
       setLoadingTeams(true);
       try {
         const response = await fetch(`${apiUrl}/v1/teams`);
         if (response.ok) {
           const data = await response.json();
           if (data.teams) {
-            console.log('[LobbyWorkflow] Teams loaded:', data.teams);
+            console.log("[LobbyWorkflow] Teams loaded:", data.teams);
             setTeams(data.teams);
           }
         }
       } catch (error) {
-        console.error('Error loading teams:', error);
+        console.error("Error loading teams:", error);
       } finally {
         setLoadingTeams(false);
       }
@@ -271,24 +283,14 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
 
   // Route to appropriate view based on workflow step
   switch (currentStep) {
-    case 'player':
-      return (
-        <PlayerSelectionView
-          apiUrl={apiUrl}
-          onDisconnect={handleDisconnect}
-        />
-      );
+    case "player":
+      return <PlayerSelectionView apiUrl={apiUrl} onDisconnect={handleDisconnect} />;
 
-    case 'team': {
-      const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
+    case "team": {
+      const currentPlayer = players.find((p) => p.id === selectedPlayerId);
       if (!currentPlayer) {
         // If we don't have player data yet, go back to player selection
-        return (
-          <PlayerSelectionView
-            apiUrl={apiUrl}
-            onDisconnect={handleDisconnect}
-          />
-        );
+        return <PlayerSelectionView apiUrl={apiUrl} onDisconnect={handleDisconnect} />;
       }
       return (
         <TeamSelectionView
@@ -300,30 +302,37 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
       );
     }
 
-    case 'ship': {
-      console.log('[LobbyWorkflow] Ship case - loadingPlayers:', loadingPlayers, 'loadingTeams:', loadingTeams);
-      const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
-      const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
-      console.log('[LobbyWorkflow] currentPlayer:', currentPlayer, 'currentTeam:', currentTeam);
-      
+    case "ship": {
+      console.log(
+        "[LobbyWorkflow] Ship case - loadingPlayers:",
+        loadingPlayers,
+        "loadingTeams:",
+        loadingTeams
+      );
+      const currentPlayer = players.find((p) => p.id === selectedPlayerId);
+      const currentTeam = teams.find((t) => t.id === selectedTeamId);
+      console.log("[LobbyWorkflow] currentPlayer:", currentPlayer, "currentTeam:", currentTeam);
+
       // Show loading state while data is being fetched
       if (loadingPlayers || loadingTeams || !currentPlayer || !currentTeam) {
-        console.log('[LobbyWorkflow] Showing loading screen');
+        console.log("[LobbyWorkflow] Showing loading screen");
         return (
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            height: '100vh',
-            fontFamily: 'var(--frigate-font-mono)',
-            color: 'var(--frigate-text-secondary)',
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100vh",
+              fontFamily: "var(--frigate-font-mono)",
+              color: "var(--frigate-text-secondary)",
+            }}
+          >
             LOADING SHIP SELECTION...
           </div>
         );
       }
-      
-      console.log('[LobbyWorkflow] Rendering ShipSelectionView');
+
+      console.log("[LobbyWorkflow] Rendering ShipSelectionView");
       return (
         <ShipSelectionView
           apiUrl={apiUrl}
@@ -337,21 +346,29 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
       );
     }
 
-    case 'design': {
-      const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
-      const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
+    case "design": {
+      const currentPlayer = players.find((p) => p.id === selectedPlayerId);
+      const currentTeam = teams.find((t) => t.id === selectedTeamId);
 
       // Show loading state while data is being fetched
-      if (loadingPlayers || loadingTeams || !currentPlayer || !currentTeam || !selectedBlueprintId) {
+      if (
+        loadingPlayers ||
+        loadingTeams ||
+        !currentPlayer ||
+        !currentTeam ||
+        !selectedBlueprintId
+      ) {
         return (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100vh',
-            fontFamily: 'var(--frigate-font-mono)',
-            color: 'var(--frigate-text-secondary)',
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100vh",
+              fontFamily: "var(--frigate-font-mono)",
+              color: "var(--frigate-text-secondary)",
+            }}
+          >
             LOADING SHIP DESIGN WORKSPACE...
           </div>
         );
@@ -361,7 +378,7 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
         <ShipDesignWorkspace
           apiUrl={apiUrl}
           player={currentPlayer}
-          team={currentTeam}
+          team={{ ...currentTeam, credits: currentTeam.credits ?? 0 }}
           blueprintId={selectedBlueprintId}
           onBack={() => {}}
           onDisconnect={handleDisconnect}
@@ -372,21 +389,29 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
       );
     }
 
-    case 'inventory': {
-      const currentPlayer = players.find((p: any) => p.id === selectedPlayerId);
-      const currentTeam = teams.find((t: any) => t.id === selectedTeamId);
+    case "inventory": {
+      const currentPlayer = players.find((p) => p.id === selectedPlayerId);
+      const currentTeam = teams.find((t) => t.id === selectedTeamId);
 
       // Show loading state while data is being fetched
-      if (loadingPlayers || loadingTeams || !currentPlayer || !currentTeam || !selectedBlueprintId) {
+      if (
+        loadingPlayers ||
+        loadingTeams ||
+        !currentPlayer ||
+        !currentTeam ||
+        !selectedBlueprintId
+      ) {
         return (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100vh',
-            fontFamily: 'var(--frigate-font-mono)',
-            color: 'var(--frigate-text-secondary)',
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100vh",
+              fontFamily: "var(--frigate-font-mono)",
+              color: "var(--frigate-text-secondary)",
+            }}
+          >
             LOADING INVENTORY WORKSPACE...
           </div>
         );
@@ -396,24 +421,19 @@ function LobbyWorkflow({ apiUrl, onDisconnect }: { apiUrl: string; onDisconnect:
         <InventoryWorkspace
           apiUrl={apiUrl}
           player={currentPlayer}
-          team={currentTeam}
+          team={{ id: currentTeam.id, name: currentTeam.name, credits: currentTeam.credits ?? 0 }}
           blueprintId={selectedBlueprintId}
           onBack={() => {}}
           onDisconnect={handleDisconnect}
           onRegisterCargo={() => {
-            console.log('Cargo registered!');
+            console.log("Cargo registered!");
           }}
         />
       );
     }
 
     default:
-      return (
-        <PlayerSelectionView
-          apiUrl={apiUrl}
-          onDisconnect={handleDisconnect}
-        />
-      );
+      return <PlayerSelectionView apiUrl={apiUrl} onDisconnect={handleDisconnect} />;
   }
 }
 

@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, ReactNode } from 'react';
-import { Button } from '../components';
-import { BOX_DRAWING } from '../constants';
+import React, { useEffect, useRef, ReactNode } from "react";
+import { BOX_DRAWING } from "../constants";
 
 export interface CenteredModalProps {
   title: string;
@@ -29,13 +28,13 @@ export function CenteredModal({
   useEffect(() => {
     if (!isOpen) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         handleClose();
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, isDirty, onClose]);
 
   useEffect(() => {
@@ -55,9 +54,7 @@ export function CenteredModal({
 
   const handleClose = () => {
     if (isDirty) {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Are you sure you want to close?'
-      );
+      const confirmed = window.confirm("You have unsaved changes. Are you sure you want to close?");
       if (!confirmed) return;
     }
     onClose();
@@ -68,17 +65,17 @@ export function CenteredModal({
   return (
     <div
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 1000,
-        animation: 'fadeIn 150ms ease-in-out',
+        animation: "fadeIn 150ms ease-in-out",
       }}
       onClick={handleOverlayClick}
       role="presentation"
@@ -90,39 +87,39 @@ export function CenteredModal({
         aria-labelledby="modal-title"
         tabIndex={-1}
         style={{
-          backgroundColor: 'var(--frigate-bg-primary)',
-          border: '2px solid var(--frigate-primary)',
+          backgroundColor: "var(--frigate-bg-primary)",
+          border: "2px solid var(--frigate-primary)",
           borderRadius: 0,
           width: `${width}px`,
-          maxWidth: '90vw',
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column',
-          fontFamily: 'var(--frigate-font-mono)',
-          boxShadow: 'none',
-          outline: 'none',
+          maxWidth: "90vw",
+          maxHeight: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily: "var(--frigate-font-mono)",
+          boxShadow: "none",
+          outline: "none",
         }}
         className={className}
       >
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: 'var(--frigate-space-4)',
-            borderBottom: '1px solid var(--frigate-border-light)',
-            backgroundColor: 'var(--frigate-bg-secondary)',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "var(--frigate-space-4)",
+            borderBottom: "1px solid var(--frigate-border-light)",
+            backgroundColor: "var(--frigate-bg-secondary)",
           }}
         >
           <h2
             id="modal-title"
             style={{
               margin: 0,
-              fontSize: 'var(--frigate-font-heading)',
+              fontSize: "var(--frigate-font-heading)",
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              color: 'var(--frigate-text-primary)',
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: "var(--frigate-text-primary)",
             }}
           >
             {BOX_DRAWING.VERTICAL_HEAVY} {title}
@@ -131,21 +128,21 @@ export function CenteredModal({
             onClick={handleClose}
             aria-label="Close modal"
             style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--frigate-text-secondary)',
-              fontSize: 'var(--frigate-font-heading)',
-              cursor: 'pointer',
-              padding: 'var(--frigate-space-2)',
-              fontFamily: 'var(--frigate-font-mono)',
+              background: "transparent",
+              border: "none",
+              color: "var(--frigate-text-secondary)",
+              fontSize: "var(--frigate-font-heading)",
+              cursor: "pointer",
+              padding: "var(--frigate-space-2)",
+              fontFamily: "var(--frigate-font-mono)",
               fontWeight: 700,
-              transition: 'color 50ms ease',
+              transition: "color 50ms ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--frigate-danger)';
+              e.currentTarget.style.color = "var(--frigate-danger)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--frigate-text-secondary)';
+              e.currentTarget.style.color = "var(--frigate-text-secondary)";
             }}
           >
             [X]
@@ -153,10 +150,10 @@ export function CenteredModal({
         </div>
         <div
           style={{
-            padding: 'var(--frigate-space-6)',
-            overflowY: 'auto',
+            padding: "var(--frigate-space-6)",
+            overflowY: "auto",
             flex: 1,
-            color: 'var(--frigate-text-primary)',
+            color: "var(--frigate-text-primary)",
           }}
         >
           {children}
@@ -164,12 +161,12 @@ export function CenteredModal({
         {actions && (
           <div
             style={{
-              padding: 'var(--frigate-space-4)',
-              borderTop: '1px solid var(--frigate-border-light)',
-              backgroundColor: 'var(--frigate-bg-secondary)',
-              display: 'flex',
-              gap: 'var(--frigate-space-3)',
-              justifyContent: 'flex-end',
+              padding: "var(--frigate-space-4)",
+              borderTop: "1px solid var(--frigate-border-light)",
+              backgroundColor: "var(--frigate-bg-secondary)",
+              display: "flex",
+              gap: "var(--frigate-space-3)",
+              justifyContent: "flex-end",
             }}
           >
             {actions}

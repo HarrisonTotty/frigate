@@ -91,9 +91,10 @@ interface ModuleSlotBrowserHeaderProps {
  * <ModuleSlotBrowserHeader buildPointsUsed={180} buildPointsMax={250} />
  * ```
  */
-export const ModuleSlotBrowserHeader: React.FC<
-  ModuleSlotBrowserHeaderProps
-> = ({ buildPointsUsed, buildPointsMax }) => {
+export const ModuleSlotBrowserHeader: React.FC<ModuleSlotBrowserHeaderProps> = ({
+  buildPointsUsed,
+  buildPointsMax,
+}) => {
   const usagePercent = (buildPointsUsed / buildPointsMax) * 100;
   let variant: "success" | "warning" | "danger" = "success";
 
@@ -113,7 +114,12 @@ export const ModuleSlotBrowserHeader: React.FC<
           <span
             style={{
               ...componentStyles.bpValue,
-              color: variant === "danger" ? "var(--frigate-danger)" : variant === "warning" ? "var(--frigate-warning)" : "var(--frigate-success)",
+              color:
+                variant === "danger"
+                  ? "var(--frigate-danger)"
+                  : variant === "warning"
+                    ? "var(--frigate-warning)"
+                    : "var(--frigate-success)",
             }}
             aria-label={`Build points: ${buildPointsUsed} of ${buildPointsMax}`}
           >
@@ -128,16 +134,12 @@ export const ModuleSlotBrowserHeader: React.FC<
             variant={variant}
             aria-label={`Build points usage: ${usagePercent.toFixed(1)}%`}
           />
-          <div style={componentStyles.percentageDisplay}>
-            {usagePercent.toFixed(1)}%
-          </div>
+          <div style={componentStyles.percentageDisplay}>{usagePercent.toFixed(1)}%</div>
         </div>
       </div>
 
       <div style={componentStyles.hints} role="status">
-        <span style={{ display: "block" }}>
-          [↑/↓] Navigate • [ENTER] Add • [ESC] Close
-        </span>
+        <span style={{ display: "block" }}>[↑/↓] Navigate • [ENTER] Add • [ESC] Close</span>
       </div>
     </div>
   );

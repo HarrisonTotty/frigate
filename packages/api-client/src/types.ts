@@ -316,40 +316,40 @@ export type ConnectionStatus = "idle" | "connecting" | "connected" | "disconnect
 
 /**
  * Module slot type definition from HYPERION API
- * 
+ *
  * Represents a type of module slot that can be added to a ship blueprint.
  * Defined in HYPERION `data/module-slots/*.yaml` files.
- * 
+ *
  * Examples: "power-core", "impulse-engine", "shield-generator"
  */
 export interface ModuleSlot {
   /** Unique slot type ID */
   readonly id: string;
-  
+
   /** Display name of the module slot */
   readonly name: string;
-  
+
   /** Brief description of the module slot */
   readonly description: string;
   /** Deprecated alias for description (kept for backward compatibility) */
   readonly desc?: string;
-  
+
   /** Extended description for lore/details */
   readonly extendedDescription?: string;
   /** Deprecated alias for extendedDescription */
   readonly extended_desc?: string;
-  
+
   /** Module groups for UI filtering and ship bonuses */
   readonly groups: readonly string[];
-  
+
   /** Whether at least one of this module type is required on a ship */
   readonly required: boolean;
-  
+
   /** Whether this module slot has different variants */
   readonly hasVariants: boolean;
   /** Deprecated alias (existing server field) */
   readonly has_varients?: boolean;
-  
+
   /** Base cost in build points to add this slot to a ship */
   readonly base_cost: number;
 
@@ -358,51 +358,51 @@ export interface ModuleSlot {
 
   /** Maximum number of slots of this type allowed on a ship */
   readonly max_slots: number;
-  
+
   /** Base hit points allocated to a module of this type */
   readonly base_hp: number;
-  
+
   /** Base power consumption at 100% power, per second (MW) */
   readonly base_power_consumption: number;
-  
+
   /** Base heat generation at 100% power, per second (K) */
   readonly base_heat_generation: number;
-  
+
   /** Base weight of the module slot (kg) */
   readonly base_weight: number;
 }
 
 /**
  * Module variant definition from HYPERION API
- * 
+ *
  * Represents a specific implementation of a module slot type.
  * Defined in HYPERION data/modules/ subdirectories (YAML files).
- * 
+ *
  * Examples: "mk2-fusion-reactor" (variant of "power-core")
  */
 export interface ModuleVariant {
   /** Unique variant ID */
   readonly id: string;
-  
+
   /** Module slot type this variant fits into (references ModuleSlot.id) */
   readonly type: string;
-  
+
   /** Display name - the "title" shown to users */
   readonly name: string;
-  
+
   /** Model identifier for lore/details */
   readonly model: string;
-  
+
   /** Manufacturer name for lore/details */
   readonly manufacturer: string;
-  
+
   /** Brief description */
   readonly description: string;
   readonly desc?: string;
-  
+
   /** Extended description/backstory for lore purposes */
   readonly lore?: string;
-  
+
   /** Variant cost in build points (added to slot base_cost) */
   readonly cost: number;
 
@@ -411,16 +411,16 @@ export interface ModuleVariant {
 
   /** Additional HP beyond slot base_hp */
   readonly additional_hp: number;
-  
+
   /** Additional power consumption beyond slot base (MW) */
   readonly additional_power_consumption: number;
-  
+
   /** Additional heat generation beyond slot base (K) */
   readonly additional_heat_generation: number;
-  
+
   /** Additional weight beyond slot base (kg) */
   readonly additional_weight: number;
-  
+
   /** Type-specific stats (e.g., energy_production for power cores, max_thrust for engines) */
   readonly stats: Record<string, unknown>;
 }
@@ -441,59 +441,59 @@ export interface ShipAggregateStats {
 
 /**
  * Module instance on a ship blueprint
- * 
+ *
  * Represents an installed module slot with optional variant selection.
  * This is what gets stored on a Blueprint.
  */
 export interface ModuleInstance {
   /** Unique instance ID */
   readonly id: string;
-  
+
   /** Module slot type ID (references ModuleSlot.id) */
   readonly module_slot_id: string;
-  
+
   /** Selected variant ID (null if slot doesn't have variants or not yet selected) */
   readonly variant_id: string | null;
 }
 
 /**
  * Module slots catalog response from HYPERION API
- * 
+ *
  * Response from GET /v1/catalog/module-slots
  */
 export interface ModuleSlotsResponse {
   /** List of all available module slot types */
   readonly slots: readonly ModuleSlot[];
-  
+
   /** Total count of module slot types */
   readonly count: number;
 }
 
 /**
  * Module variants catalog response from HYPERION API
- * 
+ *
  * Response from GET /v1/catalog/modules/<slot_id>
  */
 export interface ModuleVariantsResponse {
   /** Module slot type ID these variants belong to */
   readonly module_id: string;
-  
+
   /** List of available variants for this module slot type */
   readonly variants: readonly ModuleVariant[];
-  
+
   /** Total count of variants */
   readonly count: number;
 }
 
 /**
  * Request to add a module slot to a blueprint
- * 
+ *
  * Used with POST /v1/blueprints/<id>/modules
  */
 export interface AddModuleRequest {
   /** Module slot type ID to add */
   readonly module_slot_id: string;
-  
+
   /** Optional: variant ID to select immediately */
   readonly variant_id?: string;
 }
@@ -520,7 +520,7 @@ export interface UpdateModuleVariantRequest {
  * - missiles: Guided missiles - any missile works if launcher installed
  * - torpedos: Heavy torpedoes - any torpedo works if tube installed
  */
-export type AmmoCategory = 'kinetic' | 'missiles' | 'torpedos';
+export type AmmoCategory = "kinetic" | "missiles" | "torpedos";
 
 /**
  * Ammunition configuration from catalog API

@@ -18,10 +18,10 @@ import {
   type ThreatContact,
   type Vector3,
   RestClient,
-  WebSocketManager
+  WebSocketManager,
 } from "@frigate/api-client";
 import type { ModuleInstance } from "@frigate/api-client";
-import blueprintReducer, { initialBlueprintState, type BlueprintState } from './blueprint';
+import blueprintReducer, { initialBlueprintState, type BlueprintState } from "./blueprint";
 import { indexById } from "@frigate/utils";
 
 export interface SessionState {
@@ -83,11 +83,21 @@ interface FrigateStoreState {
   uiAddInstance(blueprintId: string, instance: ModuleInstance): void;
   uiRemoveInstance(blueprintId: string, instanceId: string): void;
   uiSetInstanceVariant(blueprintId: string, instanceId: string, variantId: string | null): void;
-  loadUiBlueprintRemote(apiBase: string, blueprintId: string): Promise<any | null>;
+  loadUiBlueprintRemote(apiBase: string, blueprintId: string): Promise<unknown | null>;
   // Remote-backed optimistic blueprint operations
-  addInstanceRemote(apiBase: string, blueprintId: string, slotTypeId: string, variantId?: string | null): Promise<ModuleInstance>;
+  addInstanceRemote(
+    apiBase: string,
+    blueprintId: string,
+    slotTypeId: string,
+    variantId?: string | null
+  ): Promise<ModuleInstance>;
   removeInstanceRemote(apiBase: string, blueprintId: string, instanceId: string): Promise<boolean>;
-  setInstanceVariantRemote(apiBase: string, blueprintId: string, instanceId: string, variantId: string | null): Promise<boolean>;
+  setInstanceVariantRemote(
+    apiBase: string,
+    blueprintId: string,
+    instanceId: string,
+    variantId: string | null
+  ): Promise<boolean>;
   upsertShips(ships: readonly Ship[]): void;
   upsertStations(stations: readonly Station[]): void;
   setScienceContacts(contacts: readonly ScienceContact[]): void;
@@ -102,7 +112,10 @@ interface FrigateStoreState {
 
 type FrigateStoreCreator = StateCreator<FrigateStoreState, [], [], FrigateStoreState>;
 
-type EventOf<TType extends HyperionEvent["type"]> = Extract<HyperionEvent, { readonly type: TType }>;
+type EventOf<TType extends HyperionEvent["type"]> = Extract<
+  HyperionEvent,
+  { readonly type: TType }
+>;
 
 const RECENT_EVENT_LIMIT = 100;
 const COMMUNICATION_LIMIT = 200;
@@ -121,7 +134,7 @@ function createDefaultHelmStatus(): HelmStatus {
     rotationRate: cloneVector(),
     warpActive: false,
     dockingMode: false,
-    effectiveWeight: 0
+    effectiveWeight: 0,
   };
 }
 
@@ -132,7 +145,7 @@ function mergeHelmStatus(status: HelmStatus | undefined, partial: Partial<HelmSt
     rotationRate: cloneVector(partial.rotationRate ?? base.rotationRate),
     warpActive: partial.warpActive ?? base.warpActive,
     dockingMode: partial.dockingMode ?? base.dockingMode,
-    effectiveWeight: partial.effectiveWeight ?? base.effectiveWeight
+    effectiveWeight: partial.effectiveWeight ?? base.effectiveWeight,
   };
 }
 
@@ -140,7 +153,11 @@ function convertRotationToVector(rotation: RotationCommand): Vector3 {
   return { x: rotation.pitch, y: rotation.yaw, z: rotation.roll };
 }
 
-function updateMutationCount(record: Record<string, number>, key: string, delta: number): Record<string, number> {
+function updateMutationCount(
+  record: Record<string, number>,
+  key: string,
+  delta: number
+): Record<string, number> {
   const current = record[key] ?? 0;
   const next = current + delta;
   if (next <= 0) {
@@ -166,7 +183,10 @@ function mapModulesById(modules: readonly ModuleStatus[]): Record<string, Module
   }, {});
 }
 
-function findDockingEntryForShip(record: Record<string, DockingStatus>, shipId: string): { key: string; status: DockingStatus } | null {
+function findDockingEntryForShip(
+  record: Record<string, DockingStatus>,
+  shipId: string
+): { key: string; status: DockingStatus } | null {
   for (const [key, status] of Object.entries(record)) {
     if (status.shipId === shipId) {
       return { key, status };
@@ -190,16 +210,18 @@ function loadSessionFromStorage(): SessionState | null {
       : [];
     const permissions: Record<string, boolean> = {};
     if (parsed.permissions && typeof parsed.permissions === "object") {
-      Object.entries(parsed.permissions as Record<string, unknown>).forEach(([permission, value]) => {
-        permissions[permission] = Boolean(value);
-      });
+      Object.entries(parsed.permissions as Record<string, unknown>).forEach(
+        ([permission, value]) => {
+          permissions[permission] = Boolean(value);
+        }
+      );
     }
     return {
       playerId: typeof parsed.playerId === "string" ? parsed.playerId : null,
       teamId: typeof parsed.teamId === "string" ? parsed.teamId : null,
       shipId: typeof parsed.shipId === "string" ? parsed.shipId : null,
       assignedRoles,
-      permissions
+      permissions,
     };
   } catch {
     return null;
@@ -218,7 +240,7 @@ function persistSession(session: SessionState): void {
         teamId: session.teamId,
         shipId: session.shipId,
         assignedRoles: session.assignedRoles,
-        permissions: session.permissions
+        permissions: session.permissions,
       })
     );
   } catch {
@@ -243,7 +265,9 @@ function shouldPersistSession(session: SessionState): boolean {
 
 const dockingKey = (shipId: string, stationId: string) => `${shipId}:${stationId}`;
 
-function toPermissionMap(permissions?: readonly string[] | Record<string, boolean>): Record<string, boolean> {
+function toPermissionMap(
+  permissions?: readonly string[] | Record<string, boolean>
+): Record<string, boolean> {
   if (!permissions) {
     return {};
   }
@@ -268,7 +292,7 @@ const createBaseSession = (): SessionState => ({
   teamId: null,
   shipId: null,
   assignedRoles: [],
-  permissions: {}
+  permissions: {},
 });
 
 const initialSessionState = loadSessionFromStorage() ?? createBaseSession();
@@ -296,8 +320,12 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       const nextSession: SessionState = {
         ...state.session,
         ...update,
-        assignedRoles: update.assignedRoles ? [...update.assignedRoles] : [...state.session.assignedRoles],
-        permissions: update.permissions ? toPermissionMap(update.permissions) : { ...state.session.permissions }
+        assignedRoles: update.assignedRoles
+          ? [...update.assignedRoles]
+          : [...state.session.assignedRoles],
+        permissions: update.permissions
+          ? toPermissionMap(update.permissions)
+          : { ...state.session.permissions },
       };
       if (shouldPersistSession(nextSession)) {
         persistSession(nextSession);
@@ -309,7 +337,9 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
   },
   hasPermission: (permission: string) => Boolean(get().session.permissions[permission]),
   setConnectionStatus: (status: ConnectionStatus) => {
-    set((state: FrigateStoreState) => (state.connectionStatus === status ? state : { ...state, connectionStatus: status }));
+    set((state: FrigateStoreState) =>
+      state.connectionStatus === status ? state : { ...state, connectionStatus: status }
+    );
   },
   loadInitialData: async (client: RestClient) => {
     const [players, teams, blueprints, ships, stations] = await Promise.all([
@@ -317,7 +347,7 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       client.teams.list(),
       client.blueprints.list(),
       client.ships.list(),
-      client.stations.list()
+      client.stations.list(),
     ]);
 
     set((state: FrigateStoreState) => ({
@@ -326,7 +356,7 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       teams: indexById(teams),
       blueprints: indexById(blueprints),
       ships: indexById(ships),
-      stations: indexById(stations)
+      stations: indexById(stations),
     }));
   },
   openUiBlueprint: (blueprintId: string, blueprint?: Partial<BlueprintState>) => {
@@ -343,7 +373,13 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       const res = await fetch(`${apiBase}/v1/blueprints/${blueprintId}`);
       if (!res.ok) return null;
       const data = await res.json();
-      set((state: FrigateStoreState) => ({ ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: { ...initialBlueprintState, ...data } } }));
+      set((state: FrigateStoreState) => ({
+        ...state,
+        uiBlueprints: {
+          ...state.uiBlueprints,
+          [blueprintId]: { ...initialBlueprintState, ...data },
+        },
+      }));
       return data;
     } catch (err) {
       return null;
@@ -361,40 +397,55 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
   uiAddInstance: (blueprintId: string, instance: ModuleInstance) => {
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/addInstance', payload: instance });
+      const next = blueprintReducer(current, { type: "blueprint/addInstance", payload: instance });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
   },
   uiRemoveInstance: (blueprintId: string, instanceId: string) => {
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/removeInstance', payload: { instanceId } });
+      const next = blueprintReducer(current, {
+        type: "blueprint/removeInstance",
+        payload: { instanceId },
+      });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
   },
   uiSetInstanceVariant: (blueprintId: string, instanceId: string, variantId: string | null) => {
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/setVariant', payload: { instanceId, variantId } });
+      const next = blueprintReducer(current, {
+        type: "blueprint/setVariant",
+        payload: { instanceId, variantId },
+      });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
   },
   // Remote-backed optimistic blueprint operations
-  addInstanceRemote: async (apiBase: string, blueprintId: string, slotTypeId: string, variantId?: string | null) => {
+  addInstanceRemote: async (
+    apiBase: string,
+    blueprintId: string,
+    slotTypeId: string,
+    variantId?: string | null
+  ) => {
     const tempId = `tmp-${Math.random().toString(36).slice(2, 9)}`;
-    const instance: ModuleInstance = { id: tempId, module_slot_id: slotTypeId, variant_id: variantId ?? null } as ModuleInstance;
+    const instance: ModuleInstance = {
+      id: tempId,
+      module_slot_id: slotTypeId,
+      variant_id: variantId ?? null,
+    } as ModuleInstance;
     // optimistic locally
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/addInstance', payload: instance });
+      const next = blueprintReducer(current, { type: "blueprint/addInstance", payload: instance });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
 
     if (!blueprintId) return instance;
     try {
       const res = await fetch(`${apiBase}/v1/blueprints/${blueprintId}/modules`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ module_slot_id: slotTypeId, variant_id: variantId }),
       });
       if (res.ok) {
@@ -404,10 +455,13 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         let createdInstance: ModuleInstance | undefined;
         if (responseData.modules && Array.isArray(responseData.modules)) {
           // Find the instance that matches our slot type and doesn't already exist locally
-          const currentInstances = (get().uiBlueprints[blueprintId] ?? initialBlueprintState).instances;
-          const existingIds = new Set(currentInstances.map(i => i.id).filter(id => !id.startsWith('tmp-')));
-          createdInstance = responseData.modules.find((m: ModuleInstance) =>
-            m.module_slot_id === slotTypeId && !existingIds.has(m.id)
+          const currentInstances = (get().uiBlueprints[blueprintId] ?? initialBlueprintState)
+            .instances;
+          const existingIds = new Set(
+            currentInstances.map((i) => i.id).filter((id) => !id.startsWith("tmp-"))
+          );
+          createdInstance = responseData.modules.find(
+            (m: ModuleInstance) => m.module_slot_id === slotTypeId && !existingIds.has(m.id)
           );
         }
 
@@ -417,7 +471,7 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
             createdInstance = responseData as ModuleInstance;
           } else {
             // Can't find the instance - keep the optimistic one
-            console.warn('[FrigateStore] Could not extract created instance from server response');
+            console.warn("[FrigateStore] Could not extract created instance from server response");
             return instance;
           }
         }
@@ -425,8 +479,14 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         // replace temporary with server instance
         set((state: FrigateStoreState) => {
           const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-          const afterRemove = blueprintReducer(current, { type: 'blueprint/removeInstance', payload: { instanceId: tempId } });
-          const afterAdd = blueprintReducer(afterRemove, { type: 'blueprint/addInstance', payload: createdInstance as ModuleInstance });
+          const afterRemove = blueprintReducer(current, {
+            type: "blueprint/removeInstance",
+            payload: { instanceId: tempId },
+          });
+          const afterAdd = blueprintReducer(afterRemove, {
+            type: "blueprint/addInstance",
+            payload: createdInstance as ModuleInstance,
+          });
           return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: afterAdd } };
         });
         return createdInstance as ModuleInstance;
@@ -435,7 +495,10 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       // rollback
       set((state: FrigateStoreState) => {
         const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-        const next = blueprintReducer(current, { type: 'blueprint/removeInstance', payload: { instanceId: tempId } });
+        const next = blueprintReducer(current, {
+          type: "blueprint/removeInstance",
+          payload: { instanceId: tempId },
+        });
         return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
       });
       throw err;
@@ -443,23 +506,34 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
     // in non-ok case, rollback
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/removeInstance', payload: { instanceId: tempId } });
+      const next = blueprintReducer(current, {
+        type: "blueprint/removeInstance",
+        payload: { instanceId: tempId },
+      });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
     return instance;
   },
   removeInstanceRemote: async (apiBase: string, blueprintId: string, instanceId: string) => {
-    const backup = (get().uiBlueprints[blueprintId] ?? initialBlueprintState).instances.find(i => i.id === instanceId) ?? null;
+    const backup =
+      (get().uiBlueprints[blueprintId] ?? initialBlueprintState).instances.find(
+        (i) => i.id === instanceId
+      ) ?? null;
     // optimistic remove
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/removeInstance', payload: { instanceId } });
+      const next = blueprintReducer(current, {
+        type: "blueprint/removeInstance",
+        payload: { instanceId },
+      });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
 
     if (!blueprintId) return false;
     try {
-      const res = await fetch(`${apiBase}/v1/blueprints/${blueprintId}/modules/${instanceId}`, { method: 'DELETE' });
+      const res = await fetch(`${apiBase}/v1/blueprints/${blueprintId}/modules/${instanceId}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
         return true;
       }
@@ -467,7 +541,10 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       if (backup) {
         set((state: FrigateStoreState) => {
           const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-          const next = blueprintReducer(current, { type: 'blueprint/addInstance', payload: backup });
+          const next = blueprintReducer(current, {
+            type: "blueprint/addInstance",
+            payload: backup,
+          });
           return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
         });
       }
@@ -476,56 +553,63 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       if (backup) {
         set((state: FrigateStoreState) => {
           const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-          const next = blueprintReducer(current, { type: 'blueprint/addInstance', payload: backup });
+          const next = blueprintReducer(current, {
+            type: "blueprint/addInstance",
+            payload: backup,
+          });
           return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
         });
       }
       throw err;
     }
   },
-  setInstanceVariantRemote: async (apiBase: string, blueprintId: string, instanceId: string, variantId: string | null) => {
+  setInstanceVariantRemote: async (
+    apiBase: string,
+    blueprintId: string,
+    instanceId: string,
+    variantId: string | null
+  ) => {
     // optimistic set
     set((state: FrigateStoreState) => {
       const current = state.uiBlueprints[blueprintId] ?? initialBlueprintState;
-      const next = blueprintReducer(current, { type: 'blueprint/setVariant', payload: { instanceId, variantId } });
+      const next = blueprintReducer(current, {
+        type: "blueprint/setVariant",
+        payload: { instanceId, variantId },
+      });
       return { ...state, uiBlueprints: { ...state.uiBlueprints, [blueprintId]: next } };
     });
 
     if (!blueprintId) return false;
-    try {
-      const res = await fetch(`${apiBase}/v1/blueprints/${blueprintId}/modules/${instanceId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variant_id: variantId }),
-      });
-      if (res.ok) {
-        return true;
-      }
-      // server rejected — caller should reload; rollback is possible but we'll let caller handle reload
-      return false;
-    } catch (err) {
-      throw err;
+    const res = await fetch(`${apiBase}/v1/blueprints/${blueprintId}/modules/${instanceId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ variant_id: variantId }),
+    });
+    if (res.ok) {
+      return true;
     }
+    // server rejected — caller should reload; rollback is possible but we'll let caller handle reload
+    return false;
   },
   refreshHelmStatus: async (shipId: string, client: RestClient) => {
     const status = await client.helm.status(shipId);
     set((state: FrigateStoreState) => ({
       ...state,
-      helmStatuses: { ...state.helmStatuses, [shipId]: status }
+      helmStatuses: { ...state.helmStatuses, [shipId]: status },
     }));
   },
   refreshEngineeringStatus: async (shipId: string, client: RestClient) => {
     const status = await client.engineering.status(shipId);
     set((state: FrigateStoreState) => ({
       ...state,
-      engineeringStatuses: { ...state.engineeringStatuses, [shipId]: status }
+      engineeringStatuses: { ...state.engineeringStatuses, [shipId]: status },
     }));
   },
   refreshModuleStatuses: async (shipId: string, client: RestClient) => {
     const statuses = await client.engineering.modulesStatus(shipId);
     set((state: FrigateStoreState) => ({
       ...state,
-      moduleStatuses: { ...state.moduleStatuses, [shipId]: mapModulesById(statuses) }
+      moduleStatuses: { ...state.moduleStatuses, [shipId]: mapModulesById(statuses) },
     }));
   },
   setHelmThrust: async (client: RestClient, shipId: string, thrust: number) => {
@@ -535,14 +619,14 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
     set((state: FrigateStoreState) => ({
       ...state,
       helmStatuses: { ...state.helmStatuses, [shipId]: optimisticStatus },
-      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1)
+      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1),
     }));
     try {
       await client.helm.setThrust(shipId, thrust);
       const latest = await client.helm.status(shipId);
       set((state: FrigateStoreState) => ({
         ...state,
-        helmStatuses: { ...state.helmStatuses, [shipId]: latest }
+        helmStatuses: { ...state.helmStatuses, [shipId]: latest },
       }));
     } catch (error) {
       set((state: FrigateStoreState) => ({
@@ -550,31 +634,33 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         helmStatuses:
           previousStatus != null
             ? { ...state.helmStatuses, [shipId]: previousStatus }
-            : removeKey(state.helmStatuses, shipId)
+            : removeKey(state.helmStatuses, shipId),
       }));
       throw error;
     } finally {
       set((state: FrigateStoreState) => ({
         ...state,
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1),
       }));
     }
   },
   rotateHelm: async (client: RestClient, shipId: string, rotation: RotationCommand) => {
     const mutationKey = createMutationKey("helm.rotate", shipId);
     const previousStatus = get().helmStatuses[shipId];
-    const optimisticStatus = mergeHelmStatus(previousStatus, { rotationRate: convertRotationToVector(rotation) });
+    const optimisticStatus = mergeHelmStatus(previousStatus, {
+      rotationRate: convertRotationToVector(rotation),
+    });
     set((state: FrigateStoreState) => ({
       ...state,
       helmStatuses: { ...state.helmStatuses, [shipId]: optimisticStatus },
-      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1)
+      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1),
     }));
     try {
       await client.helm.rotate(shipId, rotation);
       const latest = await client.helm.status(shipId);
       set((state: FrigateStoreState) => ({
         ...state,
-        helmStatuses: { ...state.helmStatuses, [shipId]: latest }
+        helmStatuses: { ...state.helmStatuses, [shipId]: latest },
       }));
     } catch (error) {
       set((state: FrigateStoreState) => ({
@@ -582,31 +668,34 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         helmStatuses:
           previousStatus != null
             ? { ...state.helmStatuses, [shipId]: previousStatus }
-            : removeKey(state.helmStatuses, shipId)
+            : removeKey(state.helmStatuses, shipId),
       }));
       throw error;
     } finally {
       set((state: FrigateStoreState) => ({
         ...state,
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1),
       }));
     }
   },
   stopHelm: async (client: RestClient, shipId: string) => {
     const mutationKey = createMutationKey("helm.stop", shipId);
     const previousStatus = get().helmStatuses[shipId];
-    const optimisticStatus = mergeHelmStatus(previousStatus, { thrust: 0, rotationRate: cloneVector() });
+    const optimisticStatus = mergeHelmStatus(previousStatus, {
+      thrust: 0,
+      rotationRate: cloneVector(),
+    });
     set((state: FrigateStoreState) => ({
       ...state,
       helmStatuses: { ...state.helmStatuses, [shipId]: optimisticStatus },
-      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1)
+      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1),
     }));
     try {
       await client.helm.stop(shipId);
       const latest = await client.helm.status(shipId);
       set((state: FrigateStoreState) => ({
         ...state,
-        helmStatuses: { ...state.helmStatuses, [shipId]: latest }
+        helmStatuses: { ...state.helmStatuses, [shipId]: latest },
       }));
     } catch (error) {
       set((state: FrigateStoreState) => ({
@@ -614,13 +703,13 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         helmStatuses:
           previousStatus != null
             ? { ...state.helmStatuses, [shipId]: previousStatus }
-            : removeKey(state.helmStatuses, shipId)
+            : removeKey(state.helmStatuses, shipId),
       }));
       throw error;
     } finally {
       set((state: FrigateStoreState) => ({
         ...state,
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1),
       }));
     }
   },
@@ -632,13 +721,13 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
     set((state: FrigateStoreState) => ({
       ...state,
       dockingStatuses: { ...state.dockingStatuses, [key]: optimisticStatus },
-      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1)
+      mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1),
     }));
     try {
       const result = await client.communications.requestDocking(shipId, stationId);
       set((state: FrigateStoreState) => ({
         ...state,
-        dockingStatuses: { ...state.dockingStatuses, [key]: result }
+        dockingStatuses: { ...state.dockingStatuses, [key]: result },
       }));
     } catch (error) {
       set((state: FrigateStoreState) => ({
@@ -646,13 +735,13 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         dockingStatuses:
           previousStatus != null
             ? { ...state.dockingStatuses, [key]: previousStatus }
-            : removeKey(state.dockingStatuses, key)
+            : removeKey(state.dockingStatuses, key),
       }));
       throw error;
     } finally {
       set((state: FrigateStoreState) => ({
         ...state,
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1),
       }));
     }
   },
@@ -664,40 +753,42 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
         ...state,
         dockingStatuses: {
           ...state.dockingStatuses,
-          [existing.key]: { shipId, stationId: existing.status.stationId, status: "undocking" }
+          [existing.key]: { shipId, stationId: existing.status.stationId, status: "undocking" },
         },
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1),
       }));
     } else {
       set((state: FrigateStoreState) => ({
         ...state,
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, 1),
       }));
     }
     try {
       await client.communications.undock(shipId);
       if (existing) {
-        const refreshed = await client.stations.getDockingStatus(existing.status.stationId, shipId).catch(() => null);
+        const refreshed = await client.stations
+          .getDockingStatus(existing.status.stationId, shipId)
+          .catch(() => null);
         set((state: FrigateStoreState) => ({
           ...state,
           dockingStatuses:
             refreshed != null
               ? { ...state.dockingStatuses, [existing.key]: refreshed }
-              : removeKey(state.dockingStatuses, existing.key)
+              : removeKey(state.dockingStatuses, existing.key),
         }));
       }
     } catch (error) {
       if (existing) {
         set((state: FrigateStoreState) => ({
           ...state,
-          dockingStatuses: { ...state.dockingStatuses, [existing.key]: existing.status }
+          dockingStatuses: { ...state.dockingStatuses, [existing.key]: existing.status },
         }));
       }
       throw error;
     } finally {
       set((state: FrigateStoreState) => ({
         ...state,
-        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1)
+        mutationCounters: updateMutationCount(state.mutationCounters, mutationKey, -1),
       }));
     }
   },
@@ -770,7 +861,10 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
   },
   clearContacts: () => {
     set((state: FrigateStoreState) => {
-      if (Object.keys(state.scienceContacts).length === 0 && Object.keys(state.threatContacts).length === 0) {
+      if (
+        Object.keys(state.scienceContacts).length === 0 &&
+        Object.keys(state.threatContacts).length === 0
+      ) {
         return state;
       }
       return { ...state, scienceContacts: {}, threatContacts: {} };
@@ -795,10 +889,10 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
                 ...ship,
                 position: payload.position,
                 velocity: payload.velocity,
-                rotation: payload.rotation
-              }
+                rotation: payload.rotation,
+              },
             },
-            recentEvents
+            recentEvents,
           };
         }
         case "ship_status": {
@@ -815,10 +909,10 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
                 ...ship,
                 hull: payload.hull,
                 shields: payload.shields,
-                power: payload.power
-              }
+                power: payload.power,
+              },
             },
-            recentEvents
+            recentEvents,
           };
         }
         case "communication": {
@@ -826,7 +920,7 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
           return {
             ...state,
             communications: appendLimited(state.communications, payload, COMMUNICATION_LIMIT),
-            recentEvents
+            recentEvents,
           };
         }
         case "docking": {
@@ -838,10 +932,10 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
               [dockingKey(payload.shipId, payload.stationId)]: {
                 shipId: payload.shipId,
                 stationId: payload.stationId,
-                status: payload.status
-              }
+                status: payload.status,
+              },
             },
-            recentEvents
+            recentEvents,
           };
         }
         default:
@@ -854,20 +948,20 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       ...state,
       dockingStatuses: {
         ...state.dockingStatuses,
-        [dockingKey(status.shipId, status.stationId)]: status
-      }
+        [dockingKey(status.shipId, status.stationId)]: status,
+      },
     }));
   },
   recordCommunication: (event: CommunicationEvent) => {
     set((state: FrigateStoreState) => ({
       ...state,
-      communications: appendLimited(state.communications, event, COMMUNICATION_LIMIT)
+      communications: appendLimited(state.communications, event, COMMUNICATION_LIMIT),
     }));
   },
   recordEvent: (event: HyperionEvent) => {
     set((state: FrigateStoreState) => ({
       ...state,
-      recentEvents: appendLimited(state.recentEvents, event, RECENT_EVENT_LIMIT)
+      recentEvents: appendLimited(state.recentEvents, event, RECENT_EVENT_LIMIT),
     }));
   },
   removeShip: (shipId: string) => {
@@ -879,7 +973,7 @@ const storeCreator: FrigateStoreCreator = (set, get) => ({
       delete nextShips[shipId];
       return { ...state, ships: nextShips };
     });
-  }
+  },
 });
 
 export const createFrigateStore = () => create<FrigateStoreState>()(storeCreator);
@@ -891,19 +985,19 @@ export type { FrigateStoreState };
 export function useSessionStore(): SessionState;
 export function useSessionStore<T>(selector: (session: SessionState) => T): T;
 export function useSessionStore<T>(selector?: (session: SessionState) => T): SessionState | T {
-  if (selector) {
-    return useFrigateStore((state: FrigateStoreState) => selector(state.session));
-  }
-  return useFrigateStore((state: FrigateStoreState) => state.session);
+  return useFrigateStore((state: FrigateStoreState) =>
+    selector ? selector(state.session) : state.session
+  );
 }
 
 export function useUiBlueprintStore(): Record<string, BlueprintState>;
 export function useUiBlueprintStore<T>(selector: (ui: Record<string, BlueprintState>) => T): T;
-export function useUiBlueprintStore<T>(selector?: (ui: Record<string, BlueprintState>) => T): Record<string, BlueprintState> | T {
-  if (selector) {
-    return useFrigateStore((state: FrigateStoreState) => selector(state.uiBlueprints));
-  }
-  return useFrigateStore((state: FrigateStoreState) => state.uiBlueprints);
+export function useUiBlueprintStore<T>(
+  selector?: (ui: Record<string, BlueprintState>) => T
+): Record<string, BlueprintState> | T {
+  return useFrigateStore((state: FrigateStoreState) =>
+    selector ? selector(state.uiBlueprints) : state.uiBlueprints
+  );
 }
 
 /**
@@ -931,11 +1025,15 @@ export function useBlueprintActions(blueprintId: string) {
     closeUiBlueprint: () => closeUiBlueprint(blueprintId),
     uiAddInstance: (instance: ModuleInstance) => uiAddInstance(blueprintId, instance),
     uiRemoveInstance: (instanceId: string) => uiRemoveInstance(blueprintId, instanceId),
-    uiSetInstanceVariant: (instanceId: string, variantId: string | null) => uiSetInstanceVariant(blueprintId, instanceId, variantId),
+    uiSetInstanceVariant: (instanceId: string, variantId: string | null) =>
+      uiSetInstanceVariant(blueprintId, instanceId, variantId),
     // remote-backed helpers
-    addInstanceRemote: (apiBase: string, slotTypeId: string, variantId?: string | null) => addInstanceRemote(apiBase, blueprintId, slotTypeId, variantId),
-    removeInstanceRemote: (apiBase: string, instanceId: string) => removeInstanceRemote(apiBase, blueprintId, instanceId),
-    setInstanceVariantRemote: (apiBase: string, instanceId: string, variantId: string | null) => setInstanceVariantRemote(apiBase, blueprintId, instanceId, variantId),
+    addInstanceRemote: (apiBase: string, slotTypeId: string, variantId?: string | null) =>
+      addInstanceRemote(apiBase, blueprintId, slotTypeId, variantId),
+    removeInstanceRemote: (apiBase: string, instanceId: string) =>
+      removeInstanceRemote(apiBase, blueprintId, instanceId),
+    setInstanceVariantRemote: (apiBase: string, instanceId: string, variantId: string | null) =>
+      setInstanceVariantRemote(apiBase, blueprintId, instanceId, variantId),
   };
 }
 

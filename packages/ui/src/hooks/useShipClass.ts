@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
-import type { ShipClassDetails } from '../types/shipClass';
-import { createApiClient } from '../api/client';
+import { useCallback, useEffect, useState } from "react";
+import type { ShipClassDetails } from "../types/shipClass";
+import { createApiClient } from "../api/client";
 
 /**
  * Hook to fetch and cache ship class details by ID
@@ -13,7 +13,7 @@ import { createApiClient } from '../api/client';
  *   - error: Any error that occurred during fetch (or null)
  *   - refetch: Function to manually retry fetching the ship class
  */
-export function useShipClass(shipClassId: string | null | undefined, apiBase = '') {
+export function useShipClass(shipClassId: string | null | undefined, apiBase = "") {
   const [shipClass, setShipClass] = useState<ShipClassDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -29,7 +29,7 @@ export function useShipClass(shipClassId: string | null | undefined, apiBase = '
     setError(null);
 
     try {
-      const baseUrl = apiBase || 'http://localhost:8000';
+      const baseUrl = apiBase || "http://localhost:8000";
       const client = createApiClient({ baseUrl });
       const details = await client.getShipClass(shipClassId);
       setShipClass(details);

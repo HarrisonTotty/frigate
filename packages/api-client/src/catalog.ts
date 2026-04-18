@@ -6,29 +6,30 @@
 import type {
   ModuleSlot,
   ModuleVariant,
-  ModuleSlotsResponse,
   ModuleVariantsResponse,
   Ammunition,
   AmmoCategory,
-} from './types';
+} from "./types";
 
 // API endpoint paths (server exposes /v1/catalog/...)
-const MODULE_SLOTS_ENDPOINT = '/v1/catalog/module-slots';
+const MODULE_SLOTS_ENDPOINT = "/v1/catalog/module-slots";
 const MODULE_SLOT_DETAIL = (slotId: string) => `/v1/catalog/module-slots/${slotId}`;
 const MODULE_VARIANTS_FOR_SLOT = (slotId: string) => `/v1/catalog/modules/${slotId}`;
-const MODULE_VARIANT_DETAIL = (slotId: string, variantId: string) => `/v1/catalog/modules/${slotId}/${variantId}`;
+const MODULE_VARIANT_DETAIL = (slotId: string, variantId: string) =>
+  `/v1/catalog/modules/${slotId}/${variantId}`;
 
 // Ammunition API endpoint paths
-const AMMO_CATEGORIES_ENDPOINT = '/v1/catalog/ammo';
+const AMMO_CATEGORIES_ENDPOINT = "/v1/catalog/ammo";
 const AMMO_CATEGORY_LIST = (category: AmmoCategory) => `/v1/catalog/ammo/${category}`;
-const AMMO_DETAIL = (category: AmmoCategory, ammoId: string) => `/v1/catalog/ammo/${category}/${ammoId}`;
+const AMMO_DETAIL = (category: AmmoCategory, ammoId: string) =>
+  `/v1/catalog/ammo/${category}/${ammoId}`;
 
 /**
  * Fetch all module slots from the backend.
  */
 export async function fetchModuleSlots(): Promise<ModuleSlot[]> {
   const res = await fetch(MODULE_SLOTS_ENDPOINT);
-  if (!res.ok) throw new Error('Failed to fetch module slots');
+  if (!res.ok) throw new Error("Failed to fetch module slots");
   const data: { slots: string[] } = await res.json();
   // Fetch details for each slot ID
   const slotDetails = await Promise.all(
@@ -40,9 +41,9 @@ export async function fetchModuleSlots(): Promise<ModuleSlot[]> {
       return {
         ...slot,
         groups: Array.isArray(slot.groups) ? slot.groups : [],
-        description: slot.description ?? slot.desc ?? '',
-        extendedDescription: slot.extendedDescription ?? slot.extended_desc ?? '',
-        hasVariants: typeof slot.hasVariants === 'boolean' ? slot.hasVariants : !!slot.has_varients,
+        description: slot.description ?? slot.desc ?? "",
+        extendedDescription: slot.extendedDescription ?? slot.extended_desc ?? "",
+        hasVariants: typeof slot.hasVariants === "boolean" ? slot.hasVariants : !!slot.has_varients,
       };
     })
   );
@@ -54,15 +55,16 @@ export async function fetchModuleSlots(): Promise<ModuleSlot[]> {
  */
 export async function fetchModuleVariants(): Promise<ModuleVariant[]> {
   // This helper isn't used often; fetch all slots then their variants if needed.
-  throw new Error('fetchModuleVariants() not implemented: use CatalogResource.getModuleVariants(slotId)');
+  throw new Error(
+    "fetchModuleVariants() not implemented: use CatalogResource.getModuleVariants(slotId)"
+  );
 }
-
 
 /**
  * Catalog API resource for module slots and variants (Phase 1.4)
  */
 export class CatalogResource {
-  public constructor(private readonly http: { get: Function }) {}
+  public constructor(private readonly http: { get: (url: string) => Promise<unknown> }) {}
 
   /**
    * Get all module slot types
@@ -70,18 +72,19 @@ export class CatalogResource {
   public async getModuleSlots(): Promise<ModuleSlot[]> {
     const response = await this.http.get(MODULE_SLOTS_ENDPOINT);
     // assume http.get returns already-parsed JSON
-    const data = (response as unknown) as { slots: string[] };
+    const data = response as unknown as { slots: string[] };
     // Fetch details for each slot ID and normalize
     const slotDetails = await Promise.all(
       data.slots.map(async (slotId) => {
-        const slot = await this.http.get(MODULE_SLOT_DETAIL(slotId));
+        const slot = (await this.http.get(MODULE_SLOT_DETAIL(slotId))) as Record<string, unknown>;
         return {
           ...slot,
           groups: Array.isArray(slot.groups) ? slot.groups : [],
-          description: slot.description ?? slot.desc ?? '',
-          extendedDescription: slot.extendedDescription ?? slot.extended_desc ?? '',
-          hasVariants: typeof slot.hasVariants === 'boolean' ? slot.hasVariants : !!slot.has_varients,
-        };
+          description: slot.description ?? slot.desc ?? "",
+          extendedDescription: slot.extendedDescription ?? slot.extended_desc ?? "",
+          hasVariants:
+            typeof slot.hasVariants === "boolean" ? slot.hasVariants : !!slot.has_varients,
+        } as unknown as ModuleSlot;
       })
     );
     return slotDetails;
@@ -100,7 +103,7 @@ export class CatalogResource {
    */
   public async getModuleVariants(slotId: string): Promise<ModuleVariant[]> {
     const response = await this.http.get(MODULE_VARIANTS_FOR_SLOT(slotId));
-    const data = (response as unknown) as ModuleVariantsResponse;
+    const data = response as unknown as ModuleVariantsResponse;
     return Array.from(data.variants);
   }
 
@@ -142,7 +145,10 @@ export class CatalogResource {
    * @returns Ammunition details
    */
   public async getAmmoDetails(category: AmmoCategory, ammoId: string): Promise<Ammunition> {
-    const response = await this.http.get(AMMO_DETAIL(category, ammoId));
+    const response = (await this.http.get(AMMO_DETAIL(category, ammoId))) as Record<
+      string,
+      unknown
+    >;
     // Normalize and add category field if not present
     return {
       ...response,
@@ -179,7 +185,7 @@ export class CatalogResource {
  * @param apiBase - Base URL for the API (e.g., 'http://localhost:3000')
  * @returns Array of category identifiers
  */
-export async function fetchAmmoCategories(apiBase = ''): Promise<AmmoCategory[]> {
+export async function fetchAmmoCategories(apiBase = ""): Promise<AmmoCategory[]> {
   const url = apiBase ? `${apiBase}${AMMO_CATEGORIES_ENDPOINT}` : AMMO_CATEGORIES_ENDPOINT;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ammo categories: ${res.status}`);
@@ -192,10 +198,7 @@ export async function fetchAmmoCategories(apiBase = ''): Promise<AmmoCategory[]>
  * @param apiBase - Base URL for the API
  * @returns Array of ammunition IDs
  */
-export async function fetchAmmoInCategory(
-  category: AmmoCategory,
-  apiBase = ''
-): Promise<string[]> {
+export async function fetchAmmoInCategory(category: AmmoCategory, apiBase = ""): Promise<string[]> {
   const url = apiBase ? `${apiBase}${AMMO_CATEGORY_LIST(category)}` : AMMO_CATEGORY_LIST(category);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ammo in ${category}: ${res.status}`);
@@ -212,9 +215,11 @@ export async function fetchAmmoInCategory(
 export async function fetchAmmoDetails(
   category: AmmoCategory,
   ammoId: string,
-  apiBase = ''
+  apiBase = ""
 ): Promise<Ammunition> {
-  const url = apiBase ? `${apiBase}${AMMO_DETAIL(category, ammoId)}` : AMMO_DETAIL(category, ammoId);
+  const url = apiBase
+    ? `${apiBase}${AMMO_DETAIL(category, ammoId)}`
+    : AMMO_DETAIL(category, ammoId);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ammo ${ammoId}: ${res.status}`);
   const data = await res.json();
@@ -230,7 +235,7 @@ export async function fetchAmmoDetails(
  * @param apiBase - Base URL for the API
  * @returns Array of all ammunition with complete details
  */
-export async function fetchAllAmmunition(apiBase = ''): Promise<Ammunition[]> {
+export async function fetchAllAmmunition(apiBase = ""): Promise<Ammunition[]> {
   const categories = await fetchAmmoCategories(apiBase);
   const allAmmo: Ammunition[] = [];
 

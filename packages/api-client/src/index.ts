@@ -27,7 +27,7 @@ export class HyperionApiClient {
       baseUrl: options.baseUrl,
       timeoutMs: options.requestTimeoutMs,
       fetchImplementation: options.fetchImplementation,
-      defaultHeaders: options.defaultHeaders
+      defaultHeaders: options.defaultHeaders,
     });
     this.rest = new RestClient(this.http);
     this.catalog = new CatalogResource(this.http);
@@ -35,11 +35,11 @@ export class HyperionApiClient {
       baseUrl: options.baseUrl,
       path: options.graphqlPath,
       fetchImplementation: options.fetchImplementation as typeof fetch | undefined,
-      headers: options.defaultHeaders
+      headers: options.defaultHeaders,
     });
     this.websocket = new WebSocketManager({
       ...(options.websocketOptions ?? {}),
-      url: options.websocketUrl ?? this.deriveWebSocketUrl(options.baseUrl)
+      url: options.websocketUrl ?? this.deriveWebSocketUrl(options.baseUrl),
     });
   }
 

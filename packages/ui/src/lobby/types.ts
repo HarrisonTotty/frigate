@@ -5,8 +5,8 @@ import type {
   ModuleSlot,
   ModuleVariant,
   ModuleInstance,
-  ShipAggregateStats
-} from '@frigate/api-client';
+  ShipAggregateStats,
+} from "@frigate/api-client";
 
 /** Props for the Module Slot Browser (left column)
  * - Responsible for listing available slot types and adding a slot to blueprint

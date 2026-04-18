@@ -6,8 +6,8 @@ Frigate is the default frontend of HYPERION. It is a modular React application b
 
 Documentation for Frigate can be found in the `docs/` directory. In particular:
 
-* `architecture.md` - Details the high-level architecture of the frontend.
-* `design.md` - Details the overall visual design philosophy of the project.
+- `architecture.md` - Details the high-level architecture of the frontend.
+- `design.md` - Details the overall visual design philosophy of the project.
 
 ## Visual Design Guidelines
 
@@ -25,3 +25,21 @@ Frigate follows a strict design system philosophy to ensure consistency and main
 3. Stick to modern React and TypeScript best practices.
 4. Ensure all UI components follow the design philosophy outlined in `doc/design.md`.
 5. Always run the build and test suites after making changes to code.
+
+## Task Runner
+
+Common workflows are wired up in the root `justfile`. Prefer these over calling `pnpm` directly so the commands stay consistent across contributors and CI. Run `just` (no args) to list recipes.
+
+| Recipe                                         | Purpose                                          |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `just bootstrap`                               | Install workspace dependencies (`pnpm install`). |
+| `just lint` / `just lint-fix`                  | Run ESLint across all packages.                  |
+| `just typecheck`                               | Run `tsc --noEmit` across all packages.          |
+| `just test [ARGS]`                             | Run the Vitest suite; extra args are forwarded.  |
+| `just format` / `just format-check`            | Run Prettier in write or check mode.             |
+| `just build`                                   | Build every package.                             |
+| `just ci`                                      | Lint, typecheck, test, and build (matches CI).   |
+| `just web` / `just desktop` / `just storybook` | Launch dev shells.                               |
+| `just clean`                                   | Remove build artifacts and `node_modules`.       |
+
+After any code change, run `just ci` (or at minimum `just typecheck` and `just test`) before declaring the task complete.

@@ -1,9 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
+import React from "react";
+import clsx from "clsx";
 
 /**
  * TabPanel Component
- * 
+ *
  * Content container for tab panels. Use in conjunction with Tabs.
  */
 export interface TabPanelProps {
@@ -19,10 +19,10 @@ export function TabPanel({ children, value, activeTab, className }: TabPanelProp
   return (
     <div
       role="tabpanel"
-      className={clsx('frigate-tab-panel', className)}
+      className={clsx("frigate-tab-panel", className)}
       style={{
-        padding: 'var(--frigate-space-4)',
-        animation: 'frigate-fade-in var(--frigate-transition-fast)',
+        padding: "var(--frigate-space-4)",
+        animation: "frigate-fade-in var(--frigate-transition-fast)",
       }}
     >
       {children}

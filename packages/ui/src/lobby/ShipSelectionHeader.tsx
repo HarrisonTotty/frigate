@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button } from '../components';
-import type { Player } from './PlayerSelectionView';
-import type { Team } from './TeamBrowser';
+import React from "react";
+import { Button } from "../components";
+import type { Player } from "./PlayerSelectionView";
+import type { Team } from "./TeamBrowser";
 
 export interface ShipSelectionHeaderProps {
   player: Player;
@@ -22,21 +22,38 @@ export function ShipSelectionHeader({
   onChangePlayer,
   onChangeTeam,
   onDisconnect,
-  className = '',
+  className = "",
 }: ShipSelectionHeaderProps): React.ReactElement {
   return (
-    <div className={className} style={{
-      backgroundColor: 'var(--frigate-bg-surface)',
-      borderBottom: '1px solid var(--frigate-border-base)',
-      padding: 'var(--frigate-space-3) var(--frigate-space-4)'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-3)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)' }}>
-            <span style={{ fontFamily: 'var(--frigate-font-mono)', fontSize: 'var(--frigate-font-small)', color: 'var(--frigate-text-secondary)', textTransform: 'uppercase' }}>
+    <div
+      className={className}
+      style={{
+        backgroundColor: "var(--frigate-bg-surface)",
+        borderBottom: "1px solid var(--frigate-border-base)",
+        padding: "var(--frigate-space-3) var(--frigate-space-4)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-3)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-2)" }}>
+            <span
+              style={{
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-text-secondary)",
+                textTransform: "uppercase",
+              }}
+            >
               PLAYER:
             </span>
-            <span style={{ fontFamily: 'var(--frigate-font-mono)', fontSize: 'var(--frigate-font-small)', color: 'var(--frigate-primary)', fontWeight: 600 }}>
+            <span
+              style={{
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-primary)",
+                fontWeight: 600,
+              }}
+            >
               {player.name}_{formatPlayerId(player.id)}
             </span>
             <Button size="sm" variant="secondary" onClick={onChangePlayer}>
@@ -44,13 +61,27 @@ export function ShipSelectionHeader({
             </Button>
           </div>
 
-          <span style={{ color: 'var(--frigate-text-muted)' }}>|</span>
+          <span style={{ color: "var(--frigate-text-muted)" }}>|</span>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--frigate-space-2)' }}>
-            <span style={{ fontFamily: 'var(--frigate-font-mono)', fontSize: 'var(--frigate-font-small)', color: 'var(--frigate-text-secondary)', textTransform: 'uppercase' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--frigate-space-2)" }}>
+            <span
+              style={{
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-text-secondary)",
+                textTransform: "uppercase",
+              }}
+            >
               TEAM:
             </span>
-            <span style={{ fontFamily: 'var(--frigate-font-mono)', fontSize: 'var(--frigate-font-small)', color: 'var(--frigate-primary)', fontWeight: 600 }}>
+            <span
+              style={{
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-small)",
+                color: "var(--frigate-primary)",
+                fontWeight: 600,
+              }}
+            >
               {team.name}
             </span>
             <Button size="sm" variant="secondary" onClick={onChangeTeam}>

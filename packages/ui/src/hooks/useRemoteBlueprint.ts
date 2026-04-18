@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from "react";
 
 export function useRemoteBlueprint(apiUrl: string, blueprintId: string) {
-  const [blueprint, setBlueprint] = useState<any | null>(null);
+  const [blueprint, setBlueprint] = useState<unknown | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -18,8 +18,8 @@ export function useRemoteBlueprint(apiUrl: string, blueprintId: string) {
       const data = await res.json();
       setBlueprint(data);
       return data;
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err : new Error(String(err)));
       setBlueprint(null);
       return null;
     } finally {

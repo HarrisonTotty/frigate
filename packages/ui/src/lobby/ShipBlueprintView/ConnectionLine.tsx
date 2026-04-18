@@ -1,5 +1,5 @@
-import React from 'react';
-import type { ConnectionLineProps } from './types';
+import React from "react";
+import type { ConnectionLineProps } from "./types";
 
 /**
  * SVG line connecting a module marker to its attachment point on the ship
@@ -18,12 +18,12 @@ export function ConnectionLine({
   isEmpty = false,
 }: ConnectionLineProps) {
   const strokeColor = isHighlighted
-    ? 'var(--frigate-primary)'
+    ? "var(--frigate-primary)"
     : isEmpty
-      ? 'var(--frigate-border-muted)'
-      : 'var(--frigate-border-base)';
+      ? "var(--frigate-border-muted)"
+      : "var(--frigate-border-base)";
 
-  const strokeDasharray = isEmpty ? '4 2' : 'none';
+  const strokeDasharray = isEmpty ? "4 2" : "none";
   const strokeWidth = isHighlighted ? 1.5 : 1;
 
   return (
@@ -36,7 +36,7 @@ export function ConnectionLine({
       strokeWidth={strokeWidth}
       strokeDasharray={strokeDasharray}
       strokeLinecap="round"
-      style={{ transition: 'stroke 0.15s ease, stroke-width 0.15s ease' }}
+      style={{ transition: "stroke 0.15s ease, stroke-width 0.15s ease" }}
     />
   );
 }

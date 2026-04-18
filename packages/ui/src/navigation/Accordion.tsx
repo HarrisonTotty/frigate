@@ -1,9 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
+import React from "react";
+import clsx from "clsx";
 
 /**
  * Accordion Component
- * 
+ *
  * Expandable/collapsible content sections.
  */
 export interface AccordionItem {
@@ -22,7 +22,12 @@ export interface AccordionProps {
   className?: string;
 }
 
-export function Accordion({ items, multiple = false, defaultExpanded = [], className }: AccordionProps) {
+export function Accordion({
+  items,
+  multiple = false,
+  defaultExpanded = [],
+  className,
+}: AccordionProps) {
   const [expanded, setExpanded] = React.useState<Set<string>>(new Set(defaultExpanded));
 
   const toggleItem = (id: string) => {
@@ -41,7 +46,7 @@ export function Accordion({ items, multiple = false, defaultExpanded = [], class
   };
 
   return (
-    <div className={clsx('frigate-accordion', className)}>
+    <div className={clsx("frigate-accordion", className)}>
       {items.map((item) => {
         const isExpanded = expanded.has(item.id);
         return (
@@ -49,7 +54,7 @@ export function Accordion({ items, multiple = false, defaultExpanded = [], class
             key={item.id}
             className="frigate-accordion-item"
             style={{
-              borderBottom: '1px solid var(--frigate-border-base)',
+              borderBottom: "1px solid var(--frigate-border-base)",
             }}
           >
             <button
@@ -57,37 +62,37 @@ export function Accordion({ items, multiple = false, defaultExpanded = [], class
               aria-expanded={isExpanded}
               aria-disabled={item.disabled}
               style={{
-                width: '100%',
-                padding: 'var(--frigate-space-3) var(--frigate-space-4)',
-                backgroundColor: isExpanded ? 'var(--frigate-bg-raised)' : 'transparent',
-                border: 'none',
-                textAlign: 'left',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                cursor: item.disabled ? 'not-allowed' : 'pointer',
-                transition: 'background-color var(--frigate-transition-fast)',
-                fontFamily: 'var(--frigate-font-mono)',
-                fontSize: 'var(--frigate-font-body)',
-                color: item.disabled ? 'var(--frigate-text-muted)' : 'var(--frigate-text-primary)',
+                width: "100%",
+                padding: "var(--frigate-space-3) var(--frigate-space-4)",
+                backgroundColor: isExpanded ? "var(--frigate-bg-raised)" : "transparent",
+                border: "none",
+                textAlign: "left",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                cursor: item.disabled ? "not-allowed" : "pointer",
+                transition: "background-color var(--frigate-transition-fast)",
+                fontFamily: "var(--frigate-font-mono)",
+                fontSize: "var(--frigate-font-body)",
+                color: item.disabled ? "var(--frigate-text-muted)" : "var(--frigate-text-primary)",
                 opacity: item.disabled ? 0.5 : 1,
               }}
               onMouseEnter={(e) => {
                 if (!item.disabled && !isExpanded) {
-                  e.currentTarget.style.backgroundColor = 'var(--frigate-bg-surface)';
+                  e.currentTarget.style.backgroundColor = "var(--frigate-bg-surface)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!item.disabled && !isExpanded) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }
               }}
             >
               <span style={{ fontWeight: 500 }}>{item.title}</span>
               <span
                 style={{
-                  transition: 'transform var(--frigate-transition-fast)',
-                  transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: "transform var(--frigate-transition-fast)",
+                  transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
                 }}
               >
                 ▼
@@ -96,9 +101,9 @@ export function Accordion({ items, multiple = false, defaultExpanded = [], class
             {isExpanded && (
               <div
                 style={{
-                  padding: 'var(--frigate-space-4)',
-                  backgroundColor: 'var(--frigate-bg-surface)',
-                  animation: 'frigate-slide-down var(--frigate-transition-fast)',
+                  padding: "var(--frigate-space-4)",
+                  backgroundColor: "var(--frigate-bg-surface)",
+                  animation: "frigate-slide-down var(--frigate-transition-fast)",
                 }}
               >
                 {item.content}

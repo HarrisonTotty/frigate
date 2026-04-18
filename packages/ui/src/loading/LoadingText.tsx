@@ -9,35 +9,38 @@
  * <LoadingText message="PROCESSING DATA" size="small" />
  * ```
  */
-import React from 'react';
+import React from "react";
 
 export interface LoadingTextProps {
   /** Loading message to display */
   message?: string;
   /** Size variant */
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
   /** Additional CSS classes */
   className?: string;
 }
 
-export function LoadingText({ 
-  message = 'LOADING', 
-  size = 'medium',
-  className = '' 
+export function LoadingText({
+  message = "LOADING",
+  size = "medium",
+  className = "",
 }: LoadingTextProps) {
-  const fontSize = size === 'small' ? 'var(--frigate-font-tiny)' :
-                   size === 'large' ? 'var(--frigate-font-body)' :
-                   'var(--frigate-font-small)';
+  const fontSize =
+    size === "small"
+      ? "var(--frigate-font-tiny)"
+      : size === "large"
+        ? "var(--frigate-font-body)"
+        : "var(--frigate-font-small)";
 
   return (
     <div
       className={className}
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
+        fontFamily: "var(--frigate-font-mono)",
         fontSize,
-        color: 'var(--frigate-text-muted)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.1em',
+        color: "var(--frigate-text-muted)",
+        textTransform: "uppercase",
+        letterSpacing: "0.1em",
       }}
     >
       <span className="frigate-loading">{message}</span>

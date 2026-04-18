@@ -103,17 +103,17 @@ Shared helper functions:
 
 ## Technology Stack
 
-| Layer | Technologies |
-|-------|--------------|
-| Frontend Framework | React 18, TypeScript 5.3 |
-| State Management | Zustand, Immer |
-| HTTP/API | axios, graphql-request, zod |
-| Real-time | WebSocket with auto-reconnect |
-| Desktop | Tauri 2.x, Rust, clap |
-| Build Tools | Vite, tsup, Storybook 8 |
-| Styling | CSS variables, CSS modules |
-| Testing | Vitest |
-| Package Manager | pnpm workspaces |
+| Layer              | Technologies                  |
+| ------------------ | ----------------------------- |
+| Frontend Framework | React 18, TypeScript 5.3      |
+| State Management   | Zustand, Immer                |
+| HTTP/API           | axios, graphql-request, zod   |
+| Real-time          | WebSocket with auto-reconnect |
+| Desktop            | Tauri 2.x, Rust, clap         |
+| Build Tools        | Vite, tsup, Storybook 8       |
+| Styling            | CSS variables, CSS modules    |
+| Testing            | Vitest                        |
+| Package Manager    | pnpm workspaces               |
 
 ## Data Flow
 
@@ -242,10 +242,7 @@ The lobby workflow state persists to localStorage, enabling auto-resume:
 WebSocket subscriptions can filter events server-side:
 
 ```typescript
-websocket.subscribe(
-  (event) => store.applyEvent(event),
-  { shipId: "...", teamId: "..." }
-)
+websocket.subscribe((event) => store.applyEvent(event), { shipId: "...", teamId: "..." });
 ```
 
 ## Lobby Workflow

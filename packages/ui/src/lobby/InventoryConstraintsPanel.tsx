@@ -6,8 +6,8 @@
  * Includes summary stats and Register Cargo button.
  * Follows the technical aesthetic with monospace typography and ASCII styling.
  */
-import React from 'react';
-import { ProgressBar } from '../components';
+import React from "react";
+import { ProgressBar } from "../components";
 
 /**
  * Inventory statistics for display
@@ -70,38 +70,39 @@ function ConstraintBar({
 }) {
   const percent = max > 0 ? (value / max) * 100 : 0;
   const exceeded = value > max && max > 0;
-  const status = exceeded ? 'danger' : percent > 90 ? 'warning' : 'primary';
+  const status = exceeded ? "danger" : percent > 90 ? "warning" : "primary";
   const fmt = formatValue ?? ((v: number) => String(v));
 
   return (
-    <div style={{ marginBottom: 'var(--frigate-space-2)' }}>
+    <div style={{ marginBottom: "var(--frigate-space-2)" }}>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '2px',
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "2px",
         }}
       >
         <span
           style={{
-            fontSize: 'var(--frigate-font-tiny)',
-            color: 'var(--frigate-text-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            fontSize: "var(--frigate-font-tiny)",
+            color: "var(--frigate-text-secondary)",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
         >
           {label}
         </span>
         <span
           style={{
-            fontSize: 'var(--frigate-font-tiny)',
-            color: exceeded ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
+            fontSize: "var(--frigate-font-tiny)",
+            color: exceeded ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
             fontWeight: exceeded ? 700 : 400,
           }}
         >
-          {fmt(value)}/{max > 0 ? fmt(max) : '—'}{unit}
-          {exceeded && showOverLimit && ' [!]'}
+          {fmt(value)}/{max > 0 ? fmt(max) : "—"}
+          {unit}
+          {exceeded && showOverLimit && " [!]"}
         </span>
       </div>
       <ProgressBar
@@ -130,28 +131,28 @@ function StatRow({
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 'var(--frigate-space-1) 0',
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "var(--frigate-space-1) 0",
       }}
     >
       <span
         style={{
-          fontSize: 'var(--frigate-font-tiny)',
-          color: 'var(--frigate-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          fontSize: "var(--frigate-font-tiny)",
+          color: "var(--frigate-text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
         }}
       >
         {label}
       </span>
       <span
         style={{
-          fontSize: 'var(--frigate-font-small)',
-          color: warning ? 'var(--frigate-danger)' : 'var(--frigate-text-primary)',
+          fontSize: "var(--frigate-font-small)",
+          color: warning ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
           fontWeight: 600,
-          fontFamily: 'var(--frigate-font-mono)',
+          fontFamily: "var(--frigate-font-mono)",
         }}
       >
         {value}
@@ -167,28 +168,28 @@ function PanelHeader() {
   return (
     <div
       style={{
-        backgroundColor: 'var(--frigate-bg-base)',
-        padding: 'var(--frigate-space-2)',
-        borderBottom: '1px solid var(--frigate-border-base)',
+        backgroundColor: "var(--frigate-bg-base)",
+        padding: "var(--frigate-space-2)",
+        borderBottom: "1px solid var(--frigate-border-base)",
       }}
     >
       <div
         style={{
           fontWeight: 800,
-          fontSize: 'var(--frigate-font-heading)',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
+          fontSize: "var(--frigate-font-heading)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
         }}
       >
         CARGO STATUS
       </div>
       <div
         style={{
-          fontSize: 'var(--frigate-font-small)',
-          color: 'var(--frigate-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginTop: 'var(--frigate-space-1)',
+          fontSize: "var(--frigate-font-small)",
+          color: "var(--frigate-text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginTop: "var(--frigate-space-1)",
         }}
       >
         RESOURCE ALLOCATION
@@ -204,20 +205,20 @@ function PanelFooter({ warningCount }: { warningCount: number }) {
   return (
     <div
       style={{
-        fontSize: 'var(--frigate-font-tiny)',
-        color: warningCount > 0 ? 'var(--frigate-danger)' : 'var(--frigate-text-muted)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        padding: 'var(--frigate-space-1) var(--frigate-space-2)',
-        borderTop: '1px solid var(--frigate-border-base)',
-        letterSpacing: '0.05em',
-        display: 'flex',
-        justifyContent: 'space-between',
+        fontSize: "var(--frigate-font-tiny)",
+        color: warningCount > 0 ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
+        backgroundColor: "var(--frigate-bg-base)",
+        padding: "var(--frigate-space-1) var(--frigate-space-2)",
+        borderTop: "1px solid var(--frigate-border-base)",
+        letterSpacing: "0.05em",
+        display: "flex",
+        justifyContent: "space-between",
       }}
     >
-      <span>[STATUS: {warningCount > 0 ? 'WARNING' : 'NOMINAL'}]</span>
+      <span>[STATUS: {warningCount > 0 ? "WARNING" : "NOMINAL"}]</span>
       {warningCount > 0 && (
         <span>
-          [{warningCount} ISSUE{warningCount > 1 ? 'S' : ''}]
+          [{warningCount} ISSUE{warningCount > 1 ? "S" : ""}]
         </span>
       )}
     </div>
@@ -242,54 +243,54 @@ function RegisterCargoButton({
   const hasConflicts = isOverWeight || isOverBudget;
   const hasWarnings = stats.warnings.length > 0;
 
-  let buttonColor = 'var(--frigate-success)';
+  let buttonColor = "var(--frigate-success)";
   if (hasConflicts) {
-    buttonColor = 'var(--frigate-danger)';
+    buttonColor = "var(--frigate-danger)";
   } else if (hasWarnings) {
-    buttonColor = 'var(--frigate-warning)';
+    buttonColor = "var(--frigate-warning)";
   }
 
   const getStatusText = () => {
-    if (isOverWeight) return 'Cargo exceeds weight limit';
-    if (isOverBudget) return 'Insufficient credits';
+    if (isOverWeight) return "Cargo exceeds weight limit";
+    if (isOverBudget) return "Insufficient credits";
     if (hasWarnings) return `${stats.warnings.length} warning(s)`;
-    return 'Ready to register cargo';
+    return "Ready to register cargo";
   };
 
   return (
     <div
       style={{
-        padding: 'var(--frigate-space-2)',
-        backgroundColor: 'var(--frigate-bg-base)',
-        borderTop: '1px solid var(--frigate-border-base)',
+        padding: "var(--frigate-space-2)",
+        backgroundColor: "var(--frigate-bg-base)",
+        borderTop: "1px solid var(--frigate-border-base)",
       }}
     >
       <button
         onClick={onClick}
         disabled={disabled || hasConflicts}
         style={{
-          width: '100%',
-          padding: 'var(--frigate-space-2) var(--frigate-space-3)',
-          backgroundColor: 'transparent',
+          width: "100%",
+          padding: "var(--frigate-space-2) var(--frigate-space-3)",
+          backgroundColor: "transparent",
           border: `2px solid ${buttonColor}`,
           color: buttonColor,
-          fontFamily: 'var(--frigate-font-mono)',
-          fontSize: 'var(--frigate-font-small)',
+          fontFamily: "var(--frigate-font-mono)",
+          fontSize: "var(--frigate-font-small)",
           fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          cursor: disabled || hasConflicts ? 'not-allowed' : 'pointer',
+          textTransform: "uppercase",
+          letterSpacing: "0.1em",
+          cursor: disabled || hasConflicts ? "not-allowed" : "pointer",
           opacity: disabled || hasConflicts ? 0.5 : 1,
-          transition: 'all 0.15s ease',
+          transition: "all 0.15s ease",
         }}
         onMouseEnter={(e) => {
           if (!disabled && !hasConflicts) {
             e.currentTarget.style.backgroundColor = buttonColor;
-            e.currentTarget.style.color = 'var(--frigate-bg-base)';
+            e.currentTarget.style.color = "var(--frigate-bg-base)";
           }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.backgroundColor = "transparent";
           e.currentTarget.style.color = buttonColor;
         }}
         title={getStatusText()}
@@ -315,7 +316,7 @@ export function InventoryConstraintsPanel({
   stats,
   onRegisterCargo,
   canRegister = true,
-  className = '',
+  className = "",
 }: InventoryConstraintsPanelProps): React.ReactElement {
   const warningCount = stats.warnings.length;
   const isOverWeight = stats.cargoWeight > stats.weightCapacity;
@@ -325,16 +326,16 @@ export function InventoryConstraintsPanel({
     <div
       className={className}
       style={{
-        fontFamily: 'var(--frigate-font-mono)',
-        background: 'var(--frigate-bg-base)',
-        color: 'var(--frigate-text-primary)',
-        border: '1px solid var(--frigate-border-base)',
+        fontFamily: "var(--frigate-font-mono)",
+        background: "var(--frigate-bg-base)",
+        color: "var(--frigate-text-primary)",
+        border: "1px solid var(--frigate-border-base)",
         borderRadius: 0,
-        boxShadow: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        height: '100%',
+        boxShadow: "none",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        height: "100%",
       }}
       aria-label="Cargo Status"
       role="region"
@@ -346,9 +347,9 @@ export function InventoryConstraintsPanel({
       <div
         style={{
           flex: 1,
-          padding: 'var(--frigate-space-2)',
-          overflow: 'auto',
-          backgroundColor: 'var(--frigate-bg-surface)',
+          padding: "var(--frigate-space-2)",
+          overflow: "auto",
+          backgroundColor: "var(--frigate-bg-surface)",
         }}
       >
         {/* Constraint Bars */}
@@ -373,9 +374,9 @@ export function InventoryConstraintsPanel({
         {/* Summary Stats */}
         <div
           style={{
-            marginTop: 'var(--frigate-space-3)',
-            paddingTop: 'var(--frigate-space-2)',
-            borderTop: '1px solid var(--frigate-border-base)',
+            marginTop: "var(--frigate-space-3)",
+            paddingTop: "var(--frigate-space-2)",
+            borderTop: "1px solid var(--frigate-border-base)",
           }}
         >
           <StatRow label="AMMO TYPES" value={stats.ammoTypesLoaded} />
@@ -386,18 +387,18 @@ export function InventoryConstraintsPanel({
         {warningCount > 0 && (
           <div
             style={{
-              marginTop: 'var(--frigate-space-3)',
-              paddingTop: 'var(--frigate-space-2)',
-              borderTop: '1px solid var(--frigate-border-base)',
+              marginTop: "var(--frigate-space-3)",
+              paddingTop: "var(--frigate-space-2)",
+              borderTop: "1px solid var(--frigate-border-base)",
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-warning)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: 'var(--frigate-space-1)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-warning)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "var(--frigate-space-1)",
                 fontWeight: 700,
               }}
             >
@@ -407,11 +408,11 @@ export function InventoryConstraintsPanel({
               <div
                 key={idx}
                 style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-warning)',
-                  paddingLeft: 'var(--frigate-space-1)',
-                  borderLeft: '2px solid var(--frigate-warning)',
-                  marginBottom: '2px',
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-warning)",
+                  paddingLeft: "var(--frigate-space-1)",
+                  borderLeft: "2px solid var(--frigate-warning)",
+                  marginBottom: "2px",
                 }}
               >
                 {warning}
@@ -424,18 +425,18 @@ export function InventoryConstraintsPanel({
         {(isOverWeight || isOverBudget) && (
           <div
             style={{
-              marginTop: 'var(--frigate-space-3)',
-              paddingTop: 'var(--frigate-space-2)',
-              borderTop: '1px solid var(--frigate-border-base)',
+              marginTop: "var(--frigate-space-3)",
+              paddingTop: "var(--frigate-space-2)",
+              borderTop: "1px solid var(--frigate-border-base)",
             }}
           >
             <div
               style={{
-                fontSize: 'var(--frigate-font-tiny)',
-                color: 'var(--frigate-danger)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: 'var(--frigate-space-1)',
+                fontSize: "var(--frigate-font-tiny)",
+                color: "var(--frigate-danger)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "var(--frigate-space-1)",
                 fontWeight: 700,
               }}
             >
@@ -444,11 +445,11 @@ export function InventoryConstraintsPanel({
             {isOverWeight && (
               <div
                 style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-danger)',
-                  paddingLeft: 'var(--frigate-space-1)',
-                  borderLeft: '2px solid var(--frigate-danger)',
-                  marginBottom: '2px',
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-danger)",
+                  paddingLeft: "var(--frigate-space-1)",
+                  borderLeft: "2px solid var(--frigate-danger)",
+                  marginBottom: "2px",
                 }}
               >
                 Weight limit exceeded
@@ -457,11 +458,11 @@ export function InventoryConstraintsPanel({
             {isOverBudget && (
               <div
                 style={{
-                  fontSize: 'var(--frigate-font-tiny)',
-                  color: 'var(--frigate-danger)',
-                  paddingLeft: 'var(--frigate-space-1)',
-                  borderLeft: '2px solid var(--frigate-danger)',
-                  marginBottom: '2px',
+                  fontSize: "var(--frigate-font-tiny)",
+                  color: "var(--frigate-danger)",
+                  paddingLeft: "var(--frigate-space-1)",
+                  borderLeft: "2px solid var(--frigate-danger)",
+                  marginBottom: "2px",
                 }}
               >
                 Credit budget exceeded
@@ -475,11 +476,7 @@ export function InventoryConstraintsPanel({
       <PanelFooter warningCount={warningCount + (isOverWeight ? 1 : 0) + (isOverBudget ? 1 : 0)} />
 
       {/* Register Cargo Button */}
-      <RegisterCargoButton
-        onClick={onRegisterCargo}
-        disabled={!canRegister}
-        stats={stats}
-      />
+      <RegisterCargoButton onClick={onRegisterCargo} disabled={!canRegister} stats={stats} />
     </div>
   );
 }

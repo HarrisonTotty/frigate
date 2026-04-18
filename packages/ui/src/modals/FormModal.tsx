@@ -1,6 +1,6 @@
-import React, { useEffect, ReactNode } from 'react';
-import { CenteredModal } from './CenteredModal';
-import { Button } from '../components';
+import React, { useEffect, ReactNode } from "react";
+import { CenteredModal } from "./CenteredModal";
+import { Button } from "../components";
 
 export interface FormModalProps {
   title: string;
@@ -22,8 +22,8 @@ export function FormModal({
   onSubmit,
   onCancel,
   children,
-  submitLabel = 'CREATE',
-  cancelLabel = 'CANCEL',
+  submitLabel = "CREATE",
+  cancelLabel = "CANCEL",
   submitDisabled = false,
   isLoading = false,
   width = 600,
@@ -32,13 +32,13 @@ export function FormModal({
   useEffect(() => {
     if (!isOpen) return;
     const handleEnter = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey && !submitDisabled && !isLoading) {
+      if (e.key === "Enter" && !e.shiftKey && !submitDisabled && !isLoading) {
         e.preventDefault();
         onSubmit();
       }
     };
-    document.addEventListener('keydown', handleEnter);
-    return () => document.removeEventListener('keydown', handleEnter);
+    document.addEventListener("keydown", handleEnter);
+    return () => document.removeEventListener("keydown", handleEnter);
   }, [isOpen, onSubmit, submitDisabled, isLoading]);
 
   return (
@@ -70,9 +70,9 @@ export function FormModal({
           onSubmit();
         }}
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--frigate-space-4)',
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--frigate-space-4)",
         }}
       >
         {children}

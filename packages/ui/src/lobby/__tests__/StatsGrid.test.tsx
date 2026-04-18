@@ -127,13 +127,9 @@ describe("StatsGrid Component", () => {
   it("applies test IDs for all items", () => {
     render(<StatsGrid items={basicItems} />);
 
-    expect(
-      screen.getByTestId("stat-item-total-cost")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("stat-item-total-cost")).toBeInTheDocument();
     expect(screen.getByTestId("stat-item-weight")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("stat-item-power-draw")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("stat-item-power-draw")).toBeInTheDocument();
     expect(screen.getByTestId("stat-item-heat")).toBeInTheDocument();
   });
 

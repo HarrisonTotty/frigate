@@ -3,8 +3,5 @@
   "identifier": "default",
   "description": "Default capabilities for the Frigate desktop application",
   "windows": ["*"],
-  "permissions": [
-    "core:default",
-    "dialog:default"
-  ]
+  "permissions": ["core:default", "dialog:default"]
 }

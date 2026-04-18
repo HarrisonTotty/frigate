@@ -1,4 +1,9 @@
-import { GraphQLClient, type RequestDocument, type RequestOptions, type Variables } from "graphql-request";
+import {
+  GraphQLClient,
+  type RequestDocument,
+  type RequestOptions,
+  type Variables,
+} from "graphql-request";
 import type { FetchImplementation } from "./http";
 
 export interface GraphQLClientOptions {
@@ -29,7 +34,7 @@ export class HyperionGraphQLClient {
     const endpoint = `${options.baseUrl.replace(/\/$/, "")}${options.path ?? "/graphql"}`;
     this.client = new GraphQLClient(endpoint, {
       headers: options.headers,
-      fetch: options.fetchImplementation
+      fetch: options.fetchImplementation,
     });
     this.retries = Math.max(0, options.retries ?? 2);
     this.retryDelayMs = Math.max(50, options.retryDelayMs ?? 250);
@@ -56,9 +61,10 @@ export class HyperionGraphQLClient {
     let attempt = 0;
     for (;;) {
       try {
-        const options = (variables
-          ? { document, variables }
-          : { document }) as RequestOptions<TVariables, TData>;
+        const options = (variables ? { document, variables } : { document }) as RequestOptions<
+          TVariables,
+          TData
+        >;
         return await this.client.request<TData, TVariables>(options);
       } catch (error) {
         attempt += 1;

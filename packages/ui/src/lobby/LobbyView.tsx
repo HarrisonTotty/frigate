@@ -1,15 +1,15 @@
 /**
  * Lobby view component
- * 
+ *
  * Main orchestrator for the pre-mission lobby experience, combining player registration,
  * team browsing, and team membership management.
  */
 
-import React, { useState } from 'react';
-import { Grid } from '../layout';
-import { PlayerRegistration, type Player } from './PlayerRegistration';
-import { TeamBrowser, type Team } from './TeamBrowser';
-import { TeamMembership } from './TeamMembership';
+import React, { useState } from "react";
+import { Grid } from "../layout";
+import { PlayerRegistration, type Player } from "./PlayerRegistration";
+import { TeamBrowser, type Team } from "./TeamBrowser";
+import { TeamMembership } from "./TeamMembership";
 
 /**
  * Lobby view props
@@ -29,7 +29,7 @@ export interface LobbyViewProps {
 
 /**
  * Lobby view component
- * 
+ *
  * Provides a complete pre-mission lobby interface with player registration,
  * team management, and membership controls.
  */
@@ -37,8 +37,8 @@ export function LobbyView({
   apiUrl,
   enableWebSocket = false,
   pollingInterval = 5000,
-  onAdvance,
-  className = '',
+  onAdvance: _onAdvance,
+  className = "",
 }: LobbyViewProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
   const [selectedTeam, setSelectedTeam] = useState<Team | undefined>();
