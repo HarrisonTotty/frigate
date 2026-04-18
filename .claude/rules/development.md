@@ -2,18 +2,6 @@
 
 Modern TypeScript development practices for the Frigate frontend application.
 
-## Code Style & Naming
-
-| Item              | Convention             | Example           |
-| ----------------- | ---------------------- | ----------------- |
-| Component files   | `PascalCase.tsx`       | `ShipCard.tsx`    |
-| Utility files     | `camelCase.ts`         | `formatDate.ts`   |
-| Components        | `PascalCase`           | `ShipStatusPanel` |
-| Functions, hooks  | `camelCase`            | `useShipStatus`   |
-| Variables         | `camelCase`            | `isLoading`       |
-| Constants         | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| Types, Interfaces | `PascalCase`           | `ShipStatus`      |
-
 ### Naming Prefixes
 
 - **Booleans**: `is`, `has`, `can`, `should`
@@ -85,19 +73,3 @@ Modern TypeScript development practices for the Frigate frontend application.
 - Most performance issues come from Effects—fix those first before memoizing
 - Lazy load heavy components with `React.lazy` and `Suspense`
 - Use Zustand selectors to minimize re-renders
-
-## Commands
-
-```bash
-pnpm lint        # ESLint
-pnpm typecheck   # TypeScript compiler
-pnpm test        # Vitest
-pnpm build       # Build all packages
-```
-
-## ESLint Rules
-
-- No unused variables (prefix with `_` if intentionally unused)
-- Exhaustive deps in hooks
-- No explicit `any`
-- Consistent return types on functions

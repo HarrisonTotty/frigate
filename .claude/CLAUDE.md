@@ -6,8 +6,11 @@ Frigate is the default frontend of HYPERION. It is a modular React application b
 
 Documentation for Frigate can be found in the `docs/` directory. In particular:
 
-- `architecture.md` - Details the high-level architecture of the frontend.
-- `design.md` - Details the overall visual design philosophy of the project.
+* `architecture.md` - Details the high-level architecture of the frontend.
+* `design.md` - Details the overall visual design philosophy of the project.
+* `plans/` - Contains detailed, phased action plans for implementing new features.
+* `brainstorming/` - Contains brainstorming documents for new features/ideas.
+
 
 ## Visual Design Guidelines
 

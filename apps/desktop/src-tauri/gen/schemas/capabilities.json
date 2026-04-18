@@ -1,9 +1,1 @@
-{
-  "default": {
-    "identifier": "default",
-    "description": "Default capabilities for the Frigate desktop application",
-    "local": true,
-    "windows": ["*"],
-    "permissions": ["core:default", "dialog:default"]
-  }
-}
+{"default":{"identifier":"default","description":"Default capabilities for the Frigate desktop application","local":true,"windows":["*"],"permissions":["core:default","dialog:default"]}}
