@@ -8,6 +8,7 @@
  */
 import React from "react";
 import { ProgressBar } from "../components";
+import { formatNumber } from "../utils";
 
 /**
  * Inventory statistics for display
@@ -41,13 +42,6 @@ export interface InventoryConstraintsPanelProps {
   canRegister?: boolean;
   /** Optional CSS class name */
   className?: string;
-}
-
-/**
- * Format number with thousand separators
- */
-function formatNumber(value: number): string {
-  return value.toLocaleString();
 }
 
 /**

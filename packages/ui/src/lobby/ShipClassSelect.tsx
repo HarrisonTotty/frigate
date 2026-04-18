@@ -4,14 +4,7 @@
 import React from "react";
 import { Select, Badge } from "../components";
 import type { ShipClassSummary, ShipClassDetails } from "../types/shipClass";
-
-/**
- * Format credit values without thousand separators (cleaner for monospace display)
- */
-function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null) return "---";
-  return String(value);
-}
+import { formatCredits } from "../utils";
 
 /**
  * Format the ship class option label in the format:

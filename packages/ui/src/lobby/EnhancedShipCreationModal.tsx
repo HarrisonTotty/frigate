@@ -10,6 +10,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "../components";
 import { LoadingText } from "../loading";
 import { useShipClassStore } from "../stores/shipClassStore";
+import { formatCredits } from "../utils";
 // ...existing code...
 import { ShipNameInput } from "./ShipNameInput";
 import { ShipClassSelect } from "./ShipClassSelect";
@@ -48,14 +49,6 @@ export interface EnhancedShipCreationModalProps {
   schematicLoading?: boolean;
   /** Initial schematic data to pre-fill the form (from external [LOAD SCHEMATIC] button) */
   initialSchematic?: SchematicDataForModal | null;
-}
-
-/**
- * Format credit values with thousand separators
- */
-function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null) return "---";
-  return value.toLocaleString();
 }
 
 /**

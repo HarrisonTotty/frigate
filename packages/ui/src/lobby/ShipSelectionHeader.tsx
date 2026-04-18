@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "../components";
 import type { Player } from "./PlayerSelectionView";
 import type { Team } from "./TeamBrowser";
+import { formatPlayerId } from "./playerUtils";
 
 export interface ShipSelectionHeaderProps {
   player: Player;
@@ -10,10 +11,6 @@ export interface ShipSelectionHeaderProps {
   onChangeTeam: () => void;
   onDisconnect?: () => void;
   className?: string;
-}
-
-function formatPlayerId(id: string): string {
-  return id.substring(0, 8).toUpperCase();
 }
 
 export function ShipSelectionHeader({

@@ -3,6 +3,7 @@ import type { ModuleSlot, ModuleVariant } from "@frigate/api-client";
 import { Button } from "../components";
 import { useCatalog } from "../hooks/useCatalog";
 import { useAlert } from "../alerts";
+import { formatCredits } from "../utils";
 
 /**
  * Custom hook for focus trap within a container element.
@@ -91,14 +92,6 @@ function useFocusTrap(isOpen: boolean, onClose?: () => void) {
   );
 
   return { containerRef, handleKeyDown };
-}
-
-/**
- * Format credit values with thousand separators
- */
-function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null || value === 0) return "---";
-  return value.toLocaleString();
 }
 
 export interface ModuleCatalogProps {

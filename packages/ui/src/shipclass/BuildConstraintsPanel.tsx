@@ -7,6 +7,7 @@
 
 import React from "react";
 import { Gauge } from "../components";
+import { formatCredits } from "../utils";
 
 export interface BuildConstraintsPanelProps {
   /** Maximum weight capacity in tonnes */
@@ -27,14 +28,6 @@ export interface BuildConstraintsPanelProps {
   teamCredits?: number;
   /** Additional CSS class name */
   className?: string;
-}
-
-/**
- * Format credit values with thousand separators
- */
-function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null) return "---";
-  return value.toLocaleString();
 }
 
 /**

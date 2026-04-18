@@ -8,6 +8,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import type { Ammunition } from "@frigate/api-client";
 import { Button } from "../components";
+import { formatNumber } from "../utils";
 
 /**
  * AmmunitionDetailModal Props
@@ -33,13 +34,6 @@ export interface AmmunitionDetailModalProps {
   compatibleWeapons?: string[];
   /** Optional CSS class name */
   className?: string;
-}
-
-/**
- * Format number with thousand separators
- */
-function formatNumber(value: number): string {
-  return value.toLocaleString();
 }
 
 /**

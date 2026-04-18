@@ -3,9 +3,7 @@ export interface Faction {
   name: string;
 }
 
-export function formatPlayerId(id: string): string {
-  return id.substring(0, 8).toUpperCase();
-}
+export { formatPlayerId } from "./playerUtils";
 
 export function getStatusBadgeVariant(
   status?: string

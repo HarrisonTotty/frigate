@@ -1,14 +1,7 @@
 import React from "react";
 import type { ModuleSlot } from "@frigate/api-client";
 import { ModuleTooltip, type TooltipStatRow } from "../components/ModuleTooltip";
-
-/**
- * Format credit values with thousand separators
- */
-function formatCredits(value: number | undefined): string {
-  if (value === undefined || value === null || value === 0) return "---";
-  return value.toLocaleString();
-}
+import { formatCredits } from "../utils";
 
 export interface ModuleSlotCardProps {
   slot: ModuleSlot;

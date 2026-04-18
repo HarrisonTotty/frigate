@@ -7,6 +7,7 @@
  */
 import React, { useState, useCallback } from "react";
 import type { Ammunition, InventoryItem } from "@frigate/api-client";
+import { formatNumber } from "../utils";
 
 /**
  * LoadedInventoryPanel Props
@@ -28,13 +29,6 @@ export interface LoadedInventoryPanelProps {
   onShowAmmoDetails?: (ammo: Ammunition) => void;
   /** Optional CSS class name */
   className?: string;
-}
-
-/**
- * Format number with thousand separators
- */
-function formatNumber(value: number): string {
-  return value.toLocaleString();
 }
 
 /**

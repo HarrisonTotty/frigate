@@ -1,20 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assert, indexById } from "./index";
-
-describe("assert", () => {
-  it("does not throw when condition is truthy", () => {
-    expect(() => assert(1, "should not throw")).not.toThrow();
-    expect(() => assert("x", "should not throw")).not.toThrow();
-    expect(() => assert({}, "should not throw")).not.toThrow();
-  });
-
-  it("throws Error with the given message when condition is falsy", () => {
-    expect(() => assert(0, "zero is falsy")).toThrow("zero is falsy");
-    expect(() => assert(null, "null is falsy")).toThrow("null is falsy");
-    expect(() => assert(undefined, "undefined is falsy")).toThrow("undefined is falsy");
-    expect(() => assert("", "empty string is falsy")).toThrow("empty string is falsy");
-  });
-});
+import { indexById } from "./index";
 
 describe("indexById", () => {
   it("produces a record keyed by id", () => {

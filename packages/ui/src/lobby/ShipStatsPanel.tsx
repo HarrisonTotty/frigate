@@ -1,5 +1,6 @@
 import React from "react";
 import { ProgressBar, RadarChart } from "../components";
+import { formatCredits } from "../utils";
 
 /**
  * Validation state for the ship blueprint
@@ -362,9 +363,6 @@ export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsP
   const heatExceeded = stats.heat > stats.heatMax && stats.heatMax > 0;
   const bpExceeded = stats.buildPointsUsed > stats.buildPointsMax;
   const creditsExceeded = stats.creditBudget > 0 && stats.creditCost > stats.creditBudget;
-
-  // Format credit values with thousand separators
-  const formatCredits = (value: number): string => value.toLocaleString();
 
   return (
     <div

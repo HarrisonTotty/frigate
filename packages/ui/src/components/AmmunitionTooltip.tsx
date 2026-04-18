@@ -6,6 +6,7 @@
  */
 import React, { useState, useRef, useEffect, useCallback, ReactNode } from "react";
 import type { Ammunition } from "@frigate/api-client";
+import { formatNumber } from "../utils";
 
 /**
  * AmmunitionTooltip Props
@@ -27,13 +28,6 @@ export interface AmmunitionTooltipProps {
   disabled?: boolean;
   /** Max width of tooltip */
   maxWidth?: number;
-}
-
-/**
- * Format number with thousand separators
- */
-function formatNumber(value: number): string {
-  return value.toLocaleString();
 }
 
 /**
