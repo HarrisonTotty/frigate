@@ -1,7 +1,7 @@
 import React from "react";
 import { InlineLoading } from "../loading";
 import PlayerItem from "./PlayerItem";
-import { Player } from "./playerTypes";
+import type { Player } from "../types";
 
 export interface PlayerListProps {
   players: Player[];

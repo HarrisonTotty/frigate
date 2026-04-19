@@ -10,30 +10,9 @@ import clsx from "clsx";
 import { Panel, Stack, Modal } from "../layout";
 import { Button, Badge } from "../components";
 import { useAlert } from "../alerts";
-import type { Player } from "./PlayerRegistration";
+import type { Player, Team, Faction } from "../types";
 
-/**
- * Faction data from HYPERION API
- */
-export interface Faction {
-  id: string;
-  name: string;
-  description: string;
-  traits?: string[];
-}
-
-/**
- * Team data from HYPERION API
- */
-export interface Team {
-  id: string;
-  name: string;
-  faction: string;
-  members: string[];
-  status?: "recruiting" | "active" | "in-mission" | "disbanded";
-  /** Team's current credit balance */
-  credits?: number;
-}
+export type { Team, Faction };
 
 /**
  * Team browser props

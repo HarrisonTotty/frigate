@@ -41,6 +41,7 @@ export const Default: Story = {
       name: "ALICE",
       created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       last_active_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      team_id: null,
     },
   },
 };
@@ -53,6 +54,7 @@ export const WithCallbacks: Story = {
       name: "BOB",
       created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       last_active_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      team_id: null,
     },
     onBack: () => console.log("Back to player selection"),
     onDisconnect: () => console.log("Disconnect clicked"),

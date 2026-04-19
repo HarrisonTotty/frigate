@@ -11,8 +11,7 @@ import { Panel, Stack } from "../layout";
 import { Button, Badge } from "../components";
 import { useAlert } from "../alerts";
 import { safeJsonParse } from "./apiHelpers";
-import type { Player } from "./PlayerRegistration";
-import type { Team } from "./TeamBrowser";
+import type { Player, Team } from "../types";
 
 /**
  * Team membership props
@@ -54,7 +53,7 @@ export function TeamMembership({
   // Load team members and all players
   useEffect(() => {
     if (currentTeam) {
-      setTeamMembers(currentTeam.members || []);
+      setTeamMembers([...(currentTeam.members ?? [])]);
       loadAllPlayers();
     }
   }, [currentTeam?.id]);
@@ -92,7 +91,7 @@ export function TeamMembership({
         throw new Error(`Failed to refresh team: ${response.statusText}`);
       }
       const updatedTeam = await safeJsonParse<Team>(response);
-      setTeamMembers(updatedTeam?.members || []);
+      setTeamMembers(updatedTeam?.members ? [...updatedTeam.members] : []);
     } catch (error) {
       console.error("Failed to refresh team members:", error);
     }

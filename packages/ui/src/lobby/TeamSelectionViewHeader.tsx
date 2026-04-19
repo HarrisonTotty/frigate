@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../components";
-import type { Player } from "./PlayerSelectionView";
+import type { Player } from "../types";
 import { formatPlayerId } from "./helpers";
 
 interface HeaderProps {

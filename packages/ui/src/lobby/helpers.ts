@@ -1,7 +1,4 @@
-export interface Faction {
-  id: string;
-  name: string;
-}
+export type { Faction } from "../types";
 
 export { formatPlayerId } from "./playerUtils";
 

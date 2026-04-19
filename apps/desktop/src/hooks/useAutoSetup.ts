@@ -7,25 +7,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { useLobbyWorkflowStore } from "@frigate/ui";
+import { useLobbyWorkflowStore, type Player, type Team } from "@frigate/ui";
 import type { CliArgs, AutoSetupState, AutoSetupStep } from "../types/cli";
-
-/** API response types */
-interface Player {
-  id: string;
-  name: string;
-  team_id: string | null;
-}
 
 interface PlayersResponse {
   players: Player[];
-}
-
-interface Team {
-  id: string;
-  name: string;
-  faction: string;
-  members: string[];
 }
 
 interface TeamsResponse {

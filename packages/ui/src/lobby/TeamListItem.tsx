@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Badge } from "../components";
-import type { Team } from "./TeamBrowser";
+import type { Team } from "../types";
 import { getStatusBadgeVariant } from "./helpers";
 
 interface TeamListItemProps {

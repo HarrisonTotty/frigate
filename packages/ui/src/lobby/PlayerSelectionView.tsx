@@ -11,13 +11,11 @@ import { Button } from "../components";
 import { useAlert } from "../alerts";
 import { safeJsonParse } from "./apiHelpers";
 import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
-import type { Player } from "./playerTypes";
+import type { Player } from "../types";
 import PlayerList from "./PlayerList";
 import CreatePlayerModal from "./CreatePlayerModal";
 
-// Re-export Player type for backwards compatibility with files that import
-// Player from this module (older code expected `export interface Player` here).
-export type { Player } from "./playerTypes";
+export type { Player };
 
 /**
  * Player selection view props

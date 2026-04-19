@@ -16,8 +16,7 @@ import type { SchematicDataForModal } from "./EnhancedShipCreationModal";
 import { ShipClassBrowser } from "../shipclass";
 import ShipSelectionHeader from "./ShipSelectionHeader";
 import ShipList from "./ShipList";
-import type { Player } from "./PlayerSelectionView";
-import type { Team } from "./TeamBrowser";
+import type { Player, Team } from "../types";
 import type { Blueprint } from "./BlueprintList";
 
 export interface ShipSelectionViewProps {

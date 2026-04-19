@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack } from "../layout";
 import { Button, Select } from "../components";
-import type { Faction } from "./helpers";
+import type { Faction } from "../types";
 
 interface CreateTeamModalProps {
   factions: Faction[];

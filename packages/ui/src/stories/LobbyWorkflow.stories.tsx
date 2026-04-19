@@ -38,13 +38,21 @@ const mockPlayers = [
     name: "Commander Sarah Chen",
     callsign: "PHEONIX",
     created_at: "2025-11-07T10:00:00Z",
+    team_id: null,
   },
-  { id: "p2", name: "Captain Marcus Blake", callsign: "VIPER", created_at: "2025-11-06T15:30:00Z" },
+  {
+    id: "p2",
+    name: "Captain Marcus Blake",
+    callsign: "VIPER",
+    created_at: "2025-11-06T15:30:00Z",
+    team_id: null,
+  },
   {
     id: "p3",
     name: "Lieutenant Yuki Tanaka",
     callsign: "GHOST",
     created_at: "2025-11-05T08:45:00Z",
+    team_id: null,
   },
 ];
 

@@ -50,11 +50,24 @@ function mapPlayer(payload: unknown): Player {
   if (!isRecord(payload)) {
     throw new Error("Invalid player payload");
   }
-  return {
+  const player: {
+    id: string;
+    name: string;
+    team_id: string | null;
+    created_at?: string;
+    last_active_at?: string;
+  } = {
     id: ensureString(payload.id),
     name: ensureString(payload.name),
-    teamId: payload.team_id == null ? null : ensureString(payload.team_id),
+    team_id: payload.team_id == null ? null : ensureString(payload.team_id),
   };
+  if (payload.created_at != null) {
+    player.created_at = ensureString(payload.created_at);
+  }
+  if (payload.last_active_at != null) {
+    player.last_active_at = ensureString(payload.last_active_at);
+  }
+  return player;
 }
 
 function mapPlayers(payload: unknown): Player[] {
@@ -65,13 +78,24 @@ function mapTeam(payload: unknown): Team {
   if (!isRecord(payload)) {
     throw new Error("Invalid team payload");
   }
-  return {
+  const team: {
+    id: string;
+    name: string;
+    faction: string;
+    members: string[];
+    credits: number;
+    status?: Team["status"];
+  } = {
     id: ensureString(payload.id),
     name: ensureString(payload.name),
     faction: ensureString(payload.faction),
     members: mapArray(payload.members, (value) => ensureString(value)),
     credits: typeof payload.credits === "number" ? payload.credits : 0,
   };
+  if (typeof payload.status === "string") {
+    team.status = payload.status as Team["status"];
+  }
+  return team;
 }
 
 function mapTeams(payload: unknown): Team[] {
@@ -104,7 +128,7 @@ function mapBlueprint(payload: unknown): Blueprint {
     name: ensureString(payload.name),
     shipClass: ensureString(payload.ship_class ?? payload.shipClass ?? ""),
     faction: ensureString(payload.faction),
-    teamId: ensureString(payload.team_id ?? payload.teamId ?? ""),
+    team_id: ensureString(payload.team_id ?? payload.teamId ?? ""),
     roles: rolesRecord,
     modules: mapArray(payload.modules, mapBlueprintModule),
     readyPlayerIds: mapArray(payload.ready_players ?? payload.readyPlayerIds, (value) =>
@@ -126,7 +150,7 @@ function mapShip(payload: unknown): Ship {
     name: ensureString(payload.name),
     classId: ensureString(payload.class ?? payload.class_id ?? ""),
     faction: ensureString(payload.faction),
-    teamId: ensureString(payload.team_id ?? payload.teamId ?? ""),
+    team_id: ensureString(payload.team_id ?? payload.teamId ?? ""),
     position: ensureVector3(payload.position),
     velocity: ensureVector3(payload.velocity),
     rotation: ensureQuaternion(payload.rotation),

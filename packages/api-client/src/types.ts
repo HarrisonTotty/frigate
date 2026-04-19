@@ -14,8 +14,12 @@ export interface Quaternion {
 export interface Player {
   readonly id: string;
   readonly name: string;
-  readonly teamId: string | null;
+  readonly team_id: string | null;
+  readonly created_at?: string;
+  readonly last_active_at?: string;
 }
+
+export type TeamStatus = "recruiting" | "active" | "in-mission" | "disbanded";
 
 export interface Team {
   readonly id: string;
@@ -24,6 +28,15 @@ export interface Team {
   readonly members: readonly string[];
   /** Team's current credit balance */
   readonly credits: number;
+  /** Operational status shown in lobby/team browser UIs */
+  readonly status?: TeamStatus;
+}
+
+export interface Faction {
+  readonly id: string;
+  readonly name: string;
+  readonly description?: string;
+  readonly traits?: readonly string[];
 }
 
 export interface BlueprintModule {
@@ -37,7 +50,7 @@ export interface Blueprint {
   readonly name: string;
   readonly shipClass: string;
   readonly faction: string;
-  readonly teamId: string;
+  readonly team_id: string;
   readonly roles: Record<string, string>;
   readonly modules: readonly BlueprintModule[];
   readonly readyPlayerIds: readonly string[];
@@ -58,7 +71,7 @@ export interface Ship {
   readonly name: string;
   readonly classId: string;
   readonly faction: string;
-  readonly teamId: string;
+  readonly team_id: string;
   readonly position: Vector3;
   readonly velocity: Vector3;
   readonly rotation: Quaternion;

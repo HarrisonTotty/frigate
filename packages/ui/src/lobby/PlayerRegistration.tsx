@@ -10,15 +10,9 @@ import clsx from "clsx";
 import { Panel, Stack } from "../layout";
 import { Button } from "../components";
 import { useAlert } from "../alerts";
+import type { Player } from "../types";
 
-/**
- * Player data from HYPERION API
- */
-export interface Player {
-  id: string;
-  name: string;
-  team_id?: string;
-}
+export type { Player };
 
 /**
  * Player registration props

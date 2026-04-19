@@ -68,11 +68,7 @@ export type {
 
 // Inventory Workspace
 export { InventoryWorkspace } from "./InventoryWorkspace";
-export type {
-  InventoryWorkspaceProps,
-  Player as InventoryPlayer,
-  Team as InventoryTeam,
-} from "./InventoryWorkspace";
+export type { InventoryWorkspaceProps } from "./InventoryWorkspace";
 
 export { AmmunitionBrowser } from "./AmmunitionBrowser";
 export type { AmmunitionBrowserProps } from "./AmmunitionBrowser";

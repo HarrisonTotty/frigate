@@ -11,7 +11,7 @@ const baseShip: Ship = {
   name: "Hyperion",
   classId: "class-1",
   faction: "Alliance",
-  teamId: "team-1",
+  team_id: "team-1",
   position: baseVector,
   velocity: baseVector,
   rotation: baseRotation,

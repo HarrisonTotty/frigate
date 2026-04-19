@@ -66,6 +66,7 @@ export const TeamBrowserDemo: StoryObj = {
       const [currentPlayer] = useState<Player>({
         id: "player-123",
         name: "Test Player",
+        team_id: null,
       });
 
       return (
@@ -99,12 +100,14 @@ export const TeamMembershipDemo: StoryObj = {
       const [currentPlayer] = useState<Player>({
         id: "player-123",
         name: "Test Player",
+        team_id: "team-456",
       });
       const [currentTeam] = useState<Team>({
         id: "team-456",
         name: "Alpha Squad",
         faction: "federation",
         members: ["player-123", "player-789"],
+        credits: 0,
       });
 
       return (

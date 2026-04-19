@@ -9,6 +9,7 @@
  */
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { Ammunition, ModuleInstance, ModuleVariant } from "@frigate/api-client";
+import type { Player, Team } from "../types";
 import { useAmmunition } from "../hooks/useAmmunition";
 import { useInventoryStore } from "../stores/inventoryStore";
 import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
@@ -25,32 +26,15 @@ import {
 } from "./utils/ammoCompatibility";
 
 /**
- * Player information
- */
-export interface Player {
-  id: string;
-  name: string;
-}
-
-/**
- * Team information
- */
-export interface Team {
-  id: string;
-  name: string;
-  credits: number;
-}
-
-/**
  * InventoryWorkspace Props
  */
 export interface InventoryWorkspaceProps {
   /** API base URL */
   apiUrl: string;
-  /** Player context */
-  player: Player;
-  /** Team context */
-  team: Team;
+  /** Player context — only id/name are read by this workspace */
+  player: Pick<Player, "id" | "name">;
+  /** Team context — only id/name/credits are read by this workspace */
+  team: Pick<Team, "id" | "name" | "credits">;
   /** Blueprint ID for this ship */
   blueprintId: string;
   /** Remaining weight capacity after module installation (optional - fetched from blueprint if not provided) */

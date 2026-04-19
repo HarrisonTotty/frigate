@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "../components";
-import type { Player } from "./PlayerSelectionView";
-import type { Team } from "./TeamBrowser";
+import type { Player, Team } from "../types";
 import { formatPlayerId } from "./playerUtils";
 
 export interface ShipSelectionHeaderProps {

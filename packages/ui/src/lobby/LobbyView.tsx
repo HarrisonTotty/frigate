@@ -7,8 +7,9 @@
 
 import React, { useState } from "react";
 import { Grid } from "../layout";
-import { PlayerRegistration, type Player } from "./PlayerRegistration";
-import { TeamBrowser, type Team } from "./TeamBrowser";
+import type { Player, Team } from "../types";
+import { PlayerRegistration } from "./PlayerRegistration";
+import { TeamBrowser } from "./TeamBrowser";
 import { TeamMembership } from "./TeamMembership";
 
 /**

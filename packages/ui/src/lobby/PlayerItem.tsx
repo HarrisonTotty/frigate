@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../components";
-import { Player } from "./playerTypes";
+import type { Player } from "../types";
 import { formatPlayerId, formatRelativeTime } from "./playerUtils";
 
 export interface PlayerItemProps {

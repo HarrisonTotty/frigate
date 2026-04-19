@@ -11,13 +11,9 @@ import { useAlert } from "../alerts";
 import CreateTeamModal from "./CreateTeamModal";
 import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
 import TeamSelectionViewHeader from "./TeamSelectionViewHeader";
-import type { Player } from "./PlayerSelectionView";
-import type { Team } from "./TeamBrowser";
+import type { Player, Team, Faction } from "../types";
 
-export interface Faction {
-  id: string;
-  name: string;
-}
+export type { Faction };
 
 export interface TeamSelectionViewProps {
   apiUrl: string;
