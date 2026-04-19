@@ -1,107 +1,18 @@
 import { describe, it, expect } from "vitest";
+import {
+  parseSchematicYaml,
+  serializeSchematicYaml,
+  type SchematicFile,
+  type SchematicModule,
+} from "../schematicYaml";
 
 /**
  * Schematic YAML Parsing and Serialization Tests
  *
- * These tests verify the YAML parsing and serialization functions used by
- * the schematic file functionality. The same logic is used in both the
- * web and desktop versions of useSchematicFile.
+ * These tests verify the YAML parsing and serialization helpers exported from
+ * `../schematicYaml`, which is the canonical source used by both the web and
+ * desktop `useSchematicFile` hooks.
  */
-
-// Types matching the schematic format
-interface SchematicModule {
-  slot: string;
-  module: string | null;
-}
-
-interface SchematicFile {
-  version: number;
-  name: string;
-  ship_class: string;
-  modules: SchematicModule[];
-}
-
-/**
- * Parse YAML string to SchematicFile
- * (Copied from useSchematicFile for testing)
- */
-function parseSchematicYaml(yaml: string): SchematicFile {
-  const lines = yaml.split("\n");
-  const schematic: Partial<SchematicFile> = {
-    modules: [],
-  };
-
-  let currentModule: Partial<{ slot: string; module: string | null }> | null = null;
-  let inModules = false;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // Skip empty lines and comments
-    if (!trimmed || trimmed.startsWith("#")) continue;
-
-    // Check for key-value pairs
-    if (trimmed.startsWith("version:")) {
-      schematic.version = parseInt(trimmed.split(":")[1].trim(), 10);
-    } else if (trimmed.startsWith("name:")) {
-      schematic.name = trimmed.split(":").slice(1).join(":").trim();
-    } else if (trimmed.startsWith("ship_class:")) {
-      schematic.ship_class = trimmed.split(":").slice(1).join(":").trim();
-    } else if (trimmed === "modules:") {
-      inModules = true;
-    } else if (inModules && trimmed.startsWith("- slot:")) {
-      // New module entry
-      if (currentModule && currentModule.slot) {
-        schematic.modules!.push({
-          slot: currentModule.slot,
-          module: currentModule.module ?? null,
-        });
-      }
-      currentModule = {
-        slot: trimmed.replace("- slot:", "").trim(),
-        module: null,
-      };
-    } else if (inModules && currentModule && trimmed.startsWith("module:")) {
-      const value = trimmed.split(":").slice(1).join(":").trim();
-      currentModule.module = value === "null" || value === "" ? null : value;
-    }
-  }
-
-  // Don't forget the last module
-  if (currentModule && currentModule.slot) {
-    schematic.modules!.push({
-      slot: currentModule.slot,
-      module: currentModule.module ?? null,
-    });
-  }
-
-  // Validate required fields
-  if (schematic.version === undefined) throw new Error("Missing version field");
-  if (!schematic.name) throw new Error("Missing name field");
-  if (!schematic.ship_class) throw new Error("Missing ship_class field");
-
-  return schematic as SchematicFile;
-}
-
-/**
- * Serialize SchematicFile to YAML string
- * (Copied from useSchematicFile for testing)
- */
-function serializeSchematicYaml(schematic: SchematicFile): string {
-  const lines: string[] = [
-    `version: ${schematic.version}`,
-    `name: ${schematic.name}`,
-    `ship_class: ${schematic.ship_class}`,
-    "modules:",
-  ];
-
-  for (const mod of schematic.modules) {
-    lines.push(`  - slot: ${mod.slot}`);
-    lines.push(`    module: ${mod.module ?? "null"}`);
-  }
-
-  return lines.join("\n");
-}
 
 describe("Schematic YAML Parsing", () => {
   describe("parseSchematicYaml", () => {
@@ -330,7 +241,6 @@ modules:
       expect(yaml).toContain("version: 1");
       expect(yaml).toContain("name: Empty Ship");
       expect(yaml).toContain("modules:");
-      // Should not have any slot entries
       expect(yaml).not.toContain("- slot:");
     });
 

@@ -11,14 +11,9 @@ import { useCatalog } from "../hooks/useCatalog";
 import { useLobbyWorkflowStore } from "./lobbyWorkflowStore";
 import { ConfirmationModal } from "../modals";
 import { useAlertSafe } from "../alerts";
+import type { SchematicModule } from "./schematicYaml";
 
-/**
- * Schematic module slot assignment
- */
-export interface SchematicModule {
-  slot: string;
-  module: string | null;
-}
+export type { SchematicModule };
 
 /**
  * Ship schematic data structure

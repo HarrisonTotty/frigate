@@ -150,6 +150,16 @@ export type {
 export { useLobbyWorkflowStore } from "./lobby";
 export type { LobbyWorkflowState, WorkflowStep } from "./lobby";
 
+// Export schematic YAML helpers and platform-agnostic file hook
+export {
+  parseSchematicYaml,
+  serializeSchematicYaml,
+} from "./lobby/schematicYaml";
+export type { SchematicFile } from "./lobby/schematicYaml";
+
+export { useSchematicFile, webPersistence } from "./hooks/useSchematicFile";
+export type { SchematicPersistence, UseSchematicFileReturn } from "./hooks/useSchematicFile";
+
 // Export module components (Phase 1.1)
 export { ModuleKindSelector } from "./modules";
 export type { ModuleKindSelectorProps, ModuleVariant } from "./modules";
