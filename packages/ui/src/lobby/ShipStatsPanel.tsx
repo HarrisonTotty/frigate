@@ -1,5 +1,5 @@
 import React from "react";
-import { ProgressBar, RadarChart } from "../components";
+import { ConstraintBar, PanelFooter, PanelHeader, RadarChart, StatRow } from "../components";
 import { formatCredits } from "../utils";
 
 /**
@@ -104,70 +104,6 @@ function getValidationColor(state: ValidationState): string {
 }
 
 /**
- * Ship Statistics Panel Header
- */
-function ShipStatsPanelHeader() {
-  return (
-    <div
-      style={{
-        backgroundColor: "var(--frigate-bg-base)",
-        padding: "var(--frigate-space-2)",
-        borderBottom: "1px solid var(--frigate-border-base)",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 800,
-          fontSize: "var(--frigate-font-heading)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-        }}
-      >
-        SHIP STATISTICS
-      </div>
-      <div
-        style={{
-          fontSize: "var(--frigate-font-small)",
-          color: "var(--frigate-text-secondary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          marginTop: "var(--frigate-space-1)",
-        }}
-      >
-        BLUEPRINT ANALYSIS
-      </div>
-    </div>
-  );
-}
-
-/**
- * Ship Statistics Panel Footer
- */
-function ShipStatsPanelFooter({ warningCount }: { warningCount: number }) {
-  return (
-    <div
-      style={{
-        fontSize: "var(--frigate-font-tiny)",
-        color: warningCount > 0 ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
-        backgroundColor: "var(--frigate-bg-base)",
-        padding: "var(--frigate-space-1) var(--frigate-space-2)",
-        borderTop: "1px solid var(--frigate-border-base)",
-        letterSpacing: "0.05em",
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
-      <span>[STATUS: {warningCount > 0 ? "WARNING" : "NOMINAL"}]</span>
-      {warningCount > 0 && (
-        <span>
-          [{warningCount} ISSUE{warningCount > 1 ? "S" : ""}]
-        </span>
-      )}
-    </div>
-  );
-}
-
-/**
  * Register Schematic Button
  */
 function RegisterSchematicButton({ stats, onClick }: { stats: ShipStats; onClick?: () => void }) {
@@ -233,121 +169,6 @@ function RegisterSchematicButton({ stats, onClick }: { stats: ShipStats; onClick
 }
 
 /**
- * Stat row component for consistent formatting
- */
-function StatRow({
-  label,
-  value,
-  unit = "",
-  warning = false,
-}: {
-  label: string;
-  value: number | string;
-  unit?: string;
-  warning?: boolean;
-}) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "var(--frigate-space-1) 0",
-      }}
-    >
-      <span
-        style={{
-          fontSize: "var(--frigate-font-tiny)",
-          color: "var(--frigate-text-secondary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontSize: "var(--frigate-font-small)",
-          color: warning ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
-          fontWeight: 600,
-          fontFamily: "var(--frigate-font-mono)",
-        }}
-      >
-        {value}
-        {unit}
-      </span>
-    </div>
-  );
-}
-
-/**
- * Constraint bar component with label
- */
-function ConstraintBar({
-  label,
-  value,
-  max,
-  unit,
-  showOverLimit = false,
-  formatValue,
-}: {
-  label: string;
-  value: number;
-  max: number;
-  unit: string;
-  showOverLimit?: boolean;
-  /** Optional formatter for large numbers (e.g., credits) */
-  formatValue?: (v: number) => string;
-}) {
-  const percent = max > 0 ? (value / max) * 100 : 0;
-  const exceeded = value > max && max > 0;
-  const status = exceeded ? "danger" : percent > 90 ? "warning" : "primary";
-  const fmt = formatValue ?? ((v: number) => String(v));
-
-  return (
-    <div style={{ marginBottom: "var(--frigate-space-2)" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2px",
-        }}
-      >
-        <span
-          style={{
-            fontSize: "var(--frigate-font-tiny)",
-            color: "var(--frigate-text-secondary)",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {label}
-        </span>
-        <span
-          style={{
-            fontSize: "var(--frigate-font-tiny)",
-            color: exceeded ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
-            fontWeight: exceeded ? 700 : 400,
-          }}
-        >
-          {fmt(value)}/{max > 0 ? fmt(max) : "—"}
-          {unit}
-          {exceeded && showOverLimit && " [!]"}
-        </span>
-      </div>
-      <ProgressBar
-        value={Math.min(value, max)}
-        max={max > 0 ? max : 1}
-        variant={status}
-        showLabel={false}
-        blocks={15}
-      />
-    </div>
-  );
-}
-
-/**
  * Ship Statistics Panel Component
  *
  * Displays aggregated ship blueprint statistics in a dense, technical format.
@@ -383,7 +204,7 @@ export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsP
       role="region"
     >
       {/* Header */}
-      <ShipStatsPanelHeader />
+      <PanelHeader title="SHIP STATISTICS" subtitle="BLUEPRINT ANALYSIS" />
 
       {/* Content */}
       <div
@@ -398,9 +219,11 @@ export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsP
         <div style={{ marginBottom: "var(--frigate-space-3)" }}>
           <StatRow
             label="COST"
-            value={formatCredits(stats.creditCost)}
-            unit=" CR"
-            warning={creditsExceeded}
+            value={
+              <span style={{ color: creditsExceeded ? "var(--frigate-danger)" : undefined }}>
+                {formatCredits(stats.creditCost)} CR
+              </span>
+            }
           />
           <StatRow label="HULL" value={stats.hp} unit=" HP" />
         </div>
@@ -409,7 +232,7 @@ export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsP
         {stats.creditBudget > 0 && (
           <ConstraintBar
             label="CREDITS"
-            value={stats.creditCost}
+            current={stats.creditCost}
             max={stats.creditBudget}
             unit=" CR"
             showOverLimit={creditsExceeded}
@@ -418,28 +241,28 @@ export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsP
         )}
         <ConstraintBar
           label="BUILD POINTS"
-          value={stats.buildPointsUsed}
+          current={stats.buildPointsUsed}
           max={stats.buildPointsMax}
           unit=" BP"
           showOverLimit={bpExceeded}
         />
         <ConstraintBar
           label="WEIGHT"
-          value={stats.weight}
+          current={stats.weight}
           max={stats.weightMax}
           unit=" t"
           showOverLimit={weightExceeded}
         />
         <ConstraintBar
           label="POWER"
-          value={stats.power}
+          current={stats.power}
           max={stats.powerMax}
           unit=" MW"
           showOverLimit={powerExceeded}
         />
         <ConstraintBar
           label="COOLING"
-          value={stats.heat}
+          current={stats.heat}
           max={stats.heatMax}
           unit=" K"
           showOverLimit={heatExceeded}
@@ -520,7 +343,7 @@ export function ShipStatsPanel({ stats, className = "", onRegister }: ShipStatsP
       </div>
 
       {/* Footer */}
-      <ShipStatsPanelFooter warningCount={warningCount} />
+      <PanelFooter warningCount={warningCount} />
 
       {/* Register Schematic Button */}
       <RegisterSchematicButton stats={stats} onClick={onRegister} />

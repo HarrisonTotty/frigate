@@ -7,7 +7,7 @@
  * Follows the technical aesthetic with monospace typography and ASCII styling.
  */
 import React from "react";
-import { ProgressBar } from "../components";
+import { ConstraintBar, PanelFooter, PanelHeader, StatRow } from "../components";
 import { formatNumber } from "../utils";
 
 /**
@@ -42,181 +42,6 @@ export interface InventoryConstraintsPanelProps {
   canRegister?: boolean;
   /** Optional CSS class name */
   className?: string;
-}
-
-/**
- * Constraint bar component with label
- */
-function ConstraintBar({
-  label,
-  value,
-  max,
-  unit,
-  showOverLimit = false,
-  formatValue,
-}: {
-  label: string;
-  value: number;
-  max: number;
-  unit: string;
-  showOverLimit?: boolean;
-  formatValue?: (v: number) => string;
-}) {
-  const percent = max > 0 ? (value / max) * 100 : 0;
-  const exceeded = value > max && max > 0;
-  const status = exceeded ? "danger" : percent > 90 ? "warning" : "primary";
-  const fmt = formatValue ?? ((v: number) => String(v));
-
-  return (
-    <div style={{ marginBottom: "var(--frigate-space-2)" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2px",
-        }}
-      >
-        <span
-          style={{
-            fontSize: "var(--frigate-font-tiny)",
-            color: "var(--frigate-text-secondary)",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {label}
-        </span>
-        <span
-          style={{
-            fontSize: "var(--frigate-font-tiny)",
-            color: exceeded ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
-            fontWeight: exceeded ? 700 : 400,
-          }}
-        >
-          {fmt(value)}/{max > 0 ? fmt(max) : "—"}
-          {unit}
-          {exceeded && showOverLimit && " [!]"}
-        </span>
-      </div>
-      <ProgressBar
-        value={Math.min(value, max)}
-        max={max > 0 ? max : 1}
-        variant={status}
-        showLabel={false}
-        blocks={15}
-      />
-    </div>
-  );
-}
-
-/**
- * Stat row component for consistent formatting
- */
-function StatRow({
-  label,
-  value,
-  warning = false,
-}: {
-  label: string;
-  value: string | number;
-  warning?: boolean;
-}) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "var(--frigate-space-1) 0",
-      }}
-    >
-      <span
-        style={{
-          fontSize: "var(--frigate-font-tiny)",
-          color: "var(--frigate-text-secondary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontSize: "var(--frigate-font-small)",
-          color: warning ? "var(--frigate-danger)" : "var(--frigate-text-primary)",
-          fontWeight: 600,
-          fontFamily: "var(--frigate-font-mono)",
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-/**
- * Panel Header Component
- */
-function PanelHeader() {
-  return (
-    <div
-      style={{
-        backgroundColor: "var(--frigate-bg-base)",
-        padding: "var(--frigate-space-2)",
-        borderBottom: "1px solid var(--frigate-border-base)",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 800,
-          fontSize: "var(--frigate-font-heading)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-        }}
-      >
-        CARGO STATUS
-      </div>
-      <div
-        style={{
-          fontSize: "var(--frigate-font-small)",
-          color: "var(--frigate-text-secondary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          marginTop: "var(--frigate-space-1)",
-        }}
-      >
-        RESOURCE ALLOCATION
-      </div>
-    </div>
-  );
-}
-
-/**
- * Panel Footer Component
- */
-function PanelFooter({ warningCount }: { warningCount: number }) {
-  return (
-    <div
-      style={{
-        fontSize: "var(--frigate-font-tiny)",
-        color: warningCount > 0 ? "var(--frigate-danger)" : "var(--frigate-text-muted)",
-        backgroundColor: "var(--frigate-bg-base)",
-        padding: "var(--frigate-space-1) var(--frigate-space-2)",
-        borderTop: "1px solid var(--frigate-border-base)",
-        letterSpacing: "0.05em",
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
-      <span>[STATUS: {warningCount > 0 ? "WARNING" : "NOMINAL"}]</span>
-      {warningCount > 0 && (
-        <span>
-          [{warningCount} ISSUE{warningCount > 1 ? "S" : ""}]
-        </span>
-      )}
-    </div>
-  );
 }
 
 /**
@@ -335,7 +160,7 @@ export function InventoryConstraintsPanel({
       role="region"
     >
       {/* Header */}
-      <PanelHeader />
+      <PanelHeader title="CARGO STATUS" subtitle="RESOURCE ALLOCATION" />
 
       {/* Content */}
       <div
@@ -349,7 +174,7 @@ export function InventoryConstraintsPanel({
         {/* Constraint Bars */}
         <ConstraintBar
           label="WEIGHT"
-          value={stats.cargoWeight}
+          current={stats.cargoWeight}
           max={stats.weightCapacity}
           unit=" t"
           showOverLimit={isOverWeight}
@@ -357,7 +182,7 @@ export function InventoryConstraintsPanel({
         {stats.creditBudget > 0 && (
           <ConstraintBar
             label="CREDITS"
-            value={stats.cargoCost}
+            current={stats.cargoCost}
             max={stats.creditBudget}
             unit=" CR"
             showOverLimit={isOverBudget}
@@ -467,7 +292,9 @@ export function InventoryConstraintsPanel({
       </div>
 
       {/* Footer */}
-      <PanelFooter warningCount={warningCount + (isOverWeight ? 1 : 0) + (isOverBudget ? 1 : 0)} />
+      <PanelFooter
+        warningCount={warningCount + (isOverWeight ? 1 : 0) + (isOverBudget ? 1 : 0)}
+      />
 
       {/* Register Cargo Button */}
       <RegisterCargoButton onClick={onRegisterCargo} disabled={!canRegister} stats={stats} />

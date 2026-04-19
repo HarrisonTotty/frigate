@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect, useCallback, ReactNode } from "react";
 import type { Ammunition } from "@frigate/api-client";
 import { formatNumber } from "../utils";
+import { StatRow } from "./StatRow";
 
 /**
  * AmmunitionTooltip Props
@@ -28,46 +29,6 @@ export interface AmmunitionTooltipProps {
   disabled?: boolean;
   /** Max width of tooltip */
   maxWidth?: number;
-}
-
-/**
- * Stat row component for tooltip
- */
-function StatRow({
-  label,
-  value,
-  unit = "",
-}: {
-  label: string;
-  value: string | number;
-  unit?: string;
-}) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "2px 0",
-      }}
-    >
-      <span
-        style={{
-          color: "var(--frigate-text-secondary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-        }}
-      >
-        {label}
-      </span>
-      <span style={{ fontWeight: 600, color: "var(--frigate-text-primary)" }}>
-        {value}
-        {unit && (
-          <span style={{ color: "var(--frigate-text-muted)", marginLeft: "2px" }}>{unit}</span>
-        )}
-      </span>
-    </div>
-  );
 }
 
 /**

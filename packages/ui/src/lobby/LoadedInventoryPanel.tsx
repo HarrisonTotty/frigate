@@ -7,6 +7,7 @@
  */
 import React, { useState, useCallback } from "react";
 import type { Ammunition, InventoryItem } from "@frigate/api-client";
+import { PanelFooter, PanelHeader } from "../components";
 import { formatNumber } from "../utils";
 
 /**
@@ -287,63 +288,6 @@ function QuantityButton({
 }
 
 /**
- * Panel Header Component
- */
-function PanelHeader({ itemCount }: { itemCount: number }) {
-  return (
-    <div
-      style={{
-        backgroundColor: "var(--frigate-bg-base)",
-        padding: "var(--frigate-space-2)",
-        borderBottom: "1px solid var(--frigate-border-base)",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 800,
-          fontSize: "var(--frigate-font-heading)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-        }}
-      >
-        LOADED INVENTORY
-      </div>
-      <div
-        style={{
-          fontSize: "var(--frigate-font-small)",
-          color: "var(--frigate-text-secondary)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          marginTop: "var(--frigate-space-1)",
-        }}
-      >
-        {itemCount} ITEM{itemCount !== 1 ? "S" : ""} LOADED
-      </div>
-    </div>
-  );
-}
-
-/**
- * Panel Footer Component
- */
-function PanelFooter() {
-  return (
-    <div
-      style={{
-        fontSize: "var(--frigate-font-tiny)",
-        color: "var(--frigate-text-muted)",
-        backgroundColor: "var(--frigate-bg-base)",
-        padding: "var(--frigate-space-1) var(--frigate-space-2)",
-        borderTop: "1px solid var(--frigate-border-base)",
-        letterSpacing: "0.05em",
-      }}
-    >
-      [+/-] ADJUST QTY [CLICK QTY] EDIT [DEL] REMOVE
-    </div>
-  );
-}
-
-/**
  * Empty State Component
  */
 function EmptyState() {
@@ -434,7 +378,7 @@ export function LoadedInventoryPanel({
       role="region"
     >
       {/* Header */}
-      <PanelHeader itemCount={validItems.length} />
+      <PanelHeader title="LOADED INVENTORY" itemCount={validItems.length} />
 
       {/* Content */}
       <div
@@ -467,7 +411,9 @@ export function LoadedInventoryPanel({
       </div>
 
       {/* Footer */}
-      <PanelFooter />
+      <PanelFooter>
+        <span>[+/-] ADJUST QTY [CLICK QTY] EDIT [DEL] REMOVE</span>
+      </PanelFooter>
     </div>
   );
 }
